@@ -124,11 +124,20 @@ class StripeAPI {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to create checkout session');
+        let errorText = 'Failed to create checkout session';
+        try {
+          const errorData = await response.json();
+          errorText = errorData.error || errorText;
+        } catch {
+          errorText = `Checkout service error (${response.status})`;
+        }
+        throw new Error(errorText);
       }
 
       const data = await response.json();
+      if (!data.sessionId && !data.url) {
+        throw new Error('Checkout service returned an invalid response');
+      }
       return data;
     } catch (error) {
       console.error('Error creating checkout session:', error);

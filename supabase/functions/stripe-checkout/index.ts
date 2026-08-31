@@ -143,7 +143,7 @@ Deno.serve(async (req) => {
       if (mode === 'subscription') {
         const { data: subscription, error: getSubscriptionError } = await supabase
           .from('stripe_subscriptions')
-          .select('status')
+          .select('status, subscription_id')
           .eq('customer_id', customerId)
           .maybeSingle();
 
@@ -154,6 +154,7 @@ Deno.serve(async (req) => {
         }
 
         if (!subscription) {
+          // No subscription row exists -- create one
           const { error: createSubscriptionError } = await supabase.from('stripe_subscriptions').insert({
             customer_id: customerId,
             status: 'not_started',
@@ -161,9 +162,51 @@ Deno.serve(async (req) => {
 
           if (createSubscriptionError) {
             console.error('Failed to create subscription record for existing customer', createSubscriptionError);
-
             return corsResponse({ error: 'Failed to create subscription record for existing customer' }, 500);
           }
+        } else if (subscription.status === 'not_started' || subscription.status === 'canceled') {
+          // Existing incomplete or canceled row -- reset it for reuse
+          // If there's an orphaned Stripe subscription, cancel it first
+          if (subscription.subscription_id) {
+            try {
+              const existingSub = await stripe.subscriptions.retrieve(subscription.subscription_id);
+              if (existingSub.status !== 'canceled' && existingSub.status !== 'ended') {
+                await stripe.subscriptions.cancel(subscription.subscription_id);
+                console.log(`Canceled orphaned subscription ${subscription.subscription_id} for customer ${customerId}`);
+              }
+            } catch (subError: any) {
+              console.warn(`Could not retrieve/cancel subscription ${subscription.subscription_id}: ${subError.message}`);
+            }
+          }
+
+          // Reset the row so it's ready for the new checkout attempt
+          const { error: resetError } = await supabase
+            .from('stripe_subscriptions')
+            .update({
+              status: 'not_started',
+              subscription_id: null,
+              price_id: null,
+              current_period_start: null,
+              current_period_end: null,
+              cancel_at_period_end: false,
+              payment_method_brand: null,
+              payment_method_last4: null,
+              discount_code: null,
+              discount_percent_off: null,
+              discount_amount_off: null,
+              discount_duration: null,
+              discount_end_date: null,
+              discount_duration_in_months: null,
+              updated_at: new Date().toISOString(),
+            })
+            .eq('customer_id', customerId);
+
+          if (resetError) {
+            console.error('Failed to reset incomplete subscription row', resetError);
+            return corsResponse({ error: 'Failed to reset previous checkout attempt' }, 500);
+          }
+
+          console.log(`Reset incomplete subscription row for customer ${customerId}`);
         }
       }
     }
@@ -212,7 +255,7 @@ Deno.serve(async (req) => {
     return corsResponse({ sessionId: session.id, url: session.url });
   } catch (error: any) {
     console.error(`Checkout error: ${error.message}`);
-    return corsResponse({ error: error.message }, 500);
+    return corsResponse({ error: error.message || 'Failed to create checkout session' }, 500);
   }
 });
 
