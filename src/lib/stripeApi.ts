@@ -79,7 +79,7 @@ export const STRIPE_PRODUCTS: StripeProduct[] = [
       'All Premium features',
       '55% savings vs monthly',
       'Annual billing',
-      'Extended support hours'
+      'Priority feature access'
     ]
   },
 ];

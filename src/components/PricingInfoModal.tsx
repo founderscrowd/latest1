@@ -147,10 +147,6 @@ const PricingInfoModal: React.FC<PricingInfoModalProps> = ({ isOpen, onClose, on
               </li>
               <li className="flex items-center gap-2 text-sm">
                 <CheckCircle size={16} className="text-green-600 flex-shrink-0" />
-                <span className="text-slate-700">Extended support hours</span>
-              </li>
-              <li className="flex items-center gap-2 text-sm">
-                <CheckCircle size={16} className="text-green-600 flex-shrink-0" />
                 <span className="text-slate-700">Priority feature access</span>
               </li>
             </ul>

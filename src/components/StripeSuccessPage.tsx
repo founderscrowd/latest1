@@ -237,14 +237,10 @@ const StripeSuccessPage: React.FC<StripeSuccessPageProps> = ({ onBack, sessionId
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle size={16} />
-                  <span className="font-medium">Extended Support Hours</span>
+                  <span className="font-medium">Priority Feature Access</span>
                 </div>
               </div>
               <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <CheckCircle size={16} />
-                  <span className="font-medium">Priority Feature Access</span>
-                </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle size={16} />
                   <span className="font-medium">All Premium Features</span>
