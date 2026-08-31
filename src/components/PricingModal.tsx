@@ -8,9 +8,10 @@ interface PricingModalProps {
   onClose: () => void;
   selectedProduct?: string;
   onShowTerms?: () => void;
+  hasHadSubscription?: boolean;
 }
 
-const PricingModal: React.FC<PricingModalProps> = ({ isOpen, onClose, selectedProduct, onShowTerms }) => {
+const PricingModal: React.FC<PricingModalProps> = ({ isOpen, onClose, selectedProduct, onShowTerms, hasHadSubscription = false }) => {
   const [loading, setLoading] = useState<string | null>(null);
   const [error, setError] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
@@ -44,7 +45,10 @@ const PricingModal: React.FC<PricingModalProps> = ({ isOpen, onClose, selectedPr
       setError('');
       
       trackInitiateCheckout();
-      await stripeAPI.redirectToCheckout(priceId, mode, true, PROMOTION_CODE_2_MONTHS_FREE);
+      // Only send the 2-month free trial promotion code for brand-new users
+      // Returning users (who previously had/cancelled a subscription) are charged immediately
+      const promotionCode = hasHadSubscription ? undefined : PROMOTION_CODE_2_MONTHS_FREE;
+      await stripeAPI.redirectToCheckout(priceId, mode, true, promotionCode);
     } catch (err: any) {
       console.error('Purchase error:', err);
       setError(err.message || 'Failed to start checkout process');
@@ -89,7 +93,8 @@ const PricingModal: React.FC<PricingModalProps> = ({ isOpen, onClose, selectedPr
           </div>
         )}
 
-        {/* Free Trial Banner */}
+        {/* Free Trial Banner - only for new users */}
+        {!hasHadSubscription && (
         <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl p-4 mb-6 text-white relative overflow-hidden">
           <div className="absolute top-0 right-0 -mr-4 -mt-4 w-24 h-24 bg-white/10 rounded-full"></div>
           <div className="absolute bottom-0 right-8 -mb-6 w-16 h-16 bg-white/10 rounded-full"></div>
@@ -105,6 +110,25 @@ const PricingModal: React.FC<PricingModalProps> = ({ isOpen, onClose, selectedPr
             </div>
           </div>
         </div>
+        )}
+
+        {/* Returning user banner */}
+        {hasHadSubscription && (
+        <div className="bg-gradient-to-r from-blue-500 to-blue-700 rounded-xl p-4 mb-6 text-white relative overflow-hidden">
+          <div className="absolute top-0 right-0 -mr-4 -mt-4 w-24 h-24 bg-white/10 rounded-full"></div>
+          <div className="relative flex items-center gap-3">
+            <div className="flex-shrink-0 w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
+              <Crown size={24} className="text-white" />
+            </div>
+            <div>
+              <h4 className="text-lg font-bold">Welcome Back - Resubscribe Today</h4>
+              <p className="text-sm text-white/90">
+                Pick up your premium membership right where you left off. Billed immediately, cancel anytime.
+              </p>
+            </div>
+          </div>
+        </div>
+        )}
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Monthly Premium */}
@@ -120,18 +144,31 @@ const PricingModal: React.FC<PricingModalProps> = ({ isOpen, onClose, selectedPr
                 </div>
                 <h4 className="text-xl font-bold text-slate-900 mb-2">{monthlyProduct.name}</h4>
                 <p className="text-slate-600 text-sm mb-4">{monthlyProduct.description}</p>
-                <div className="mb-2">
-                  <span className="inline-block bg-green-100 text-green-800 text-sm font-semibold px-3 py-1 rounded-full">
-                    $0.00 for 2 months
-                  </span>
-                </div>
-                <div className="text-3xl font-bold text-slate-900">
-                  <span className="text-slate-400 line-through text-lg mr-2">{stripeAPI.formatPrice(monthlyProduct.price)}</span>
-                  <span>$0.00</span>
-                </div>
-                <div className="text-sm text-slate-500 mt-1">
-                  Then {stripeAPI.formatPrice(monthlyProduct.price)}/month after trial
-                </div>
+                {hasHadSubscription ? (
+                  <div className="text-3xl font-bold text-slate-900">
+                    {stripeAPI.formatPrice(monthlyProduct.price)}
+                  </div>
+                ) : (
+                  <>
+                    <div className="mb-2">
+                      <span className="inline-block bg-green-100 text-green-800 text-sm font-semibold px-3 py-1 rounded-full">
+                        $0.00 for 2 months
+                      </span>
+                    </div>
+                    <div className="text-3xl font-bold text-slate-900">
+                      <span className="text-slate-400 line-through text-lg mr-2">{stripeAPI.formatPrice(monthlyProduct.price)}</span>
+                      <span>$0.00</span>
+                    </div>
+                    <div className="text-sm text-slate-500 mt-1">
+                      Then {stripeAPI.formatPrice(monthlyProduct.price)}/month after trial
+                    </div>
+                  </>
+                )}
+                {hasHadSubscription && (
+                  <div className="text-sm text-slate-500 mt-1">
+                    {stripeAPI.formatPrice(monthlyProduct.price)}/month
+                  </div>
+                )}
               </div>
 
               <ul className="space-y-3 mb-6">
@@ -156,7 +193,7 @@ const PricingModal: React.FC<PricingModalProps> = ({ isOpen, onClose, selectedPr
                 ) : (
                   <>
                     <CreditCard size={16} />
-                    Start 2-Month Free Trial
+                    {hasHadSubscription ? 'Subscribe Now' : 'Start 2-Month Free Trial'}
                   </>
                 )}
               </button>
@@ -183,18 +220,31 @@ const PricingModal: React.FC<PricingModalProps> = ({ isOpen, onClose, selectedPr
                 </div>
                 <h4 className="text-xl font-bold text-slate-900 mb-2">{annualProduct.name}</h4>
                 <p className="text-slate-600 text-sm mb-4">{annualProduct.description}</p>
-                <div className="mb-2">
-                  <span className="inline-block bg-green-100 text-green-800 text-sm font-semibold px-3 py-1 rounded-full">
-                    $0.00 for 2 months
-                  </span>
-                </div>
-                <div className="text-3xl font-bold text-slate-900">
-                  <span className="text-slate-400 line-through text-lg mr-2">{stripeAPI.formatPrice(annualProduct.price)}</span>
-                  <span>$0.00</span>
-                </div>
-                <div className="text-sm text-slate-500 mt-1">
-                  Then {stripeAPI.formatPrice(annualProduct.price)}/year after trial
-                </div>
+                {hasHadSubscription ? (
+                  <div className="text-3xl font-bold text-slate-900">
+                    {stripeAPI.formatPrice(annualProduct.price)}
+                  </div>
+                ) : (
+                  <>
+                    <div className="mb-2">
+                      <span className="inline-block bg-green-100 text-green-800 text-sm font-semibold px-3 py-1 rounded-full">
+                        $0.00 for 2 months
+                      </span>
+                    </div>
+                    <div className="text-3xl font-bold text-slate-900">
+                      <span className="text-slate-400 line-through text-lg mr-2">{stripeAPI.formatPrice(annualProduct.price)}</span>
+                      <span>$0.00</span>
+                    </div>
+                    <div className="text-sm text-slate-500 mt-1">
+                      Then {stripeAPI.formatPrice(annualProduct.price)}/year after trial
+                    </div>
+                  </>
+                )}
+                {hasHadSubscription && (
+                  <div className="text-sm text-slate-500 mt-1">
+                    {stripeAPI.formatPrice(annualProduct.price)}/year
+                  </div>
+                )}
                 <div className="text-sm text-green-600 font-medium mt-1">
                   Save 55% vs monthly
                 </div>
@@ -222,7 +272,7 @@ const PricingModal: React.FC<PricingModalProps> = ({ isOpen, onClose, selectedPr
                 ) : (
                   <>
                     <CreditCard size={16} />
-                    Start 2-Month Free Trial
+                    {hasHadSubscription ? 'Subscribe Now' : 'Start 2-Month Free Trial'}
                   </>
                 )}
               </button>

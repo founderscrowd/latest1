@@ -1581,6 +1581,7 @@ const App: React.FC = () => {
           setShowPricingModal(false);
           navigate('/terms');
         }}
+        hasHadSubscription={userSubscription?.subscription_status && userSubscription.subscription_status !== 'active'}
       />
 
       <PricingInfoModal
