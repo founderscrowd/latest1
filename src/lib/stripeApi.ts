@@ -46,7 +46,7 @@ export interface StripeOrder {
   order_date: string;
 }
 
-export const PROMOTION_CODE_2_MONTHS_FREE = '2MONTHSFREE';
+export const PROMOTION_CODE_2_MONTHS_FREE = '2mfree';
 
 // Predefined products - these would typically come from your Stripe dashboard
 export const STRIPE_PRODUCTS: StripeProduct[] = [

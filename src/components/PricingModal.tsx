@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Check, Crown, Zap, Star, CreditCard, Loader2, FileText, ExternalLink, Gift, Tag } from 'lucide-react';
+import { X, Check, Crown, Zap, Star, CreditCard, Loader2, FileText, ExternalLink, Gift } from 'lucide-react';
 import { stripeAPI, STRIPE_PRODUCTS, PROMOTION_CODE_2_MONTHS_FREE } from '../lib/stripeApi';
 import { trackInitiateCheckout } from '../lib/metaPixel';
 
@@ -100,19 +100,10 @@ const PricingModal: React.FC<PricingModalProps> = ({ isOpen, onClose, selectedPr
             <div>
               <h4 className="text-lg font-bold">2 Months Free - No Charge Today</h4>
               <p className="text-sm text-white/90">
-                Your first 2 months are on us. Your card won't be charged until the trial ends.
+                Your first 2 months of full site access are on us. Cancel anytime, no questions asked.
               </p>
             </div>
           </div>
-        </div>
-
-        {/* Coupon Applied Indicator */}
-        <div className="flex items-center gap-2 mb-6 px-4 py-3 bg-green-50 border border-green-200 rounded-lg">
-          <Tag size={16} className="text-green-600 flex-shrink-0" />
-          <span className="text-sm text-green-800">
-            Coupon <code className="bg-green-100 px-2 py-0.5 rounded font-mono font-semibold text-green-900">{PROMOTION_CODE_2_MONTHS_FREE}</code> will be automatically applied at checkout
-          </span>
-          <Check size={16} className="text-green-600 ml-auto flex-shrink-0" />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
