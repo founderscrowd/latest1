@@ -221,7 +221,6 @@ Deno.serve(async (req) => {
         },
       ],
       mode,
-      allow_promotion_codes,
       customer_update: {
         address: 'auto',
       },
@@ -239,13 +238,20 @@ Deno.serve(async (req) => {
 
         if (promoCodes.data.length > 0) {
           sessionParams.discounts = [{ promotion_code: promoCodes.data[0].id }];
-          sessionParams.allow_promotion_codes = false;
         } else {
           console.log(`Promotion code "${promotion_code}" not found or inactive; continuing without auto-applied discount`);
+          if (allow_promotion_codes) {
+            sessionParams.allow_promotion_codes = true;
+          }
         }
       } catch (promoError: any) {
         console.error(`Failed to look up promotion code "${promotion_code}": ${promoError.message}`);
+        if (allow_promotion_codes) {
+          sessionParams.allow_promotion_codes = true;
+        }
       }
+    } else if (allow_promotion_codes) {
+      sessionParams.allow_promotion_codes = true;
     }
 
     const session = await stripe.checkout.sessions.create(sessionParams);
