@@ -1,0 +1,32 @@
+<svg width="32" height="32" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Dark blue background -->
+  <rect width="1024" height="1024" fill="#0a1e2e"/>
+
+  <!-- Top person - purple circle head -->
+  <circle cx="512" cy="180" r="65" fill="#c566d9"/>
+  <!-- Top person - blue body -->
+  <path d="M 512 245 Q 450 280 420 360 Q 420 390 450 420 L 574 420 Q 604 390 604 360 Q 574 280 512 245" fill="#1e4a5f"/>
+
+  <!-- Left person - purple circle head -->
+  <circle cx="245" cy="390" r="50" fill="#c566d9"/>
+  <!-- Left person - blue body -->
+  <path d="M 245 440 Q 200 470 180 530 Q 180 555 200 575 L 290 575 Q 310 555 310 530 Q 290 470 245 440" fill="#1e4a5f"/>
+
+  <!-- Right person - purple circle head -->
+  <circle cx="779" cy="390" r="50" fill="#c566d9"/>
+  <!-- Right person - blue body -->
+  <path d="M 779 440 Q 734 470 714 530 Q 714 555 734 575 L 824 575 Q 844 555 844 530 Q 824 470 779 440" fill="#1e4a5f"/>
+
+  <!-- Bottom left person - purple circle head -->
+  <circle cx="370" cy="700" r="50" fill="#c566d9"/>
+  <!-- Bottom left person - blue body -->
+  <path d="M 370 750 Q 325 780 305 840 Q 305 865 325 885 L 415 885 Q 435 865 435 840 Q 415 780 370 750" fill="#1e4a5f"/>
+
+  <!-- Bottom right person - purple circle head -->
+  <circle cx="654" cy="700" r="50" fill="#c566d9"/>
+  <!-- Bottom right person - blue body -->
+  <path d="M 654 750 Q 609 780 589 840 Q 589 865 609 885 L 699 885 Q 719 865 719 840 Q 699 780 654 750" fill="#1e4a5f"/>
+
+  <!-- Pink smile arc -->
+  <path d="M 180 780 Q 512 950 844 780" stroke="#ff5c8a" stroke-width="50" fill="none" stroke-linecap="round"/>
+</svg>
