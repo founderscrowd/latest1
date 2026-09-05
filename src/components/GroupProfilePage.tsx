@@ -48,6 +48,7 @@ import ConfirmationModal from './ConfirmationModal';
 interface Group {
   id: string;
   name: string;
+  slug?: string;
   description: string;
   tags: string[];
   equity_available: number;
@@ -315,8 +316,11 @@ Are you absolutely sure you want to leave this group and forfeit your equity?`
   
   const handleShareGroup = async () => {
     try {
-      // Generate the group URL
-      const groupUrl = `${window.location.origin}/?group=${groupId}`;
+      // Generate the clean group URL using slug for SEO-friendly sharing
+      const groupSlug = group?.slug;
+      const groupUrl = groupSlug
+        ? `${window.location.origin}/groups/${groupSlug}`
+        : `${window.location.origin}/?group=${groupId}`;
       
       // Try to use the modern Clipboard API first
       if (navigator.clipboard && window.isSecureContext) {

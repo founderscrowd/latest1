@@ -46,6 +46,27 @@
   status = 200
   force = true
 
+# Social crawler previews for group pages
+# Facebook, Twitter, LinkedIn, and other crawlers don't run JavaScript,
+# so we proxy their requests to a Supabase Edge Function that returns
+# pre-rendered HTML with group-specific Open Graph meta tags.
+[[redirects]]
+  from = "/groups/:slug"
+  to = "https://jdpugmeoocezzxqegmsu.supabase.co/functions/v2/social-preview?slug=:splat"
+  status = 200
+  force = false
+  [redirects.conditions]
+    [redirects.conditions.User-Agent]
+    facebookexternalhit = ["facebookexternalhit/1.1", "facebookexternalhit/1.0"]
+    Twitterbot = ["Twitterbot/1.0"]
+    LinkedInBot = ["LinkedInBot/1.0"]
+    WhatsApp = ["WhatsApp"]
+    TelegramBot = ["TelegramBot"]
+    Slackbot = ["Slackbot"]
+    Discordbot = ["Discordbot"]
+    Googlebot = ["Googlebot"]
+    Bingbot = ["Bingbot"]
+
 [[redirects]]
   from = "/*"
   to = "/index.html"

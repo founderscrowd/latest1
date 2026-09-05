@@ -21,7 +21,7 @@ const GroupDetailsRoute: React.FC<GroupDetailsRouteProps> = ({
   const [searchParams] = useSearchParams();
   const { user } = useAuth();
   const [groupId, setGroupId] = useState<string | null>(null);
-  const [groupName, setGroupName] = useState<string>('');
+  const [groupData, setGroupData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [userSubscription, setUserSubscription] = useState<any>(null);
 
@@ -54,7 +54,7 @@ const GroupDetailsRoute: React.FC<GroupDetailsRouteProps> = ({
       const group = await groupAPI.getGroupBySlug(groupSlug);
       if (group) {
         setGroupId(group.id);
-        setGroupName(group.name);
+        setGroupData(group);
       } else {
         // Group not found, redirect to home
         navigate('/');
@@ -120,12 +120,42 @@ const GroupDetailsRoute: React.FC<GroupDetailsRouteProps> = ({
     return null;
   }
 
+  const groupName = groupData?.name || '';
+  const groupDescription = groupData?.description || `Join ${groupName} on EquityTake - connect with co-founders and build startups together`;
+  const groupCoverImage = groupData?.cover_image || null;
+  const groupIndustry = groupData?.industry || '';
+  const groupEquity = groupData?.equity_available;
+  const groupFunding = groupData?.funding_needed || '';
+  const groupUrl = `${window.location.origin}/groups/${slug}`;
+  const defaultShareImage = `${window.location.origin}/social-share-default.png`;
+
+  const shareDescription = groupData
+    ? `${groupDescription.slice(0, 140)}${groupDescription.length > 140 ? '...' : ''}${groupIndustry ? ` | Industry: ${groupIndustry}` : ''}${groupEquity ? ` | ${groupEquity}% equity available` : ''}${groupFunding ? ` | Funding: ${groupFunding}` : ''}`
+    : `Join ${groupName} on EquityTake - connect with co-founders and build startups together`;
+  const shareImage = groupCoverImage || defaultShareImage;
+
   return (
     <>
       <Helmet>
         <title>{groupName} | EquityTake</title>
-        <meta name="description" content={`Join ${groupName} on EquityTake - connect with co-founders and build startups together`} />
-        <link rel="canonical" href={`${window.location.origin}/groups/${slug}`} />
+        <meta name="description" content={shareDescription} />
+        <link rel="canonical" href={groupUrl} />
+
+        {/* Open Graph tags for social sharing */}
+        <meta property="og:title" content={`${groupName} | EquityTake`} />
+        <meta property="og:description" content={shareDescription} />
+        <meta property="og:url" content={groupUrl} />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="EquityTake" />
+        <meta property="og:image" content={shareImage} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+
+        {/* Twitter Card tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`${groupName} | EquityTake`} />
+        <meta name="twitter:description" content={shareDescription} />
+        <meta name="twitter:image" content={shareImage} />
       </Helmet>
       <GroupDetailsPage
         groupId={groupId}
