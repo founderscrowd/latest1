@@ -455,3 +455,23 @@ export const getCurrentUser = async () => {
   const { data: { user } } = await supabase.auth.getUser()
   return user
 }
+
+export const resendVerificationEmail = async (email: string): Promise<{ error: string | null }> => {
+  try {
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email,
+      options: {
+        emailRedirectTo: window.location.origin,
+      },
+    });
+
+    if (error) {
+      return { error: error.message };
+    }
+
+    return { error: null };
+  } catch (err: any) {
+    return { error: err?.message || 'Failed to resend verification email. Please try again.' };
+  }
+};

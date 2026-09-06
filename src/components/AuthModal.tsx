@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { X, Mail, Lock, User } from 'lucide-react';
-import { signIn, signUp, checkUsernameAvailability } from '../lib/supabase';
+import { X, Mail, Lock, User, MailCheck, RotateCw, ArrowLeft } from 'lucide-react';
+import { signIn, signUp, checkUsernameAvailability, resendVerificationEmail } from '../lib/supabase';
 import { trackCompleteRegistration, trackLogin } from '../lib/metaPixel';
 
 interface AuthModalProps {
@@ -23,6 +23,12 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuccess, i
   const [displayNameChecked, setDisplayNameChecked] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showVerificationScreen, setShowVerificationScreen] = useState(false);
+  const [signedUpEmail, setSignedUpEmail] = useState('');
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const [resendStatus, setResendStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+  const [resendMessage, setResendMessage] = useState('');
+  const cooldownTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Update isSignUp when initialIsSignUp prop changes
   useEffect(() => {
@@ -217,8 +223,10 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuccess, i
         }
       } else {
         if (result.needsEmailConfirmation) {
-          setError('Please check your email and click the confirmation link to complete your registration.');
+          setSignedUpEmail(email);
+          setShowVerificationScreen(true);
           setLoading(false);
+          startResendCooldown();
           return;
         }
 
@@ -239,6 +247,72 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuccess, i
     }
   };
 
+  const startResendCooldown = () => {
+    setResendCooldown(60);
+    if (cooldownTimerRef.current) {
+      clearInterval(cooldownTimerRef.current);
+    }
+    cooldownTimerRef.current = setInterval(() => {
+      setResendCooldown((prev) => {
+        if (prev <= 1) {
+          if (cooldownTimerRef.current) {
+            clearInterval(cooldownTimerRef.current);
+            cooldownTimerRef.current = null;
+          }
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
+
+  const handleResendEmail = async () => {
+    if (resendCooldown > 0 || resendStatus === 'sending') return;
+    setResendStatus('sending');
+    setResendMessage('');
+
+    const { error: resendError } = await resendVerificationEmail(signedUpEmail);
+
+    if (resendError) {
+      setResendStatus('error');
+      setResendMessage(resendError);
+    } else {
+      setResendStatus('sent');
+      setResendMessage('Verification email sent. Check your inbox and spam folder.');
+      startResendCooldown();
+    }
+  };
+
+  const handleUseDifferentEmail = () => {
+    setShowVerificationScreen(false);
+    setSignedUpEmail('');
+    setResendCooldown(0);
+    setResendStatus('idle');
+    setResendMessage('');
+    if (cooldownTimerRef.current) {
+      clearInterval(cooldownTimerRef.current);
+      cooldownTimerRef.current = null;
+    }
+    setEmail('');
+    setPassword('');
+    setConfirmPassword('');
+    setDisplayName('');
+    setDisplayNameError('');
+    setDisplayNameAvailable(null);
+    setDisplayNameChecked(false);
+    setCheckingDisplayName(false);
+    setError('');
+    setIsSignUp(true);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (cooldownTimerRef.current) {
+        clearInterval(cooldownTimerRef.current);
+      }
+    };
+  }, []);
+
   const resetForm = () => {
     setEmail('');
     setPassword('');
@@ -250,6 +324,15 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuccess, i
     setCheckingDisplayName(false);
     setError('');
     setIsSignUp(initialIsSignUp);
+    setShowVerificationScreen(false);
+    setSignedUpEmail('');
+    setResendCooldown(0);
+    setResendStatus('idle');
+    setResendMessage('');
+    if (cooldownTimerRef.current) {
+      clearInterval(cooldownTimerRef.current);
+      cooldownTimerRef.current = null;
+    }
   };
 
   const handleClose = () => {
@@ -258,6 +341,80 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuccess, i
   };
 
   if (!isOpen) return null;
+
+  if (showVerificationScreen) {
+    return (
+      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[2000] p-4">
+        <div className="bg-white rounded-xl p-6 max-w-md w-full">
+          <div className="flex justify-between items-center mb-5">
+            <h3 className="text-xl font-bold text-slate-900">Verify your email</h3>
+            <button
+              onClick={handleClose}
+              className="text-slate-400 hover:text-slate-600 transition-colors"
+            >
+              <X size={20} />
+            </button>
+          </div>
+
+          <div className="flex flex-col items-center text-center py-2">
+            <div className="w-14 h-14 rounded-full bg-blue-50 flex items-center justify-center mb-4">
+              <MailCheck size={28} className="text-blue-600" />
+            </div>
+
+            <p className="text-slate-700 font-medium mb-1">Almost there!</p>
+            <p className="text-sm text-slate-500 mb-4 leading-relaxed">
+              We sent a confirmation link to
+              <span className="block font-semibold text-slate-800 mt-0.5">{signedUpEmail}</span>
+            </p>
+            <p className="text-xs text-slate-500 leading-relaxed mb-5">
+              Click the link in that email to activate your account.
+              Didn't arrive? Check your spam or junk folder, then try resending below.
+            </p>
+
+            {resendMessage && (
+              <div
+                className={`w-full px-3 py-2 rounded-lg text-sm mb-4 ${
+                  resendStatus === 'error'
+                    ? 'bg-red-50 border border-red-200 text-red-700'
+                    : 'bg-green-50 border border-green-200 text-green-700'
+                }`}
+              >
+                {resendMessage}
+              </div>
+            )}
+
+            <button
+              onClick={handleResendEmail}
+              disabled={resendCooldown > 0 || resendStatus === 'sending'}
+              className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-semibold text-sm hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {resendStatus === 'sending' ? (
+                <>
+                  <RotateCw size={16} className="animate-spin" />
+                  Sending...
+                </>
+              ) : resendCooldown > 0 ? (
+                `Resend available in ${resendCooldown}s`
+              ) : (
+                <>
+                  <RotateCw size={16} />
+                  Resend verification email
+                </>
+              )}
+            </button>
+
+            <button
+              onClick={handleUseDifferentEmail}
+              className="mt-3 text-sm text-slate-500 hover:text-slate-700 font-medium flex items-center gap-1.5 transition-colors"
+            >
+              <ArrowLeft size={14} />
+              Use a different email
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[2000] p-4">
