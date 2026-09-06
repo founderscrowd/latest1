@@ -277,7 +277,7 @@ const GroupsListPage: React.FC<GroupsListPageProps> = ({
                       </span>
                     </div>
 
-                    <div className="flex items-center justify-between text-xs text-slate-600 pb-8">
+                    <div className="flex items-center justify-between text-xs text-slate-600 pb-12">
                       <span>
                         {group.currentMembers}/{group.maxMembers} co-founders
                         {group.creator_subscription_active === false && (

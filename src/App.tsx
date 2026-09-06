@@ -1439,7 +1439,7 @@ const App: React.FC = () => {
                         </div>
                           
                           {/* Location Information */}
-                          <div className="flex items-center gap-1 pt-2 pb-8">
+                          <div className="flex items-center gap-1 pt-2 pb-12">
                             <span className="text-xs">📍</span>
                             <span className="text-xs text-slate-600">
                               {(() => {

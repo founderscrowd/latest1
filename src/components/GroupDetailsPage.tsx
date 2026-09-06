@@ -302,7 +302,7 @@ Are you sure you want to leave this group and lose all access to your engagement
   }
 
   const memberCount = members.length;
-  const canJoin = user && !userMembership && memberCount < group.max_members && group.is_public;
+  const canJoin = !userMembership && memberCount < group.max_members && group.is_public;
   const isMember = userMembership?.status === 'approved';
   const isPending = userMembership?.status === 'pending';
   const isRejected = userMembership?.status === 'rejected';
@@ -353,13 +353,21 @@ Are you sure you want to leave this group and lose all access to your engagement
                   </div>
                 </div>
                 <div className="flex flex-col items-end gap-2">
-                  {canJoin && (
+                  {canJoin && user && (
                     <button
                       onClick={handleJoinGroup}
                       disabled={joining}
                      className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50"
                     >
                       {joining ? 'Joining...' : 'Join Group'}
+                    </button>
+                  )}
+                  {canJoin && !user && (
+                    <button
+                      onClick={onShowAuthModal}
+                      className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                    >
+                      Sign Up to Join
                     </button>
                   )}
                   {isPending && (
