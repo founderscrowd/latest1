@@ -40,6 +40,7 @@ interface Group {
     avatar_url?: string;
   };
   member_count?: Array<{ count: number }>;
+  creator_subscription_active?: boolean;
 }
 
 interface GroupMember {
@@ -52,6 +53,7 @@ interface GroupMember {
     username: string;
     avatar_url?: string;
   };
+  subscription_active?: boolean;
 }
 
 const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ 
@@ -483,8 +485,15 @@ Are you sure you want to leave this group and lose all access to your engagement
                         <div className="font-medium text-slate-900">
                           {member.profile?.username || 'Unknown User'}
                         </div>
-                        <div className="text-xs text-slate-500 capitalize">
-                          {member.role === 'starter' ? 'Starter' : member.role}
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs text-slate-500 capitalize">
+                            {member.role === 'starter' ? 'Starter' : member.role}
+                          </span>
+                          {member.subscription_active === false && (
+                            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-slate-200 text-slate-600">
+                              Inactive
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -519,8 +528,15 @@ Are you sure you want to leave this group and lose all access to your engagement
                     <div className="font-medium text-slate-900">
                       {group.creator_profile.username}
                     </div>
-                    <div className="text-xs text-slate-500">
-                      Starter
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs text-slate-500">
+                        Starter
+                      </span>
+                      {group.creator_subscription_active === false && (
+                        <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-slate-200 text-slate-600">
+                          Inactive
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>

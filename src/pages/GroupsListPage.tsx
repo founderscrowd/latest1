@@ -18,6 +18,7 @@ interface GroupData {
   maxMembers: number;
   joined: boolean;
   creator_id?: string;
+  creator_subscription_active?: boolean;
   is_public: boolean;
   cover_image?: string;
   location_type?: string;
@@ -80,6 +81,7 @@ const GroupsListPage: React.FC<GroupsListPageProps> = ({
             maxMembers: group.max_members,
             joined: isJoined,
             creator_id: group.creator_id,
+            creator_subscription_active: group.creator_subscription_active,
             creator_username: group.creator_profile?.username || 'Unknown',
             is_public: group.is_public,
             cover_image: group.cover_image,
@@ -278,6 +280,11 @@ const GroupsListPage: React.FC<GroupsListPageProps> = ({
                     <div className="flex items-center justify-between text-xs text-slate-600 pb-8">
                       <span>
                         {group.currentMembers}/{group.maxMembers} co-founders
+                        {group.creator_subscription_active === false && (
+                          <span className="ml-1 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-slate-200 text-slate-600">
+                            Inactive Starter
+                          </span>
+                        )}
                       </span>
                       <div className="flex items-center gap-1">
                         <span>📍</span>

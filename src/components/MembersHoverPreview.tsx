@@ -11,6 +11,7 @@ interface GroupMember {
     username: string;
     avatar_url?: string;
   };
+  subscription_active?: boolean;
 }
 
 interface MembersHoverPreviewProps {
@@ -138,9 +139,16 @@ const MembersHoverPreview: React.FC<MembersHoverPreviewProps> = ({
                     <h4 className="font-medium text-slate-900 text-sm truncate">
                       {member.profile?.username || 'Anonymous'}
                     </h4>
-                    <p className="text-xs text-slate-600 capitalize">
-                      {member.role === 'starter' ? 'Starter' : member.role}
-                    </p>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs text-slate-600 capitalize">
+                        {member.role === 'starter' ? 'Starter' : member.role}
+                      </span>
+                      {member.subscription_active === false && (
+                        <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-slate-200 text-slate-600">
+                          Inactive
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}

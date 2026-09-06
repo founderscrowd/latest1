@@ -20,6 +20,7 @@ export interface Group {
   location_type?: string;
   country?: string;
   city?: string;
+  creator_subscription_active?: boolean;
 }
 
 export interface GroupMember {
@@ -33,6 +34,7 @@ export interface GroupMember {
     username: string;
     avatar_url?: string;
   };
+  subscription_active?: boolean;
 }
 
 export interface CreateGroupData {
@@ -48,6 +50,25 @@ export interface CreateGroupData {
   location_type: 'worldwide' | 'location_based';
   country?: string;
   city?: string;
+}
+
+// Fetch subscription status for a list of user IDs and return a Set of inactive user IDs
+async function fetchInactiveUserIds(userIds: string[]): Promise<Set<string>> {
+  if (userIds.length === 0) return new Set();
+  try {
+    const { data, error } = await supabase
+      .rpc('get_batch_subscription_status', { user_ids: userIds });
+    if (error || !data) return new Set();
+    const inactive = new Set<string>();
+    for (const row of data) {
+      if (row.subscription_status !== 'active') {
+        inactive.add(row.user_id);
+      }
+    }
+    return inactive;
+  } catch {
+    return new Set();
+  }
 }
 
 class GroupAPI {
@@ -127,7 +148,15 @@ class GroupAPI {
         })
       );
 
-      return groupsWithDetails;
+      // Fetch subscription status for all group creators
+      const creatorIds = groupsWithDetails.map(g => g.creator_id).filter(Boolean);
+      const inactiveCreatorIds = await fetchInactiveUserIds(creatorIds);
+      const groupsWithCreatorSubStatus = groupsWithDetails.map(g => ({
+        ...g,
+        creator_subscription_active: !inactiveCreatorIds.has(g.creator_id)
+      }));
+
+      return groupsWithCreatorSubStatus;
     } catch (error) {
       console.error('Error in getGroups:', error);
       throw error;
@@ -161,10 +190,14 @@ class GroupAPI {
 
       const memberCount = memberData?.length || 0;
 
+      // Check creator's subscription status
+      const inactiveCreatorIds = await fetchInactiveUserIds([groupData.creator_id]);
+
       return {
         ...groupData,
         creator_profile: creatorProfile,
-        member_count: [{ count: memberCount }]
+        member_count: [{ count: memberCount }],
+        creator_subscription_active: !inactiveCreatorIds.has(groupData.creator_id)
       };
     } catch (error) {
       console.error('Error fetching group:', error);
@@ -200,10 +233,14 @@ class GroupAPI {
 
       const memberCount = memberData?.length || 0;
 
+      // Check creator's subscription status
+      const inactiveCreatorIds = await fetchInactiveUserIds([groupData.creator_id]);
+
       return {
         ...groupData,
         creator_profile: creatorProfile,
-        member_count: [{ count: memberCount }]
+        member_count: [{ count: memberCount }],
+        creator_subscription_active: !inactiveCreatorIds.has(groupData.creator_id)
       };
     } catch (error) {
       console.error('Error fetching group by slug:', error);
@@ -545,9 +582,16 @@ class GroupAPI {
           } : { username: 'Member', avatar_url: null }
         };
       });
-      
-      console.log('✅ Returning members with profiles:', membersWithProfiles.length);
-      return membersWithProfiles;
+
+      // Fetch subscription status for all members
+      const inactiveUserIds = await fetchInactiveUserIds(userIds);
+      const membersWithSubStatus = membersWithProfiles.map(member => ({
+        ...member,
+        subscription_active: !inactiveUserIds.has(member.user_id)
+      }));
+
+      console.log('✅ Returning members with profiles:', membersWithSubStatus.length);
+      return membersWithSubStatus;
     } catch (error) {
       console.error('Error fetching group members:', error);
       return [];
