@@ -65,6 +65,9 @@ HOW EQUITY WORKS:
 - Example: Funding goal $100,000, equity offered 60% → your base valuation $40,000, equity pool $60,000 available to co-founders
 - If someone claims 10% equity, they commit $10,000 worth of contribution (funding, skills, or services)
 - Potential co-founders may ask for evidence of assets, skills, or contributions included in an equity claim
+- Users may propose or identify equity allocations within a group as part of the early-stage collaboration process
+- EquityTake does not issue shares, guarantee equity, guarantee the value of an equity allocation, or legally enforce ownership
+- Any actual legal ownership of shares or enforceable equity rights must be established through the appropriate company formation, shareholder, contractual, and legal arrangements outside the EquityTake platform
 
 PRICING:
 - Browsing groups, reading the blog, and exploring the site is free for everyone — no account needed
