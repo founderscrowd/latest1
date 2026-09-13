@@ -7,7 +7,14 @@ interface ChatMessage {
   content: string;
 }
 
-const AI_SUPPORT_WIDGET_ID = 'equitytake-ai-support';
+// ─────────────────────────────────────────────────────────────────────────────
+// CLIENT-SIDE GUARDS (also enforced server-side in the edge function)
+// These provide immediate feedback to the user without a round-trip.
+// The authoritative limits live in the edge function's CONFIG object.
+// ─────────────────────────────────────────────────────────────────────────────
+const CLIENT_COOLDOWN_SECONDS = 3;        // min seconds between messages
+const CLIENT_MAX_MESSAGE_LENGTH = 2000;   // max chars in the input field
+const CLIENT_MAX_VISIBLE_MESSAGES = 50;   // prevent UI from growing unbounded
 
 const AiSupportWidget: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -23,12 +30,37 @@ const AiSupportWidget: React.FC = () => {
     return newId;
   });
   const [unreadCount, setUnreadCount] = useState(0);
+  const [aiDisabled, setAiDisabled] = useState(false);
+  const [cooldownRemaining, setCooldownRemaining] = useState(0);
+  const lastSendTime = useRef<number>(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, []);
+
+  // Check if AI support is enabled on mount
+  useEffect(() => {
+    const checkEnabled = async () => {
+      try {
+        const { data, error } = await supabase.rpc('is_ai_support_enabled');
+        if (!error && data === false) {
+          setAiDisabled(true);
+        }
+      } catch {
+        // If we can't check, assume enabled
+      }
+    };
+    checkEnabled();
+  }, []);
+
+  // Cooldown timer
+  useEffect(() => {
+    if (cooldownRemaining <= 0) return;
+    const timer = setTimeout(() => setCooldownRemaining(prev => Math.max(0, prev - 1)), 1000);
+    return () => clearTimeout(timer);
+  }, [cooldownRemaining]);
 
   useEffect(() => {
     if (isOpen) {
@@ -44,10 +76,19 @@ const AiSupportWidget: React.FC = () => {
 
   const sendMessage = async () => {
     const trimmed = input.trim();
-    if (!trimmed || loading) return;
+    if (!trimmed || loading || aiDisabled || cooldownRemaining > 0) return;
+
+    // Client-side cooldown enforcement
+    const now = Date.now();
+    const elapsed = (now - lastSendTime.current) / 1000;
+    if (elapsed < CLIENT_COOLDOWN_SECONDS) {
+      setCooldownRemaining(Math.ceil(CLIENT_COOLDOWN_SECONDS - elapsed));
+      return;
+    }
+    lastSendTime.current = now;
 
     const userMessage: ChatMessage = { role: 'user', content: trimmed };
-    setMessages(prev => [...prev, userMessage]);
+    setMessages(prev => [...prev.slice(-CLIENT_MAX_VISIBLE_MESSAGES + 1), userMessage]);
     setInput('');
     setLoading(true);
 
@@ -73,9 +114,16 @@ const AiSupportWidget: React.FC = () => {
 
       const data = await response.json();
 
-      if (!response.ok) {
+      if (response.status === 503 && data.disabled) {
+        setAiDisabled(true);
+        setMessages(prev => [...prev, { role: 'assistant', content: data.error }]);
+      } else if (!response.ok) {
         const errorMsg = data.error || 'Something went wrong. Please try again.';
         setMessages(prev => [...prev, { role: 'assistant', content: errorMsg }]);
+        // Start cooldown on rate-limit responses
+        if (response.status === 429) {
+          setCooldownRemaining(30);
+        }
       } else {
         const aiMessage: ChatMessage = { role: 'assistant', content: data.reply };
         setMessages(prev => [...prev, aiMessage]);
@@ -113,6 +161,10 @@ const AiSupportWidget: React.FC = () => {
 
   const welcomeMessage = "Hi! I'm the EquityTake AI assistant. I can answer questions about how the platform works, pricing, equity, groups, and more. How can I help you today?";
 
+  const disabledMessage = "AI support is temporarily unavailable. Please contact equitytake@gmail.com for assistance.";
+
+  const canSend = input.trim().length > 0 && !loading && !aiDisabled && cooldownRemaining === 0;
+
   return (
     <>
       {/* Floating Button */}
@@ -121,7 +173,9 @@ const AiSupportWidget: React.FC = () => {
         className={`fixed bottom-6 left-6 z-[60] flex items-center justify-center rounded-full shadow-lg transition-all duration-300 ${
           isOpen
             ? 'bg-slate-600 text-white scale-90'
-            : 'bg-orange-600 text-white hover:bg-orange-700 hover:scale-110'
+            : aiDisabled
+              ? 'bg-slate-400 text-white hover:bg-slate-500 hover:scale-105'
+              : 'bg-orange-600 text-white hover:bg-orange-700 hover:scale-110'
         } w-14 h-14`}
         aria-label={isOpen ? 'Close support chat' : 'Open support chat'}
       >
@@ -135,7 +189,7 @@ const AiSupportWidget: React.FC = () => {
 
       {/* Chat Panel */}
       {isOpen && (
-        <div className="fixed bottom-24 left-6 z-[60] w-[calc(100vw-3rem)] max-w-sm bg-white rounded-2xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden animate-in"
+        <div className="fixed bottom-24 left-6 z-[60] w-[calc(100vw-3rem)] max-w-sm bg-white rounded-2xl shadow-2xl border border-slate-200 flex flex-col overflow-hidden"
           style={{
             animation: 'slideUp 0.25s ease-out',
             maxHeight: '70vh',
@@ -153,7 +207,7 @@ const AiSupportWidget: React.FC = () => {
               </div>
             </div>
             <div className="flex items-center gap-1">
-              {messages.length > 0 && (
+              {messages.length > 0 && !aiDisabled && (
                 <button
                   onClick={handleClearChat}
                   className="text-xs text-slate-300 hover:text-white px-2 py-1 rounded transition-colors"
@@ -174,14 +228,21 @@ const AiSupportWidget: React.FC = () => {
 
           {/* Messages */}
           <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 bg-slate-50">
-            {messages.length === 0 && (
+            {aiDisabled && messages.length === 0 ? (
+              <div className="flex flex-col items-center text-center py-6">
+                <div className="w-12 h-12 bg-slate-200 rounded-full flex items-center justify-center mb-3">
+                  <Bot size={24} className="text-slate-400" />
+                </div>
+                <p className="text-sm text-slate-500 leading-relaxed">{disabledMessage}</p>
+              </div>
+            ) : messages.length === 0 ? (
               <div className="flex flex-col items-center text-center py-6">
                 <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mb-3">
                   <Bot size={24} className="text-orange-600" />
                 </div>
                 <p className="text-sm text-slate-600 leading-relaxed">{welcomeMessage}</p>
               </div>
-            )}
+            ) : null}
             {messages.map((msg, idx) => (
               <div
                 key={idx}
@@ -213,32 +274,34 @@ const AiSupportWidget: React.FC = () => {
           </div>
 
           {/* Input */}
-          <div className="border-t border-slate-200 bg-white px-3 py-3">
-            <div className="flex items-center gap-2">
-              <input
-                ref={inputRef}
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Ask me anything about EquityTake..."
-                disabled={loading}
-                maxLength={2000}
-                className="flex-1 px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500/40 focus:border-orange-500 text-slate-700 placeholder:text-slate-400 disabled:bg-slate-50"
-              />
-              <button
-                onClick={sendMessage}
-                disabled={!input.trim() || loading}
-                className="flex-shrink-0 w-9 h-9 flex items-center justify-center bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors disabled:bg-slate-300 disabled:cursor-not-allowed"
-                aria-label="Send message"
-              >
-                <Send size={16} />
-              </button>
+          {!aiDisabled && (
+            <div className="border-t border-slate-200 bg-white px-3 py-3">
+              <div className="flex items-center gap-2">
+                <input
+                  ref={inputRef}
+                  type="text"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder={cooldownRemaining > 0 ? `Please wait ${cooldownRemaining}s...` : 'Ask me anything about EquityTake...'}
+                  disabled={loading || cooldownRemaining > 0}
+                  maxLength={CLIENT_MAX_MESSAGE_LENGTH}
+                  className="flex-1 px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500/40 focus:border-orange-500 text-slate-700 placeholder:text-slate-400 disabled:bg-slate-50"
+                />
+                <button
+                  onClick={sendMessage}
+                  disabled={!canSend}
+                  className="flex-shrink-0 w-9 h-9 flex items-center justify-center bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors disabled:bg-slate-300 disabled:cursor-not-allowed"
+                  aria-label="Send message"
+                >
+                  <Send size={16} />
+                </button>
+              </div>
+              <p className="text-xs text-slate-400 mt-2 text-center">
+                AI assistant · Cannot modify accounts or payments
+              </p>
             </div>
-            <p className="text-xs text-slate-400 mt-2 text-center">
-              AI assistant · Cannot modify accounts or payments
-            </p>
-          </div>
+          )}
         </div>
       )}
 
@@ -253,4 +316,3 @@ const AiSupportWidget: React.FC = () => {
 };
 
 export default AiSupportWidget;
-export { AI_SUPPORT_WIDGET_ID };

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, Upload, Image, Trash2, Save, Camera, AlertTriangle, CheckCircle, Settings, BellRing, MessageSquare, X } from 'lucide-react';
+import { ArrowLeft, Upload, Image, Trash2, Save, Camera, AlertTriangle, CheckCircle, Settings, BellRing, MessageSquare, X, Bot } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { siteSettingsAPI } from '../lib/siteSettingsApi';
 import BlogContentManager from './BlogContentManager';
@@ -26,6 +26,8 @@ const SiteSettingsPage: React.FC<SiteSettingsPageProps> = ({ onBack }) => {
   const [importantMessageText, setImportantMessageText] = useState('');
   const [importantMessageEnabled, setImportantMessageEnabled] = useState(false);
   const [savingImportantMessage, setSavingImportantMessage] = useState(false);
+  const [aiSupportEnabled, setAiSupportEnabled] = useState(true);
+  const [savingAiSupport, setSavingAiSupport] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -84,11 +86,13 @@ const SiteSettingsPage: React.FC<SiteSettingsPageProps> = ({ onBack }) => {
   const fetchSiteSettings = async () => {
     try {
       setLoading(true);
-      const [logoUrl, announcementSettings, importantMessageSettings] = await Promise.all([
+      const [logoUrl, announcementSettings, importantMessageSettings, aiEnabled] = await Promise.all([
         siteSettingsAPI.getLogoUrl(),
         siteSettingsAPI.getAnnouncementSettings(),
-        siteSettingsAPI.getImportantMessageSettings()
+        siteSettingsAPI.getImportantMessageSettings(),
+        siteSettingsAPI.getAiSupportEnabled()
       ]);
+      setAiSupportEnabled(aiEnabled);
       
       console.log('SiteSettingsPage: Fetched logo URL:', logoUrl);
       setCurrentLogoUrl(logoUrl);
@@ -897,6 +901,63 @@ const SiteSettingsPage: React.FC<SiteSettingsPageProps> = ({ onBack }) => {
                     Save Important Message
                   </>
                 )}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* AI Support Toggle Section */}
+      <div className="max-w-4xl mx-auto px-4 py-6">
+        <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+          <div className="flex items-center gap-3 p-6 border-b border-slate-200">
+            <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg flex items-center justify-center">
+              <Bot size={20} className="text-white" />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-slate-900">AI Support Chatbot</h2>
+              <p className="text-sm text-slate-600">Enable or disable the AI customer support assistant</p>
+            </div>
+          </div>
+
+          <div className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-700">
+                  AI Support Status: <span className={aiSupportEnabled ? 'text-green-600' : 'text-red-600'}>{aiSupportEnabled ? 'Enabled' : 'Disabled'}</span>
+                </p>
+                <p className="text-xs text-slate-500 mt-1">
+                  When disabled, the chat button shows a message directing users to email support.
+                </p>
+              </div>
+              <button
+                onClick={async () => {
+                  try {
+                    setSavingAiSupport(true);
+                    const newValue = !aiSupportEnabled;
+                    await siteSettingsAPI.toggleAiSupport(newValue);
+                    setAiSupportEnabled(newValue);
+                    setMessage(`AI support ${newValue ? 'enabled' : 'disabled'} successfully.`);
+                    setMessageType('success');
+                    setTimeout(() => setMessage(''), 5000);
+                  } catch (error: any) {
+                    setMessage(error.message || 'Error toggling AI support.');
+                    setMessageType('error');
+                    setTimeout(() => setMessage(''), 5000);
+                  } finally {
+                    setSavingAiSupport(false);
+                  }
+                }}
+                disabled={savingAiSupport}
+                className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${
+                  aiSupportEnabled ? 'bg-green-500' : 'bg-slate-300'
+                }`}
+              >
+                <span
+                  className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
+                    aiSupportEnabled ? 'translate-x-6' : 'translate-x-1'
+                  }`}
+                />
               </button>
             </div>
           </div>

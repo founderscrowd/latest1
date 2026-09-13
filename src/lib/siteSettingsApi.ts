@@ -276,6 +276,31 @@ class SiteSettingsAPI {
   }
 
   /**
+   * Check if AI support chatbot is enabled
+   */
+  async getAiSupportEnabled(): Promise<boolean> {
+    const value = await this.getSetting('ai_support_enabled');
+    return value !== 'false';
+  }
+
+  /**
+   * Toggle AI support chatbot on/off (admin only)
+   */
+  async toggleAiSupport(enabled: boolean): Promise<void> {
+    try {
+      const isAdmin = await this.isCurrentUserSiteAdmin();
+      if (!isAdmin) {
+        throw new Error('Unauthorized: Only site administrators can toggle AI support');
+      }
+      const { error } = await supabase.rpc('toggle_ai_support', { enabled });
+      if (error) throw error;
+    } catch (error) {
+      console.error('Error toggling AI support:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Check if current user is site admin
    */
   async isCurrentUserSiteAdmin(): Promise<boolean> {
