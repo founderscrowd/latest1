@@ -17,6 +17,7 @@ import TermsOfServicePage from './components/TermsOfServicePage';
 import PricingInfoModal from './components/PricingInfoModal';
 import CookiePolicyPage from './components/CookiePolicyPage';
 import ContactModal from './components/ContactModal';
+import AiSupportWidget from './components/AiSupportWidget';
 import BlogAndAboutPage from './components/BlogAndAboutPage';
 import HowItWorksPage from './components/HowItWorksPage';
 import BlogListPage from './pages/BlogListPage';
@@ -1597,6 +1598,8 @@ const App: React.FC = () => {
         isOpen={showContactModal}
         onClose={() => setShowContactModal(false)}
       />
+
+      <AiSupportWidget />
     </div>
   );
 };
