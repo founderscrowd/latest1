@@ -58,7 +58,7 @@ const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onBack, siteLogoUrl }) 
                 "name": "Do I need to pay to join EquityTake?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "You can browse and join existing startup groups for free. Creating a new startup group requires an active subscription. New users can explore the platform and join teams without any cost."
+                  "text": "Browsing groups, reading the blog, and exploring the site is free for everyone. Both joining and creating startup groups require an active subscription for new users. New users get 2 months free with no card needed — no charge today, cancel anytime. After the trial, it's $8.85/month or $48.00/year for the annual plan (55% savings). Users who registered before September 20, 2025 can join and create groups without a subscription."
                 }
               },
               {

@@ -67,12 +67,13 @@ HOW EQUITY WORKS:
 - Potential co-founders may ask for evidence of assets, skills, or contributions included in an equity claim
 
 PRICING:
-- Browsing and joining existing startup groups is free
-- Creating a new startup group requires an active subscription
-- Premium Membership: $8.85/month — first 2 months free for new users, cancel anytime
-- Premium Annual: $48.00/year — 55% savings compared to monthly, first 2 months free for new users
-- New users (registered after September 20, 2025) need an active subscription to create groups
-- Existing users (registered before September 20, 2025) can create groups without a subscription
+- Browsing groups, reading the blog, and exploring the site is free for everyone — no account needed
+- Both joining and creating startup groups require an active subscription for new users
+- New users get 2 months free with no card needed — no charge today, cancel anytime
+- Premium Membership: $8.85/month — first 2 months free, then $8.85/month after trial
+- Premium Annual: $48.00/year — 55% savings compared to monthly, first 2 months free, then $48.00/year after trial
+- New users (registered after September 20, 2025) need an active subscription to join and create groups
+- Existing users (registered before September 20, 2025) can join and create groups without a subscription
 
 GROUP DETAILS:
 - Groups can be public or private
