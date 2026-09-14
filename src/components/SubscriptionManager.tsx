@@ -476,16 +476,10 @@ Are you absolutely sure you want to cancel your subscription and risk losing you
         ) : (
           <div className="text-center py-8">
             <Crown size={48} className="text-slate-300 mx-auto mb-4" />
-            <h4 className="text-lg font-semibold text-slate-900 mb-2">No Active Subscription</h4>
-            <p className="text-slate-600 mb-4">
-              Upgrade to Premium to unlock advanced features and grow your startup faster.
+            <h4 className="text-lg font-semibold text-slate-900 mb-2">All Features Unlocked</h4>
+            <p className="text-slate-600">
+              EquityTake is completely free. You have full access to all features, no subscription required.
             </p>
-            <button
-              onClick={onUpgrade}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold"
-            >
-              Upgrade to Premium
-            </button>
           </div>
         )}
       </div>
