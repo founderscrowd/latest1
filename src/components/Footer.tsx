@@ -86,14 +86,6 @@ const Footer: React.FC<FooterProps> = ({
               </button>
             </li>
             <li>
-              <button 
-                onClick={() => window.dispatchEvent(new CustomEvent('showPricingInfoModal'))}
-                className="text-slate-300 hover:text-white transition-colors text-left"
-              >
-                Pricing
-              </button>
-            </li>
-            <li>
               {onShowHowItWorks ? (
                 <button
                   onClick={onShowHowItWorks}
