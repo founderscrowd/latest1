@@ -421,27 +421,39 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
               </button>
             </div>
 
-            {formData.organisation_type && (
-              <div>
-                <label className="block mb-1 font-semibold text-sm text-slate-700">
-                  {formData.organisation_type === 'for_profit' ? 'For-profit' : 'Non-profit'} Organisation Structure *
-                </label>
-                <select
-                  name="legal_structure"
-                  value={formData.legal_structure}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border border-slate-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 text-sm"
-                  required
-                >
-                  {getStructuresForProfitStatus(formData.organisation_type).map(opt => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                  ))}
-                </select>
-                <p className="text-xs text-slate-500 mt-1">
-                  You can change this later as your startup develops.
-                </p>
-              </div>
-            )}
+            <div>
+              <label className="block mb-1 font-semibold text-sm text-slate-700">
+                {formData.organisation_type === 'for_profit'
+                  ? 'For-profit Organisation Structure *'
+                  : formData.organisation_type === 'non_profit'
+                  ? 'Non-profit Organisation Structure *'
+                  : 'Organisation Structure *'}
+              </label>
+              <select
+                name="legal_structure"
+                value={formData.legal_structure}
+                onChange={handleInputChange}
+                disabled={!formData.organisation_type}
+                className={`w-full p-2 border rounded-lg focus:outline-none text-sm ${
+                  formData.organisation_type
+                    ? 'border-slate-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10'
+                    : 'border-slate-200 bg-slate-50 text-slate-400 cursor-not-allowed'
+                }`}
+                required
+              >
+                {!formData.organisation_type && (
+                  <option value="">Select an organisation type first</option>
+                )}
+                {getStructuresForProfitStatus(formData.organisation_type).map(opt => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+              <p className="text-xs text-slate-500 mt-1">
+                {formData.organisation_type
+                  ? 'You can change this later as your startup develops.'
+                  : 'Select For-profit or Non-profit above to see structure options.'}
+              </p>
+            </div>
 
             {formData.organisation_type === 'non_profit' && parseInt(formData.equity_available) > 0 && (
               <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800">
