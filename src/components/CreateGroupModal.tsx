@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { X, Upload, Image, Info, Coins, Sprout } from 'lucide-react';
 import {
   groupAPI,
-  getStructuresForProfitStatus,
+  FOR_PROFIT_STRUCTURES,
+  NON_PROFIT_STRUCTURES,
   isValidStructureForProfitStatus,
 } from '../lib/groupApi';
 import { useAuth } from '../hooks/useAuth';
@@ -430,6 +431,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
                   : 'Organisation Structure *'}
               </label>
               <select
+                key={formData.organisation_type || 'none'}
                 name="legal_structure"
                 value={formData.legal_structure}
                 onChange={handleInputChange}
@@ -444,7 +446,10 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
                 {!formData.organisation_type && (
                   <option value="">Select an organisation type first</option>
                 )}
-                {getStructuresForProfitStatus(formData.organisation_type).map(opt => (
+                {formData.organisation_type === 'for_profit' && FOR_PROFIT_STRUCTURES.map(opt => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+                {formData.organisation_type === 'non_profit' && NON_PROFIT_STRUCTURES.map(opt => (
                   <option key={opt.value} value={opt.value}>{opt.label}</option>
                 ))}
               </select>

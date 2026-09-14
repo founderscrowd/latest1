@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, Save, Trash2, AlertTriangle, Users, Settings, Info, Shield, Globe, Lock, Image, Camera, Upload, X as XIcon, Coins, Sprout } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
-import { groupAPI, getStructuresForProfitStatus, isValidStructureForProfitStatus } from '../lib/groupApi';
+import { groupAPI, FOR_PROFIT_STRUCTURES, NON_PROFIT_STRUCTURES, isValidStructureForProfitStatus } from '../lib/groupApi';
 import { supabase } from '../lib/supabase';
 import ConfirmationModal from './ConfirmationModal';
 
@@ -832,6 +832,7 @@ Are you sure you want to remove this member and revoke their equity?`
                         : 'Organisation Structure *'}
                     </label>
                     <select
+                      key={formData.organisation_type || 'none'}
                       name="legal_structure"
                       value={formData.legal_structure}
                       onChange={handleInputChange}
@@ -846,7 +847,10 @@ Are you sure you want to remove this member and revoke their equity?`
                       {!formData.organisation_type && (
                         <option value="">Select an organisation type first</option>
                       )}
-                      {getStructuresForProfitStatus(formData.organisation_type).map(opt => (
+                      {formData.organisation_type === 'for_profit' && FOR_PROFIT_STRUCTURES.map(opt => (
+                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                      ))}
+                      {formData.organisation_type === 'non_profit' && NON_PROFIT_STRUCTURES.map(opt => (
                         <option key={opt.value} value={opt.value}>{opt.label}</option>
                       ))}
                     </select>
