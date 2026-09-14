@@ -76,17 +76,7 @@ const GroupDetailsRoute: React.FC<GroupDetailsRouteProps> = ({
       onShowAuthModal();
       return;
     }
-
-    // Check if user is existing (before cutoff) or new (after cutoff)
-    const userCreatedAt = new Date(user.created_at);
-    const isExistingUser = userCreatedAt < EXISTING_USER_CUTOFF_DATE;
-
-    if (isExistingUser || userSubscription?.subscription_status === 'active') {
-      navigate('/');
-      // The parent App component will handle opening the create modal
-    } else {
-      onShowPricingModal();
-    }
+    navigate('/');
   };
 
   const handleViewGroupProfile = (groupId: string) => {

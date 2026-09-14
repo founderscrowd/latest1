@@ -1,7 +1,6 @@
 // src/components/Footer.tsx
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { EXISTING_USER_CUTOFF_DATE } from '../App';
 
 interface FooterProps {
   siteLogoUrl: string | null;
@@ -78,22 +77,7 @@ const Footer: React.FC<FooterProps> = ({
                   if (!user) {
                     setIsAuthModalOpen(true);
                   } else {
-                    // Check if user is existing (before cutoff) or new (after cutoff)
-                    const userCreatedAt = new Date(user.created_at);
-                    const isExistingUser = userCreatedAt < EXISTING_USER_CUTOFF_DATE;
-                    
-                    if (isExistingUser) {
-                      // Existing users bypass subscription check
-                      setIsCreateModalOpen(true);
-                    } else {
-                      // New users need active subscription
-                      if (userSubscription?.subscription_status === 'active') {
-                        setIsCreateModalOpen(true);
-                      } else {
-                        // Show pricing modal for new users without subscription
-                        window.dispatchEvent(new CustomEvent('showPricingModal'));
-                      }
-                    }
+                    setIsCreateModalOpen(true);
                   }
                 }}
                 className="text-slate-300 hover:text-white transition-colors text-left"

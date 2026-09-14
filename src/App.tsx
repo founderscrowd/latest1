@@ -775,21 +775,7 @@ const App: React.FC = () => {
     
     setShowProfile(false);
     
-    // Check if user is existing (before cutoff) or new (after cutoff)
-    const userCreatedAt = new Date(user.created_at);
-    const isExistingUser = userCreatedAt < EXISTING_USER_CUTOFF_DATE;
-    
-    if (isExistingUser) {
-      // Existing users bypass subscription check
-      setIsCreateModalOpen(true);
-    } else {
-      // New users need active subscription
-      if (userSubscription?.subscription_status === 'active') {
-        setIsCreateModalOpen(true);
-      } else {
-        setShowPricingModal(true);
-      }
-    }
+    setIsCreateModalOpen(true);
   };
 
   const handleViewGroup = (groupId: string) => {
@@ -1005,17 +991,7 @@ const App: React.FC = () => {
                 if (!user) {
                   setIsAuthModalOpen(true);
                 } else {
-                  const userCreatedAt = new Date(user.created_at);
-                  const isExistingUser = userCreatedAt < EXISTING_USER_CUTOFF_DATE;
-                  if (isExistingUser) {
-                    setIsCreateModalOpen(true);
-                  } else {
-                    if (userSubscription?.subscription_status === 'active') {
-                      setIsCreateModalOpen(true);
-                    } else {
-                      setShowPricingModal(true);
-                    }
-                  }
+                  setIsCreateModalOpen(true);
                 }
               }}
             />
@@ -1230,15 +1206,7 @@ const App: React.FC = () => {
                         </span>
                       </button>
                     )}
-                    {/* Premium Status Indicator */}
-                    {userSubscription?.subscription_status === 'active' && (
-                      <div className="flex items-center gap-1 px-2 py-1.5 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-lg">
-                        <Crown size={14} className="text-white" />
-                        <span className="text-xs font-bold text-white">
-                          PREMIUM
-                        </span>
-                      </div>
-                    )}
+{/* Premium Status Indicator - hidden, infrastructure preserved */}
                     <button
                       onClick={() => navigate('/profile')}
                       className="flex items-center gap-1 px-2 py-1.5 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors"
@@ -1313,21 +1281,7 @@ const App: React.FC = () => {
                       setInitialAuthModeSignUp(true);
                       setIsAuthModalOpen(true);
                     } else {
-                      // Check if user is existing (before cutoff) or new (after cutoff)
-                      const userCreatedAt = new Date(user.created_at);
-                      const isExistingUser = userCreatedAt < EXISTING_USER_CUTOFF_DATE;
-                      
-                      if (isExistingUser) {
-                        // Existing users bypass subscription check
-                        setIsCreateModalOpen(true);
-                      } else {
-                        // New users need active subscription
-                        if (userSubscription?.subscription_status === 'active') {
-                          setIsCreateModalOpen(true);
-                        } else {
-                          setShowPricingModal(true);
-                        }
-                      }
+                      setIsCreateModalOpen(true);
                     }
                   }}
                   className="px-5 py-2.5 text-sm font-semibold border border-white/30 text-white rounded-lg hover:bg-white/10 hover:-translate-y-0.5 transition-all"
@@ -1514,21 +1468,7 @@ const App: React.FC = () => {
                 setInitialAuthModeSignUp(true);
                 setIsAuthModalOpen(true);
               } else {
-                // Check if user is existing (before cutoff) or new (after cutoff)
-                const userCreatedAt = new Date(user.created_at);
-                const isExistingUser = userCreatedAt < EXISTING_USER_CUTOFF_DATE;
-                
-                if (isExistingUser) {
-                  // Existing users bypass subscription check
-                  setIsCreateModalOpen(true);
-                } else {
-                  // New users need active subscription
-                  if (userSubscription?.subscription_status === 'active') {
-                    setIsCreateModalOpen(true);
-                  } else {
-                    setShowPricingModal(true);
-                  }
-                }
+                setIsCreateModalOpen(true);
               }
             }}
             className="fixed bottom-6 right-6 w-12 h-12 text-white rounded-full shadow-lg hover:scale-110 transition-all z-50 flex items-center justify-center"

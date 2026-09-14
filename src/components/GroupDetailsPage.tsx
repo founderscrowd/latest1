@@ -111,18 +111,7 @@ const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({
       return;
     }
 
-    // Check if user is existing (before cutoff) or new (after cutoff)
-    const userCreatedAt = new Date(user.created_at);
-    const isExistingUser = userCreatedAt < EXISTING_USER_CUTOFF_DATE;
-    
-    if (!isExistingUser) {
-      // New users need active subscription to join groups
-      if (userSubscription?.subscription_status !== 'active') {
-        onShowPricingModal();
-        return;
-      }
-    }
-    // Existing users bypass subscription check and proceed directly
+    // All authenticated users can join groups freely
 
     try {
       setJoining(true);

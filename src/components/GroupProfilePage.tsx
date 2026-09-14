@@ -1050,11 +1050,6 @@ Are you absolutely sure you want to leave this group and forfeit your equity?`
                           <span className="text-xs text-slate-500 capitalize">
                             {member.role === 'starter' ? 'Starter' : member.role}
                           </span>
-                          {member.subscription_active === false && (
-                            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-slate-200 text-slate-600">
-                              Inactive
-                            </span>
-                          )}
                         </div>
                       </div>
                     </div>
@@ -1094,11 +1089,6 @@ Are you absolutely sure you want to leave this group and forfeit your equity?`
                       <span className="text-sm text-slate-500 capitalize">
                         {member.role === 'starter' ? 'Starter' : member.role}
                       </span>
-                      {member.subscription_active === false && (
-                        <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-slate-200 text-slate-600">
-                          Inactive
-                        </span>
-                      )}
                     </div>
                     <div className="text-xs text-slate-400">
                       Joined {new Date(member.joined_at).toLocaleDateString()}

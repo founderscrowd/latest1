@@ -459,7 +459,7 @@ Are you absolutely sure you want to leave this group and forfeit your equity?`
             My Equity Claims
           </button>
           <button
-            onClick={handleBillingClick}
+            onClick={() => setActiveTab('billing')}
             className={`pb-3 px-1 text-sm font-semibold transition-colors ${
               activeTab === 'billing'
                 ? 'text-blue-600 border-b-2 border-blue-600'
@@ -615,18 +615,7 @@ Are you absolutely sure you want to leave this group and forfeit your equity?`
 
             {/* Quick Stats */}
             <div className="space-y-6">
-              {/* Premium Status */}
-              {userSubscription?.subscription_status === 'active' && (
-                <div className="bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl p-4 text-white">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Crown size={20} />
-                    <h4 className="font-bold">Premium Member</h4>
-                  </div>
-                  <p className="text-sm text-yellow-100">
-                    You have access to all premium features
-                  </p>
-                </div>
-              )}
+              {/* Premium Status - hidden, infrastructure preserved */}
 
               {/* Stats */}
               <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
