@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Routes, Route, useNavigate, useLocation, Link, Navigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { Plus, X, LogOut, User, CircleUser as UserCircle, Settings, Crown, CreditCard, Landmark, Coins, Sprout } from 'lucide-react';
+import { Plus, X, LogOut, User, CircleUser as UserCircle, Settings, Crown, CreditCard, Landmark, Coins, Sprout, MessageSquare } from 'lucide-react';
 import AuthModal from './components/AuthModal';
 import ProfilePage from './components/ProfilePage';
 import GroupDetailsPage from './components/GroupDetailsPage';
@@ -1198,6 +1198,13 @@ const App: React.FC = () => {
                 >
                   About
                 </Link>
+                <button
+                  onClick={() => setShowFeedbackModal(true)}
+                  className="flex items-center gap-1 px-3 py-2 rounded-lg font-semibold text-xs text-slate-600 hover:text-slate-900 transition-colors"
+                >
+                  <MessageSquare size={14} className="text-slate-500" />
+                  Feedback
+                </button>
                 {user ? (
                   <div className="flex items-center gap-2">
                     {(() => {
