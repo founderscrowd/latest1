@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Users, MapPin, Calendar, DollarSign, Building, Tag, Globe, Lock, Crown, Scale } from 'lucide-react';
+import { ArrowLeft, Users, MapPin, Calendar, DollarSign, Building, Tag, Globe, Lock, Crown, Scale, Landmark, Briefcase } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { groupAPI, formatLegalStructure, formatOrganisationType } from '../lib/groupApi';
 import { supabase } from '../lib/supabase';
@@ -446,15 +446,27 @@ Are you sure you want to leave this group and lose all access to your engagement
                 <Scale size={20} />
                 Organisation
               </h3>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-600">Legal Structure</span>
+              <div className="space-y-3">
+                <div
+                  className="flex items-center justify-between"
+                  title="Legal structure — the current or planned legal structure of this startup."
+                >
+                  <span className="text-sm text-slate-600 inline-flex items-center gap-1.5">
+                    <Landmark size={14} className="text-slate-400" aria-label="Legal structure" />
+                    Legal Structure
+                  </span>
                   <span className="text-sm font-medium text-slate-900">
                     {formatLegalStructure(group.legal_structure)}
                   </span>
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-slate-600">Type</span>
+                <div
+                  className="flex items-center justify-between"
+                  title="Organisation type — whether the group is planning a for-profit or non-profit organisation."
+                >
+                  <span className="text-sm text-slate-600 inline-flex items-center gap-1.5">
+                    <Briefcase size={14} className="text-slate-400" aria-label="Organisation type" />
+                    Type
+                  </span>
                   <span className="text-sm font-medium text-slate-900">
                     {formatOrganisationType(group.organisation_type)}
                   </span>

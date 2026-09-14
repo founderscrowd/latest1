@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { ArrowLeft, Plus } from 'lucide-react';
+import { ArrowLeft, Plus, Landmark, Briefcase } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { groupAPI, formatLegalStructure, formatOrganisationType } from '../lib/groupApi';
 import Footer from '../components/Footer';
@@ -283,16 +283,26 @@ const GroupsListPage: React.FC<GroupsListPageProps> = ({
 
                     {/* Legal Structure & Org Type Badges */}
                     <div className="flex flex-wrap gap-1 mb-3">
-                      <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full text-xs font-medium">
+                      <span
+                        title="Legal structure — the current or planned legal structure of this startup."
+                        className="inline-flex items-center gap-1 bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full text-xs font-medium"
+                      >
+                        <Landmark size={11} className="shrink-0" aria-label="Legal structure" />
+                        <span className="font-semibold text-slate-500">Legal:</span>
                         {formatLegalStructure(group.legal_structure)}
                       </span>
-                      <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                        group.organisation_type === 'for_profit'
-                          ? 'bg-emerald-50 text-emerald-700'
-                          : group.organisation_type === 'non_profit'
-                          ? 'bg-blue-50 text-blue-700'
-                          : 'bg-slate-100 text-slate-500'
-                      }`}>
+                      <span
+                        title="Organisation type — whether the group is planning a for-profit or non-profit organisation."
+                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
+                          group.organisation_type === 'for_profit'
+                            ? 'bg-emerald-50 text-emerald-700'
+                            : group.organisation_type === 'non_profit'
+                            ? 'bg-blue-50 text-blue-700'
+                            : 'bg-slate-100 text-slate-500'
+                        }`}
+                      >
+                        <Briefcase size={11} className="shrink-0" aria-label="Organisation type" />
+                        <span className="font-semibold opacity-70">Type:</span>
                         {formatOrganisationType(group.organisation_type)}
                       </span>
                     </div>
