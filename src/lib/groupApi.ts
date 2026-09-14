@@ -868,9 +868,54 @@ class GroupAPI {
 
 export const groupAPI = new GroupAPI();
 
+export type ProfitStatus = 'for_profit' | 'non_profit' | 'not_yet_decided';
+
+export interface StructureOption {
+  value: string;
+  label: string;
+}
+
+export const FOR_PROFIT_STRUCTURES: StructureOption[] = [
+  { value: 'planning_to_incorporate', label: 'Planning to incorporate' },
+  { value: 'private_company_ltd', label: 'Private Company / Ltd' },
+  { value: 'llc', label: 'LLC' },
+  { value: 'corporation_inc', label: 'Corporation / Inc.' },
+  { value: 'partnership', label: 'Partnership' },
+  { value: 'cooperative', label: 'Cooperative' },
+  { value: 'other', label: 'Other' },
+  { value: 'not_yet_decided', label: 'Not yet decided' },
+];
+
+export const NON_PROFIT_STRUCTURES: StructureOption[] = [
+  { value: 'nonprofit_organisation', label: 'Non-profit organisation' },
+  { value: 'charity', label: 'Charity' },
+  { value: 'foundation', label: 'Foundation' },
+  { value: 'association', label: 'Association' },
+  { value: 'cooperative', label: 'Cooperative' },
+  { value: 'social_enterprise', label: 'Social enterprise' },
+  { value: 'other', label: 'Other' },
+  { value: 'not_yet_decided', label: 'Not yet decided' },
+];
+
+export const UNDECIDED_STRUCTURES: StructureOption[] = [
+  { value: 'not_yet_decided', label: 'Not yet decided' },
+];
+
+export function getStructuresForProfitStatus(profitStatus: string | null | undefined): StructureOption[] {
+  switch (profitStatus) {
+    case 'for_profit': return FOR_PROFIT_STRUCTURES;
+    case 'non_profit': return NON_PROFIT_STRUCTURES;
+    default: return UNDECIDED_STRUCTURES;
+  }
+}
+
+export function isValidStructureForProfitStatus(profitStatus: string | null | undefined, structure: string | null | undefined): boolean {
+  const options = getStructuresForProfitStatus(profitStatus);
+  return options.some(o => o.value === structure);
+}
+
 export function formatLegalStructure(value?: string | null): string {
   switch (value) {
-    case 'not_yet_formed': return 'Not yet formed';
     case 'planning_to_incorporate': return 'Planning to incorporate';
     case 'private_company_ltd': return 'Private Company / Ltd';
     case 'llc': return 'LLC';
@@ -879,6 +924,9 @@ export function formatLegalStructure(value?: string | null): string {
     case 'cooperative': return 'Cooperative';
     case 'nonprofit_organisation': return 'Non-profit organisation';
     case 'charity': return 'Charity';
+    case 'foundation': return 'Foundation';
+    case 'association': return 'Association';
+    case 'social_enterprise': return 'Social enterprise';
     case 'other': return 'Other';
     case 'not_yet_decided': return 'Not yet decided';
     default: return 'Not yet decided';

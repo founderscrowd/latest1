@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { X, Upload, Image, Info } from 'lucide-react';
-import { groupAPI } from '../lib/groupApi';
+import {
+  groupAPI,
+  getStructuresForProfitStatus,
+  isValidStructureForProfitStatus,
+} from '../lib/groupApi';
 import { useAuth } from '../hooks/useAuth';
 
 interface CreateGroupModalProps {
@@ -89,10 +93,22 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
-    }));
+    const checked = type === 'checkbox' ? (e.target as HTMLInputElement).checked : undefined;
+
+    setFormData(prev => {
+      const next: typeof prev = {
+        ...prev,
+        [name]: checked !== undefined ? checked : value,
+      };
+
+      if (name === 'organisation_type') {
+        if (!isValidStructureForProfitStatus(value, prev.legal_structure)) {
+          next.legal_structure = 'not_yet_decided';
+        }
+      }
+
+      return next;
+    });
   };
 
   if (!isOpen) return null;
@@ -358,41 +374,17 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
             </div>
           )}
 
-          {/* Legal Structure Section */}
+          {/* Organisation Section */}
           <div className="border-t border-slate-200 pt-4">
-            <h4 className="font-bold text-sm text-slate-900 mb-1">Legal Structure</h4>
+            <h4 className="font-bold text-sm text-slate-900 mb-1">Organisation</h4>
             <p className="text-xs text-slate-500 mb-3">
-              What type of legal structure does your startup have now, or are you planning in the future?
+              Tell co-founders whether this is a for-profit or non-profit venture, and what type of organisation you are planning.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div>
                 <label className="block mb-1 font-semibold text-sm text-slate-700">
-                  Current / Planned Legal Structure *
-                </label>
-                <select
-                  name="legal_structure"
-                  value={formData.legal_structure}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border border-slate-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 text-sm"
-                  required
-                >
-                  <option value="not_yet_decided">Not yet decided</option>
-                  <option value="not_yet_formed">Not yet formed</option>
-                  <option value="planning_to_incorporate">Planning to incorporate</option>
-                  <option value="private_company_ltd">Private Company / Ltd</option>
-                  <option value="llc">LLC</option>
-                  <option value="corporation_inc">Corporation / Inc.</option>
-                  <option value="partnership">Partnership</option>
-                  <option value="cooperative">Cooperative</option>
-                  <option value="charity">Charity</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block mb-1 font-semibold text-sm text-slate-700">
-                  Organisation Type *
+                  Profit or Non-Profit *
                 </label>
                 <select
                   name="organisation_type"
@@ -405,6 +397,29 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
                   <option value="for_profit">For-profit</option>
                   <option value="non_profit">Non-profit</option>
                 </select>
+                <p className="text-xs text-slate-500 mt-1">
+                  Choose whether your startup is intended to operate as a for-profit or non-profit organisation.
+                </p>
+              </div>
+
+              <div>
+                <label className="block mb-1 font-semibold text-sm text-slate-700">
+                  Organisation Structure *
+                </label>
+                <select
+                  name="legal_structure"
+                  value={formData.legal_structure}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border border-slate-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 text-sm"
+                  required
+                >
+                  {getStructuresForProfitStatus(formData.organisation_type).map(opt => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
+                <p className="text-xs text-slate-500 mt-1">
+                  You can change this later as your startup develops.
+                </p>
               </div>
             </div>
 
@@ -415,7 +430,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
             )}
 
             <p className="text-xs text-slate-500 mt-2">
-              If you are not sure yet, choose "Not yet decided". You can update this later from your group settings.
+              These are general categories to help founders describe their planned organisation — not legal advice. Structures vary by country and jurisdiction.
             </p>
           </div>
 
