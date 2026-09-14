@@ -159,7 +159,7 @@ const AiSupportWidget: React.FC = () => {
     window.location.reload();
   };
 
-  const welcomeMessage = "Hi! I'm the EquityTake AI assistant. I can answer questions about how the platform works, pricing, equity, groups, and more. How can I help you today?";
+  const welcomeMessage = "Hi! I'm the EquityTake AI assistant. I can answer questions about how the platform works, equity, groups, and more. EquityTake is completely free to use — ask me anything!";
 
   const disabledMessage = "AI support is temporarily unavailable. Please contact equitytake@gmail.com for assistance.";
 
@@ -298,7 +298,7 @@ const AiSupportWidget: React.FC = () => {
                 </button>
               </div>
               <p className="text-xs text-slate-400 mt-2 text-center">
-                AI assistant · Cannot modify accounts or payments
+                AI assistant · Cannot modify accounts or groups
               </p>
             </div>
           )}
