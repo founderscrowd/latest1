@@ -598,19 +598,6 @@ Are you absolutely sure you want to cancel your subscription and risk losing you
         </div>
       )}
 
-      {/* Billing Information */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <div className="flex items-center gap-2 mb-2">
-          <CreditCard size={16} className="text-blue-600" />
-          <span className="text-sm font-medium text-blue-900">Billing Information</span>
-        </div>
-        <div className="text-sm text-blue-800 space-y-1">
-          <p>• All payments are processed securely by Stripe</p>
-          <p>• You can cancel your subscription at any time</p>
-          <p>• Refunds are subject to our terms of service</p>
-          <p>• For billing questions, contact support</p>
-        </div>
-      </div>
     </div>
   );
 };
