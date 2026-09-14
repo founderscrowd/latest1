@@ -20,6 +20,8 @@ export interface Group {
   location_type?: string;
   country?: string;
   city?: string;
+  legal_structure?: string;
+  organisation_type?: string;
   creator_subscription_active?: boolean;
 }
 
@@ -50,6 +52,8 @@ export interface CreateGroupData {
   location_type: 'worldwide' | 'location_based';
   country?: string;
   city?: string;
+  legal_structure?: string;
+  organisation_type?: string;
 }
 
 // Fetch subscription status for a list of user IDs and return a Set of inactive user IDs
@@ -863,3 +867,29 @@ class GroupAPI {
 }
 
 export const groupAPI = new GroupAPI();
+
+export function formatLegalStructure(value?: string | null): string {
+  switch (value) {
+    case 'not_yet_formed': return 'Not yet formed';
+    case 'planning_to_incorporate': return 'Planning to incorporate';
+    case 'private_company_ltd': return 'Private Company / Ltd';
+    case 'llc': return 'LLC';
+    case 'corporation_inc': return 'Corporation / Inc.';
+    case 'partnership': return 'Partnership';
+    case 'cooperative': return 'Cooperative';
+    case 'nonprofit_organisation': return 'Non-profit organisation';
+    case 'charity': return 'Charity';
+    case 'other': return 'Other';
+    case 'not_yet_decided': return 'Not yet decided';
+    default: return 'Not yet decided';
+  }
+}
+
+export function formatOrganisationType(value?: string | null): string {
+  switch (value) {
+    case 'for_profit': return 'For-profit';
+    case 'non_profit': return 'Non-profit';
+    case 'not_yet_decided': return 'Not yet decided';
+    default: return 'Not yet decided';
+  }
+}

@@ -35,7 +35,7 @@ import ResetPasswordPage from './pages/ResetPasswordPage';
 import { useAuth } from './hooks/useAuth';
 import { usePresence } from './hooks/usePresence';
 import { signOut } from './lib/supabase';
-import { groupAPI } from './lib/groupApi';
+import { groupAPI, formatLegalStructure, formatOrganisationType } from './lib/groupApi';
 import { siteSettingsAPI } from './lib/siteSettingsApi';
 import { stripeAPI } from './lib/stripeApi';
 
@@ -59,6 +59,8 @@ interface GroupData {
   creator_id?: string;
   is_public: boolean;
   cover_image?: string;
+  legal_structure?: string;
+  organisation_type?: string;
 }
 
 interface Particle {
@@ -399,7 +401,9 @@ const App: React.FC = () => {
               cover_image: group.cover_image,
               location_type: group.location_type,
               country: group.country,
-              city: group.city
+              city: group.city,
+              legal_structure: group.legal_structure,
+              organisation_type: group.organisation_type
             };
           })
         );
@@ -1401,6 +1405,22 @@ const App: React.FC = () => {
                           </span>
                         </div>
                           
+                          {/* Legal Structure & Org Type Badges */}
+                          <div className="flex flex-wrap gap-1 pt-2">
+                            <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full text-xs font-medium">
+                              {formatLegalStructure(group.legal_structure)}
+                            </span>
+                            <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                              group.organisation_type === 'for_profit'
+                                ? 'bg-emerald-50 text-emerald-700'
+                                : group.organisation_type === 'non_profit'
+                                ? 'bg-blue-50 text-blue-700'
+                                : 'bg-slate-100 text-slate-500'
+                            }`}>
+                              {formatOrganisationType(group.organisation_type)}
+                            </span>
+                          </div>
+
                           {/* Location Information */}
                           <div className="flex items-center gap-1 pt-2 pb-12">
                             <span className="text-xs">📍</span>

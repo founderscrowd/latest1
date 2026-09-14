@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Users, MapPin, Calendar, DollarSign, Building, Tag, Globe, Lock, Crown } from 'lucide-react';
+import { ArrowLeft, Users, MapPin, Calendar, DollarSign, Building, Tag, Globe, Lock, Crown, Scale } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
-import { groupAPI } from '../lib/groupApi';
+import { groupAPI, formatLegalStructure, formatOrganisationType } from '../lib/groupApi';
 import { supabase } from '../lib/supabase';
 import { EXISTING_USER_CUTOFF_DATE } from '../App';
 import ConfirmationModal from './ConfirmationModal';
@@ -35,6 +35,8 @@ interface Group {
   location_type: 'worldwide' | 'location_based';
   country?: string;
   city?: string;
+  legal_structure?: string;
+  organisation_type?: string;
   creator_profile?: {
     username: string;
     avatar_url?: string;
@@ -434,6 +436,28 @@ Are you sure you want to leave this group and lose all access to your engagement
                 </div>
                 <div className="text-xs text-slate-600 uppercase tracking-wide font-medium">
                   Business Stage
+                </div>
+              </div>
+            </div>
+
+            {/* Organisation */}
+            <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
+              <h3 className="text-lg font-semibold text-slate-900 mb-3 flex items-center gap-2">
+                <Scale size={20} />
+                Organisation
+              </h3>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-slate-600">Legal Structure</span>
+                  <span className="text-sm font-medium text-slate-900">
+                    {formatLegalStructure(group.legal_structure)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-slate-600">Type</span>
+                  <span className="text-sm font-medium text-slate-900">
+                    {formatOrganisationType(group.organisation_type)}
+                  </span>
                 </div>
               </div>
             </div>

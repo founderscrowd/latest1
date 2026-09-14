@@ -24,6 +24,8 @@ interface Group {
   country?: string;
   city?: string;
   require_approval?: boolean;
+  legal_structure?: string;
+  organisation_type?: string;
 }
 
 interface GroupMember {
@@ -85,7 +87,9 @@ const GroupSettingsPage: React.FC<GroupSettingsPageProps> = ({ groupId, onBack, 
     location_type: 'worldwide',
     country: '',
     city: '',
-    require_approval: false
+    require_approval: false,
+    legal_structure: 'not_yet_decided',
+    organisation_type: 'not_yet_decided'
   });
 
   useEffect(() => {
@@ -114,7 +118,9 @@ const GroupSettingsPage: React.FC<GroupSettingsPageProps> = ({ groupId, onBack, 
         location_type: groupData.location_type || 'worldwide',
         country: groupData.country || '',
         city: groupData.city || '',
-        require_approval: groupData.require_approval || false
+        require_approval: groupData.require_approval || false,
+        legal_structure: groupData.legal_structure || 'not_yet_decided',
+        organisation_type: groupData.organisation_type || 'not_yet_decided'
       });
       
       // Set initial image preview
@@ -250,6 +256,8 @@ const GroupSettingsPage: React.FC<GroupSettingsPageProps> = ({ groupId, onBack, 
         country: formData.country,
         city: formData.city,
         require_approval: formData.require_approval,
+        legal_structure: formData.legal_structure,
+        organisation_type: formData.organisation_type,
         cover_image: coverImageUrl
       };
 
@@ -755,6 +763,68 @@ Are you sure you want to remove this member and revoke their equity?`
                     </div>
                   </div>
                 )}
+
+                {/* Legal Structure Section */}
+                <div className="border-t border-slate-200 pt-4">
+                  <h4 className="font-bold text-sm text-slate-900 mb-1">Legal Structure</h4>
+                  <p className="text-xs text-slate-500 mb-3">
+                    What type of legal structure does your startup have now, or are you planning in the future?
+                  </p>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block mb-1 font-semibold text-sm text-slate-700">
+                        Current / Planned Legal Structure *
+                      </label>
+                      <select
+                        name="legal_structure"
+                        value={formData.legal_structure}
+                        onChange={handleInputChange}
+                        className="w-full p-3 border border-slate-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10"
+                        required
+                      >
+                        <option value="not_yet_decided">Not yet decided</option>
+                        <option value="not_yet_formed">Not yet formed</option>
+                        <option value="planning_to_incorporate">Planning to incorporate</option>
+                        <option value="private_company_ltd">Private Company / Ltd</option>
+                        <option value="llc">LLC</option>
+                        <option value="corporation_inc">Corporation / Inc.</option>
+                        <option value="partnership">Partnership</option>
+                        <option value="cooperative">Cooperative</option>
+                        <option value="nonprofit_organisation">Non-profit organisation</option>
+                        <option value="charity">Charity</option>
+                        <option value="other">Other</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block mb-1 font-semibold text-sm text-slate-700">
+                        Organisation Type *
+                      </label>
+                      <select
+                        name="organisation_type"
+                        value={formData.organisation_type}
+                        onChange={handleInputChange}
+                        className="w-full p-3 border border-slate-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10"
+                        required
+                      >
+                        <option value="not_yet_decided">Not yet decided</option>
+                        <option value="for_profit">For-profit</option>
+                        <option value="non_profit">Non-profit</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {formData.organisation_type === 'non_profit' && parseInt(formData.equity_available) > 0 && (
+                    <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800">
+                      Some non-profit structures may not use conventional equity ownership. Make sure your proposed structure is appropriate for your organisation and jurisdiction.
+                    </div>
+                  )}
+
+                  <p className="text-xs text-slate-500 mt-2">
+                    If you are not sure yet, choose "Not yet decided". You can update this later from your group settings.
+                  </p>
+                </div>
 
                 <div className="flex items-center gap-2">
                   <input

@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { ArrowLeft, Plus } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
-import { groupAPI } from '../lib/groupApi';
+import { groupAPI, formatLegalStructure, formatOrganisationType } from '../lib/groupApi';
 import Footer from '../components/Footer';
 
 interface GroupData {
@@ -25,6 +25,8 @@ interface GroupData {
   country?: string;
   city?: string;
   stage?: string;
+  legal_structure?: string;
+  organisation_type?: string;
 }
 
 interface GroupsListPageProps {
@@ -88,7 +90,9 @@ const GroupsListPage: React.FC<GroupsListPageProps> = ({
             location_type: group.location_type,
             country: group.country,
             city: group.city,
-            stage: group.stage
+            stage: group.stage,
+            legal_structure: group.legal_structure,
+            organisation_type: group.organisation_type
           };
         })
       );
@@ -274,6 +278,22 @@ const GroupsListPage: React.FC<GroupsListPageProps> = ({
                           : 'bg-red-100 text-red-800'
                       }`}>
                         {group.is_public ? 'Public' : 'Private'}
+                      </span>
+                    </div>
+
+                    {/* Legal Structure & Org Type Badges */}
+                    <div className="flex flex-wrap gap-1 mb-3">
+                      <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full text-xs font-medium">
+                        {formatLegalStructure(group.legal_structure)}
+                      </span>
+                      <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+                        group.organisation_type === 'for_profit'
+                          ? 'bg-emerald-50 text-emerald-700'
+                          : group.organisation_type === 'non_profit'
+                          ? 'bg-blue-50 text-blue-700'
+                          : 'bg-slate-100 text-slate-500'
+                      }`}>
+                        {formatOrganisationType(group.organisation_type)}
                       </span>
                     </div>
 
