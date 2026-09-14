@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Users, MapPin, Calendar, DollarSign, Building, Tag, Globe, Lock, Crown, Scale, Landmark, Coins } from 'lucide-react';
+import { ArrowLeft, Users, MapPin, Calendar, DollarSign, Building, Tag, Globe, Lock, Crown, Scale, Landmark, Coins, Sprout } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { groupAPI, formatLegalStructure, formatOrganisationType } from '../lib/groupApi';
 import { supabase } from '../lib/supabase';
@@ -449,11 +449,15 @@ Are you sure you want to leave this group and lose all access to your engagement
               <div className="space-y-3">
                 <div
                   className="flex items-center justify-between"
-                  title="Profit status — whether the group is planning a for-profit or non-profit organisation."
+                  title="Organisation type — whether this is a for-profit or non-profit venture."
                 >
                   <span className="text-sm text-slate-600 inline-flex items-center gap-1.5">
-                    <Coins size={14} className="text-slate-400" aria-label="Profit status" />
-                    Profit or Non-Profit
+                    {group.organisation_type === 'non_profit' ? (
+                      <Sprout size={14} className="text-slate-400" aria-label="Organisation type" />
+                    ) : (
+                      <Coins size={14} className="text-slate-400" aria-label="Organisation type" />
+                    )}
+                    Organisation Type
                   </span>
                   <span className="text-sm font-medium text-slate-900">
                     {formatOrganisationType(group.organisation_type)}
@@ -461,7 +465,7 @@ Are you sure you want to leave this group and lose all access to your engagement
                 </div>
                 <div
                   className="flex items-center justify-between"
-                  title="Organisation structure — the current or planned legal structure of this startup."
+                  title="Organisation structure — the current or planned structure of this startup."
                 >
                   <span className="text-sm text-slate-600 inline-flex items-center gap-1.5">
                     <Landmark size={14} className="text-slate-400" aria-label="Organisation structure" />

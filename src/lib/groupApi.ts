@@ -868,7 +868,7 @@ class GroupAPI {
 
 export const groupAPI = new GroupAPI();
 
-export type ProfitStatus = 'for_profit' | 'non_profit' | 'not_yet_decided';
+export type ProfitStatus = 'for_profit' | 'non_profit';
 
 export interface StructureOption {
   value: string;
@@ -881,23 +881,23 @@ export const FOR_PROFIT_STRUCTURES: StructureOption[] = [
   { value: 'llc', label: 'LLC' },
   { value: 'corporation_inc', label: 'Corporation / Inc.' },
   { value: 'partnership', label: 'Partnership' },
+  { value: 'llp', label: 'LLP' },
   { value: 'cooperative', label: 'Cooperative' },
+  { value: 'sole_proprietorship', label: 'Sole Proprietorship' },
   { value: 'other', label: 'Other' },
   { value: 'not_yet_decided', label: 'Not yet decided' },
 ];
 
 export const NON_PROFIT_STRUCTURES: StructureOption[] = [
-  { value: 'nonprofit_organisation', label: 'Non-profit organisation' },
+  { value: 'nonprofit_organisation', label: 'Non-profit Organisation' },
   { value: 'charity', label: 'Charity' },
   { value: 'foundation', label: 'Foundation' },
   { value: 'association', label: 'Association' },
+  { value: 'nonprofit_corporation', label: 'Non-profit Corporation' },
+  { value: 'cic', label: 'Community Interest Company (CIC)' },
+  { value: 'social_enterprise', label: 'Social Enterprise' },
   { value: 'cooperative', label: 'Cooperative' },
-  { value: 'social_enterprise', label: 'Social enterprise' },
   { value: 'other', label: 'Other' },
-  { value: 'not_yet_decided', label: 'Not yet decided' },
-];
-
-export const UNDECIDED_STRUCTURES: StructureOption[] = [
   { value: 'not_yet_decided', label: 'Not yet decided' },
 ];
 
@@ -905,7 +905,7 @@ export function getStructuresForProfitStatus(profitStatus: string | null | undef
   switch (profitStatus) {
     case 'for_profit': return FOR_PROFIT_STRUCTURES;
     case 'non_profit': return NON_PROFIT_STRUCTURES;
-    default: return UNDECIDED_STRUCTURES;
+    default: return [];
   }
 }
 
@@ -921,12 +921,16 @@ export function formatLegalStructure(value?: string | null): string {
     case 'llc': return 'LLC';
     case 'corporation_inc': return 'Corporation / Inc.';
     case 'partnership': return 'Partnership';
+    case 'llp': return 'LLP';
     case 'cooperative': return 'Cooperative';
-    case 'nonprofit_organisation': return 'Non-profit organisation';
+    case 'sole_proprietorship': return 'Sole Proprietorship';
+    case 'nonprofit_organisation': return 'Non-profit Organisation';
     case 'charity': return 'Charity';
     case 'foundation': return 'Foundation';
     case 'association': return 'Association';
-    case 'social_enterprise': return 'Social enterprise';
+    case 'nonprofit_corporation': return 'Non-profit Corporation';
+    case 'cic': return 'Community Interest Company (CIC)';
+    case 'social_enterprise': return 'Social Enterprise';
     case 'other': return 'Other';
     case 'not_yet_decided': return 'Not yet decided';
     default: return 'Not yet decided';
@@ -937,7 +941,6 @@ export function formatOrganisationType(value?: string | null): string {
   switch (value) {
     case 'for_profit': return 'For-profit';
     case 'non_profit': return 'Non-profit';
-    case 'not_yet_decided': return 'Not yet decided';
-    default: return 'Not yet decided';
+    default: return 'Not specified';
   }
 }

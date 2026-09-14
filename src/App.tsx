@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Routes, Route, useNavigate, useLocation, Link, Navigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { Plus, X, LogOut, User, CircleUser as UserCircle, Settings, Crown, CreditCard, Landmark, Coins } from 'lucide-react';
+import { Plus, X, LogOut, User, CircleUser as UserCircle, Settings, Crown, CreditCard, Landmark, Coins, Sprout } from 'lucide-react';
 import AuthModal from './components/AuthModal';
 import ProfilePage from './components/ProfilePage';
 import GroupDetailsPage from './components/GroupDetailsPage';
@@ -35,7 +35,7 @@ import ResetPasswordPage from './pages/ResetPasswordPage';
 import { useAuth } from './hooks/useAuth';
 import { usePresence } from './hooks/usePresence';
 import { signOut } from './lib/supabase';
-import { groupAPI, formatLegalStructure, formatOrganisationType } from './lib/groupApi';
+import { groupAPI, formatLegalStructure } from './lib/groupApi';
 import { siteSettingsAPI } from './lib/siteSettingsApi';
 import { stripeAPI } from './lib/stripeApi';
 
@@ -1407,21 +1407,33 @@ const App: React.FC = () => {
                           
                           {/* Organisation Badges */}
                           <div className="flex flex-wrap gap-1 pt-2">
+                            {group.organisation_type === 'for_profit' ? (
+                              <span
+                                title="Organisation type — this is a for-profit venture."
+                                className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full text-xs font-medium"
+                              >
+                                <Coins size={11} className="shrink-0" aria-label="Organisation type" />
+                                For-profit
+                              </span>
+                            ) : group.organisation_type === 'non_profit' ? (
+                              <span
+                                title="Organisation type — this is a non-profit venture."
+                                className="inline-flex items-center gap-1 bg-teal-50 text-teal-700 px-2 py-0.5 rounded-full text-xs font-medium"
+                              >
+                                <Sprout size={11} className="shrink-0" aria-label="Organisation type" />
+                                Non-profit
+                              </span>
+                            ) : (
+                              <span
+                                title="Organisation type — not yet specified for this group."
+                                className="inline-flex items-center gap-1 bg-slate-100 text-slate-400 px-2 py-0.5 rounded-full text-xs font-medium"
+                              >
+                                <Coins size={11} className="shrink-0" aria-label="Organisation type" />
+                                Type: Not specified
+                              </span>
+                            )}
                             <span
-                              title="Profit status — whether the group is planning a for-profit or non-profit organisation."
-                              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${
-                                group.organisation_type === 'for_profit'
-                                  ? 'bg-emerald-50 text-emerald-700'
-                                  : group.organisation_type === 'non_profit'
-                                  ? 'bg-teal-50 text-teal-700'
-                                  : 'bg-slate-100 text-slate-500'
-                              }`}
-                            >
-                              <Coins size={11} className="shrink-0" aria-label="Profit status" />
-                              {formatOrganisationType(group.organisation_type)}
-                            </span>
-                            <span
-                              title="Organisation structure — the current or planned legal structure of this startup."
+                              title="Organisation structure — the current or planned structure of this startup."
                               className="inline-flex items-center gap-1 bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full text-xs font-medium"
                             >
                               <Landmark size={11} className="shrink-0" aria-label="Organisation structure" />

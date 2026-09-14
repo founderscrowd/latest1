@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Upload, Image, Info } from 'lucide-react';
+import { X, Upload, Image, Info, Coins, Sprout } from 'lucide-react';
 import {
   groupAPI,
   getStructuresForProfitStatus,
@@ -31,7 +31,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
     country: '',
     city: '',
     legal_structure: 'not_yet_decided',
-    organisation_type: 'not_yet_decided'
+    organisation_type: ''
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -79,7 +79,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
         country: '',
         city: '',
         legal_structure: 'not_yet_decided',
-        organisation_type: 'not_yet_decided'
+        organisation_type: ''
       });
       
       onSuccess();
@@ -107,6 +107,16 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
         }
       }
 
+      return next;
+    });
+  };
+
+  const handleOrgTypeClick = (value: string) => {
+    setFormData(prev => {
+      const next: typeof prev = { ...prev, organisation_type: value };
+      if (!isValidStructureForProfitStatus(value, prev.legal_structure)) {
+        next.legal_structure = 'not_yet_decided';
+      }
       return next;
     });
   };
@@ -378,33 +388,43 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
           <div className="border-t border-slate-200 pt-4">
             <h4 className="font-bold text-sm text-slate-900 mb-1">Organisation</h4>
             <p className="text-xs text-slate-500 mb-3">
-              Tell co-founders whether this is a for-profit or non-profit venture, and what type of organisation you are planning.
+              Tell potential co-founders what type of venture you are creating and what organisation structure you are considering.
             </p>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div>
-                <label className="block mb-1 font-semibold text-sm text-slate-700">
-                  Profit or Non-Profit *
-                </label>
-                <select
-                  name="organisation_type"
-                  value={formData.organisation_type}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border border-slate-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 text-sm"
-                  required
-                >
-                  <option value="not_yet_decided">Not yet decided</option>
-                  <option value="for_profit">For-profit</option>
-                  <option value="non_profit">Non-profit</option>
-                </select>
-                <p className="text-xs text-slate-500 mt-1">
-                  Choose whether your startup is intended to operate as a for-profit or non-profit organisation.
-                </p>
-              </div>
+            <label className="block mb-1 font-semibold text-sm text-slate-700">
+              Organisation Type *
+            </label>
+            <div className="grid grid-cols-2 gap-3 mb-3">
+              <button
+                type="button"
+                onClick={() => handleOrgTypeClick('for_profit')}
+                className={`flex items-center gap-2 p-3 rounded-lg border-2 transition-all text-sm font-medium ${
+                  formData.organisation_type === 'for_profit'
+                    ? 'border-emerald-500 bg-emerald-50 text-emerald-700'
+                    : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+                }`}
+              >
+                <Coins size={18} className="shrink-0" />
+                For-profit
+              </button>
+              <button
+                type="button"
+                onClick={() => handleOrgTypeClick('non_profit')}
+                className={`flex items-center gap-2 p-3 rounded-lg border-2 transition-all text-sm font-medium ${
+                  formData.organisation_type === 'non_profit'
+                    ? 'border-teal-500 bg-teal-50 text-teal-700'
+                    : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+                }`}
+              >
+                <Sprout size={18} className="shrink-0" />
+                Non-profit
+              </button>
+            </div>
 
+            {formData.organisation_type && (
               <div>
                 <label className="block mb-1 font-semibold text-sm text-slate-700">
-                  Organisation Structure *
+                  {formData.organisation_type === 'for_profit' ? 'For-profit' : 'Non-profit'} Organisation Structure *
                 </label>
                 <select
                   name="legal_structure"
@@ -421,7 +441,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
                   You can change this later as your startup develops.
                 </p>
               </div>
-            </div>
+            )}
 
             {formData.organisation_type === 'non_profit' && parseInt(formData.equity_available) > 0 && (
               <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800">
@@ -430,7 +450,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
             )}
 
             <p className="text-xs text-slate-500 mt-2">
-              These are general categories to help founders describe their planned organisation — not legal advice. Structures vary by country and jurisdiction.
+              Organisation structures vary by country. These options are provided for general planning purposes and are not legal advice. Please check the requirements in your country before forming an organisation.
             </p>
           </div>
 
