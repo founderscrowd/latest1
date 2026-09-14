@@ -29,7 +29,7 @@ export const feedbackApi = {
     message: string;
     email?: string;
     page_url?: string;
-  }): Promise<Feedback> {
+  }): Promise<void> {
     const { data: userData } = await supabase.auth.getUser();
     const user = userData.user;
 
@@ -46,17 +46,13 @@ export const feedbackApi = {
       insertData.email = data.email.trim();
     }
 
-    const { data: result, error } = await supabase
+    const { error } = await supabase
       .from('feedback')
-      .insert(insertData)
-      .select()
-      .single();
+      .insert(insertData);
 
     if (error) {
       throw error;
     }
-
-    return result as Feedback;
   },
 
   async getAllFeedback(options?: {
