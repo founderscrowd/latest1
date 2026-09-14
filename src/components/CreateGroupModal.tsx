@@ -385,7 +385,6 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
                   <option value="corporation_inc">Corporation / Inc.</option>
                   <option value="partnership">Partnership</option>
                   <option value="cooperative">Cooperative</option>
-                  <option value="nonprofit_organisation">Non-profit organisation</option>
                   <option value="charity">Charity</option>
                   <option value="other">Other</option>
                 </select>
