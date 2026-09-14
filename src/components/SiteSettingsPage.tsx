@@ -3,6 +3,7 @@ import { ArrowLeft, Upload, Image, Trash2, Save, Camera, AlertTriangle, CheckCir
 import { useAuth } from '../hooks/useAuth';
 import { siteSettingsAPI } from '../lib/siteSettingsApi';
 import BlogContentManager from './BlogContentManager';
+import FeedbackManager from './FeedbackManager';
 
 interface SiteSettingsPageProps {
   onBack: () => void;
@@ -962,6 +963,11 @@ const SiteSettingsPage: React.FC<SiteSettingsPageProps> = ({ onBack }) => {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Suggestions & Feedback Management Section */}
+      <div className="max-w-4xl mx-auto px-4 py-6">
+        <FeedbackManager />
       </div>
 
       {/* Blog & About Content Management Section */}

@@ -17,6 +17,7 @@ import TermsOfServicePage from './components/TermsOfServicePage';
 import PricingInfoModal from './components/PricingInfoModal';
 import CookiePolicyPage from './components/CookiePolicyPage';
 import ContactModal from './components/ContactModal';
+import FeedbackModal from './components/FeedbackModal';
 import AiSupportWidget from './components/AiSupportWidget';
 import BlogAndAboutPage from './components/BlogAndAboutPage';
 import HowItWorksPage from './components/HowItWorksPage';
@@ -113,6 +114,7 @@ const App: React.FC = () => {
   const [userSubscription, setUserSubscription] = useState<any>(null);
   const [showPricingInfoModal, setShowPricingInfoModal] = useState(false);
   const [showContactModal, setShowContactModal] = useState(false);
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [showBlogAndAbout, setShowBlogAndAbout] = useState(false);
   const [showHowItWorks, setShowHowItWorks] = useState(false);
   
@@ -249,6 +251,10 @@ const App: React.FC = () => {
       setShowContactModal(true);
     };
 
+    const handleShowFeedbackModal = () => {
+      setShowFeedbackModal(true);
+    };
+
     // Listen for group leave events to refresh groups
     const handleGroupLeft = (event: CustomEvent) => {
       console.log('Group left event received:', event.detail);
@@ -261,6 +267,7 @@ const App: React.FC = () => {
     window.addEventListener('showPricingModal', handleShowPricingModal as EventListener);
     window.addEventListener('showPricingInfoModal', handleShowPricingInfoModal as EventListener);
     window.addEventListener('showContactModal', handleShowContactModal as EventListener);
+    window.addEventListener('showFeedbackModal', handleShowFeedbackModal as EventListener);
     window.addEventListener('groupLeft', handleGroupLeft as EventListener);
     
     return () => {
@@ -270,6 +277,7 @@ const App: React.FC = () => {
       window.removeEventListener('showPricingModal', handleShowPricingModal as EventListener);
       window.removeEventListener('showPricingInfoModal', handleShowPricingInfoModal as EventListener);
       window.removeEventListener('showContactModal', handleShowContactModal as EventListener);
+      window.removeEventListener('showFeedbackModal', handleShowFeedbackModal as EventListener);
       window.removeEventListener('groupLeft', handleGroupLeft as EventListener);
     };
   }, []);
@@ -1537,6 +1545,11 @@ const App: React.FC = () => {
       <ContactModal
         isOpen={showContactModal}
         onClose={() => setShowContactModal(false)}
+      />
+
+      <FeedbackModal
+        isOpen={showFeedbackModal}
+        onClose={() => setShowFeedbackModal(false)}
       />
 
       <AiSupportWidget />

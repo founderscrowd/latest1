@@ -1,6 +1,7 @@
 // src/components/Footer.tsx
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { MessageSquare } from 'lucide-react';
 
 interface FooterProps {
   siteLogoUrl: string | null;
@@ -128,6 +129,14 @@ const Footer: React.FC<FooterProps> = ({
                 className="text-slate-300 hover:text-white transition-colors text-left"
               >
                 Help Center
+              </button>
+            </li>
+            <li>
+              <button
+                onClick={() => window.dispatchEvent(new CustomEvent('showFeedbackModal'))}
+                className="text-slate-300 hover:text-white transition-colors text-left"
+              >
+                Suggestions & Feedback
               </button>
             </li>
             <li>
