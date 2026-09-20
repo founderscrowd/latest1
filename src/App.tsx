@@ -33,6 +33,7 @@ import LegacyGroupRedirect from './pages/LegacyGroupRedirect';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
 import StartupGroupsPage from './pages/StartupGroupsPage';
+import CommunitiesAndCooperativesPage from './pages/CommunitiesAndCooperativesPage';
 import CreateStartupGroupPage from './pages/CreateStartupGroupPage';
 import CofounderMatchingPage from './pages/CofounderMatchingPage';
 import FindACofounderPage from './pages/FindACofounderPage';
@@ -1099,6 +1100,23 @@ const App: React.FC = () => {
           path="/startup-groups"
           element={
             <StartupGroupsPage
+              onBack={() => navigate('/')}
+              siteLogoUrl={siteLogoUrl}
+              onCreateGroup={() => {
+                if (!user) {
+                  setInitialAuthModeSignUp(true);
+                  setIsAuthModalOpen(true);
+                } else {
+                  setIsCreateModalOpen(true);
+                }
+              }}
+            />
+          }
+        />
+        <Route
+          path="/communities-and-cooperatives"
+          element={
+            <CommunitiesAndCooperativesPage
               onBack={() => navigate('/')}
               siteLogoUrl={siteLogoUrl}
               onCreateGroup={() => {

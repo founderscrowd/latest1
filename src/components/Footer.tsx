@@ -59,6 +59,11 @@ const Footer: React.FC<FooterProps> = ({
               </Link>
             </li>
             <li>
+              <Link to="/communities-and-cooperatives" className="text-slate-300 hover:text-white transition-colors">
+                Communities &amp; cooperatives
+              </Link>
+            </li>
+            <li>
               <Link to="/create-startup-group" className="text-slate-300 hover:text-white transition-colors">
                 Create a startup group
               </Link>
