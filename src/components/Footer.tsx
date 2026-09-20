@@ -50,7 +50,7 @@ const Footer: React.FC<FooterProps> = ({
             )}
           </div>
           <p className="text-slate-300 text-sm leading-relaxed mb-4">
-            Connect with co-founders, claim equity, and turn your startup ideas into reality through collaborative groups.
+            EquityTake is a startup group and co-founder matching platform. Create a group around your idea, find potential co-founders, and discuss proposed equity allocations within the group.
           </p>
           <div className="flex items-center gap-1 text-sm text-slate-400">
             <span>✉️</span>
@@ -68,23 +68,24 @@ const Footer: React.FC<FooterProps> = ({
           <h4 className="font-semibold text-white mb-4">Platform</h4>
           <ul className="space-y-2 text-sm">
             <li>
-              <a href="#" className="text-slate-300 hover:text-white transition-colors">
-                Browse Groups
-              </a>
+              <Link to="/startup-groups" className="text-slate-300 hover:text-white transition-colors">
+                Startup groups
+              </Link>
             </li>
             <li>
-              <button 
-                onClick={() => {
-                  if (!user) {
-                    setIsAuthModalOpen(true);
-                  } else {
-                    setIsCreateModalOpen(true);
-                  }
-                }}
-                className="text-slate-300 hover:text-white transition-colors text-left"
-              >
-                Create Group
-              </button>
+              <Link to="/create-startup-group" className="text-slate-300 hover:text-white transition-colors">
+                Create a startup group
+              </Link>
+            </li>
+            <li>
+              <Link to="/cofounder-matching" className="text-slate-300 hover:text-white transition-colors">
+                Co-founder matching
+              </Link>
+            </li>
+            <li>
+              <Link to="/find-a-cofounder" className="text-slate-300 hover:text-white transition-colors">
+                Find a co-founder
+              </Link>
             </li>
             <li>
               {onShowHowItWorks ? (
@@ -92,12 +93,12 @@ const Footer: React.FC<FooterProps> = ({
                   onClick={onShowHowItWorks}
                   className="text-slate-300 hover:text-white transition-colors text-left"
                 >
-                  How It Works
+                  How it works
                 </button>
               ) : (
-                <a href="#" className="text-slate-300 hover:text-white transition-colors">
-                  How It Works
-                </a>
+                <Link to="/how-it-works" className="text-slate-300 hover:text-white transition-colors">
+                  How it works
+                </Link>
               )}
             </li>
           </ul>
@@ -107,6 +108,21 @@ const Footer: React.FC<FooterProps> = ({
         <div>
           <h4 className="font-semibold text-white mb-4">Resources</h4>
           <ul className="space-y-2 text-sm">
+            <li>
+              <Link to="/equity-for-cofounders" className="text-slate-300 hover:text-white transition-colors">
+                Equity for co-founders
+              </Link>
+            </li>
+            <li>
+              <Link to="/startup-equity-split" className="text-slate-300 hover:text-white transition-colors">
+                Startup equity split
+              </Link>
+            </li>
+            <li>
+              <Link to="/startup-team-building" className="text-slate-300 hover:text-white transition-colors">
+                Startup team building
+              </Link>
+            </li>
             <li>
               <Link
                 to="/blog"
@@ -122,27 +138,6 @@ const Footer: React.FC<FooterProps> = ({
               >
                 About
               </Link>
-            </li>
-            <li>
-              <button
-                onClick={() => window.dispatchEvent(new CustomEvent('showContactModal'))}
-                className="text-slate-300 hover:text-white transition-colors text-left"
-              >
-                Help Center
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={() => window.dispatchEvent(new CustomEvent('showFeedbackModal'))}
-                className="text-slate-300 hover:text-white transition-colors text-left"
-              >
-                Suggestions & Feedback
-              </button>
-            </li>
-            <li>
-              <a href="#" className="text-slate-300 hover:text-white transition-colors">
-                Startup Guide
-              </a>
             </li>
           </ul>
         </div>

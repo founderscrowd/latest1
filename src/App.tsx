@@ -32,6 +32,13 @@ import PaymentCancelRoute from './pages/PaymentCancelRoute';
 import LegacyGroupRedirect from './pages/LegacyGroupRedirect';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
+import StartupGroupsPage from './pages/StartupGroupsPage';
+import CreateStartupGroupPage from './pages/CreateStartupGroupPage';
+import CofounderMatchingPage from './pages/CofounderMatchingPage';
+import FindACofounderPage from './pages/FindACofounderPage';
+import EquityForCofoundersPage from './pages/EquityForCofoundersPage';
+import StartupEquitySplitPage from './pages/StartupEquitySplitPage';
+import StartupTeamBuildingPage from './pages/StartupTeamBuildingPage';
 import { useAuth } from './hooks/useAuth';
 import { usePresence } from './hooks/usePresence';
 import { signOut } from './lib/supabase';
@@ -1083,6 +1090,127 @@ const App: React.FC = () => {
             <HowItWorksPage
               onBack={() => navigate('/')}
               siteLogoUrl={siteLogoUrl}
+            />
+          }
+        />
+
+        {/* Marketing Pages */}
+        <Route
+          path="/startup-groups"
+          element={
+            <StartupGroupsPage
+              onBack={() => navigate('/')}
+              siteLogoUrl={siteLogoUrl}
+              onCreateGroup={() => {
+                if (!user) {
+                  setInitialAuthModeSignUp(true);
+                  setIsAuthModalOpen(true);
+                } else {
+                  setIsCreateModalOpen(true);
+                }
+              }}
+            />
+          }
+        />
+        <Route
+          path="/create-startup-group"
+          element={
+            <CreateStartupGroupPage
+              onBack={() => navigate('/')}
+              siteLogoUrl={siteLogoUrl}
+              onCreateGroup={() => {
+                if (!user) {
+                  setInitialAuthModeSignUp(true);
+                  setIsAuthModalOpen(true);
+                } else {
+                  setIsCreateModalOpen(true);
+                }
+              }}
+            />
+          }
+        />
+        <Route
+          path="/cofounder-matching"
+          element={
+            <CofounderMatchingPage
+              onBack={() => navigate('/')}
+              siteLogoUrl={siteLogoUrl}
+              onCreateGroup={() => {
+                if (!user) {
+                  setInitialAuthModeSignUp(true);
+                  setIsAuthModalOpen(true);
+                } else {
+                  setIsCreateModalOpen(true);
+                }
+              }}
+            />
+          }
+        />
+        <Route
+          path="/find-a-cofounder"
+          element={
+            <FindACofounderPage
+              onBack={() => navigate('/')}
+              siteLogoUrl={siteLogoUrl}
+              onCreateGroup={() => {
+                if (!user) {
+                  setInitialAuthModeSignUp(true);
+                  setIsAuthModalOpen(true);
+                } else {
+                  setIsCreateModalOpen(true);
+                }
+              }}
+            />
+          }
+        />
+        <Route
+          path="/equity-for-cofounders"
+          element={
+            <EquityForCofoundersPage
+              onBack={() => navigate('/')}
+              siteLogoUrl={siteLogoUrl}
+              onCreateGroup={() => {
+                if (!user) {
+                  setInitialAuthModeSignUp(true);
+                  setIsAuthModalOpen(true);
+                } else {
+                  setIsCreateModalOpen(true);
+                }
+              }}
+            />
+          }
+        />
+        <Route
+          path="/startup-equity-split"
+          element={
+            <StartupEquitySplitPage
+              onBack={() => navigate('/')}
+              siteLogoUrl={siteLogoUrl}
+              onCreateGroup={() => {
+                if (!user) {
+                  setInitialAuthModeSignUp(true);
+                  setIsAuthModalOpen(true);
+                } else {
+                  setIsCreateModalOpen(true);
+                }
+              }}
+            />
+          }
+        />
+        <Route
+          path="/startup-team-building"
+          element={
+            <StartupTeamBuildingPage
+              onBack={() => navigate('/')}
+              siteLogoUrl={siteLogoUrl}
+              onCreateGroup={() => {
+                if (!user) {
+                  setInitialAuthModeSignUp(true);
+                  setIsAuthModalOpen(true);
+                } else {
+                  setIsCreateModalOpen(true);
+                }
+              }}
             />
           }
         />
