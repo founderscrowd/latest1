@@ -15,6 +15,8 @@ const FindACofounderPage: React.FC<FindACofounderPageProps> = ({ onBack, siteLog
     title="Find a Co-founder"
     metaDescription="Find a co-founder on EquityTake. Browse groups, join one that fits, talk in group chat, see whether skills and working style match, then discuss proposed equity."
     h1="Find a co-founder"
+    secondaryCtaTo="/"
+    secondaryCtaLabel="Browse groups"
   >
     <div className="space-y-6 text-slate-700">
       <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
