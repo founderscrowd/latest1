@@ -1281,19 +1281,13 @@ const App: React.FC = () => {
             />
 
             <div className="relative z-20 max-w-6xl mx-auto px-4 text-center">
-              <h1 className="text-3xl md:text-4xl font-bold mb-3 tracking-tight">
-                Build Startups Together
+              <h1 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight leading-tight">
+                EquityTake is a startup group and co-founder matching platform.
               </h1>
-              <p className="text-base mb-6 text-slate-300 max-w-2xl mx-auto">
-                Connect with co-founders, claim equity, and turn your startup ideas into reality through collaborative groups
+              <p className="text-base md:text-lg mb-6 text-slate-300 max-w-2xl mx-auto leading-relaxed">
+                Create a startup group around your idea, find potential co-founders, build your team, and discuss proposed equity allocations within the group.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button 
-                  onClick={scrollToMainContent}
-                  className="px-5 py-2.5 text-sm font-semibold bg-orange-600 text-white rounded-lg hover:bg-red-600 hover:-translate-y-0.5 transition-all"
-                >
-                  Browse Startups
-                </button>
                 <button 
                   onClick={() => {
                     if (!user) {
@@ -1303,14 +1297,23 @@ const App: React.FC = () => {
                       setIsCreateModalOpen(true);
                     }
                   }}
+                  className="px-5 py-2.5 text-sm font-semibold bg-orange-600 text-white rounded-lg hover:bg-red-600 hover:-translate-y-0.5 transition-all"
+                >
+                  Create Group
+                </button>
+                <button 
+                  onClick={scrollToMainContent}
                   className="px-5 py-2.5 text-sm font-semibold border border-white/30 text-white rounded-lg hover:bg-white/10 hover:-translate-y-0.5 transition-all"
                   style={{ backgroundColor: '#FF69B4' }}
                   onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#E91E63'}
                   onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#FF69B4'}
                 >
-                  Create Group
+                  Browse Groups
                 </button>
               </div>
+              <p className="mt-5 text-sm text-slate-400 font-medium">
+                Form a group. Match co-founders. Talk equity inside the group.
+              </p>
             </div>
           </section>
 
@@ -1319,10 +1322,10 @@ const App: React.FC = () => {
             <div className="max-w-6xl mx-auto px-4">
               <div className="text-center mb-8">
                 <h2 className="text-2xl font-bold mb-2 text-slate-900">
-                  Active Startup Groups
+                  Active groups
                 </h2>
                 <p className="text-sm text-slate-600">
-                  Join these innovative startups and claim your equity stake
+                  Join a group, meet potential co-founders, and discuss equity allocations together.
                 </p>
               </div>
 
