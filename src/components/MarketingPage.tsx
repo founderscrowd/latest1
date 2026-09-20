@@ -94,10 +94,10 @@ const MarketingPage: React.FC<MarketingPageProps> = ({
             Create a startup group
           </button>
           <Link
-            to={secondaryCtaTo ?? "/find-a-cofounder"}
+            to={secondaryCtaTo ?? "/"}
             className="px-6 py-3 text-sm font-semibold border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-100 hover:-translate-y-0.5 transition-all"
           >
-            {secondaryCtaLabel ?? "Find a co-founder"}
+            {secondaryCtaLabel ?? "Browse groups"}
           </Link>
         </div>
 
