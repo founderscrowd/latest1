@@ -1,7 +1,6 @@
 // src/components/Footer.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { MessageSquare } from 'lucide-react';
 
 interface FooterProps {
   siteLogoUrl: string | null;
@@ -19,204 +18,164 @@ interface FooterProps {
 
 const Footer: React.FC<FooterProps> = ({
   siteLogoUrl,
-  user,
-  userSubscription,
-  setIsCreateModalOpen,
-  setShowProfile,
-  setIsAuthModalOpen,
   onShowPrivacyPolicy,
   onShowTermsOfService,
   onShowCookiePolicy,
-  onShowBlogAndAbout,
-  onShowHowItWorks
-}) => (
-  <footer className="bg-slate-900 text-white">
-    <div className="max-w-6xl mx-auto px-4 py-12">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-        {/* Brand Section */}
-        <div className="md:col-span-1">
-          <div className="flex items-center mb-4">
-            {siteLogoUrl && siteLogoUrl.trim() !== '' ? (
-              <img
-                src={siteLogoUrl}
-                alt="EquityTake Logo"
-                className="h-8 max-w-[200px] object-contain brightness-0 invert"
-                onError={() => {
-                  console.warn('Logo failed to load in footer. URL was:', siteLogoUrl);
-                }}
-              />
-            ) : (
-              <span className="text-xl font-bold">EquityTake</span>
-            )}
-          </div>
-          <p className="text-slate-300 text-sm leading-relaxed mb-4">
-            EquityTake is a startup group and co-founder matching platform. Create a group around your idea, find potential co-founders, and discuss proposed equity allocations within the group.
-          </p>
-          <div className="flex items-center gap-1 text-sm text-slate-400">
-            <span>✉️</span>
-            <a 
-              href="mailto:equitytake@gmail.com"
-              className="hover:text-white transition-colors"
-            >
-              equitytake@gmail.com
-            </a>
-          </div>
-        </div>
+  onShowHowItWorks,
+}) => {
+  const [logoError, setLogoError] = useState(false);
 
-        {/* Platform Links */}
-        <div>
-          <h4 className="font-semibold text-white mb-4">Platform</h4>
-          <ul className="space-y-2 text-sm">
-            <li>
-              <Link to="/startup-groups" className="text-slate-300 hover:text-white transition-colors">
-                Startup groups
-              </Link>
-            </li>
-            <li>
-              <Link to="/create-startup-group" className="text-slate-300 hover:text-white transition-colors">
-                Create a startup group
-              </Link>
-            </li>
-            <li>
-              <Link to="/cofounder-matching" className="text-slate-300 hover:text-white transition-colors">
-                Co-founder matching
-              </Link>
-            </li>
-            <li>
-              <Link to="/find-a-cofounder" className="text-slate-300 hover:text-white transition-colors">
-                Find a co-founder
-              </Link>
-            </li>
-            <li>
-              {onShowHowItWorks ? (
-                <button
-                  onClick={onShowHowItWorks}
-                  className="text-slate-300 hover:text-white transition-colors text-left"
-                >
-                  How it works
-                </button>
+  return (
+    <footer className="bg-slate-900 text-white">
+      <div className="max-w-6xl mx-auto px-4 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          {/* Brand Section */}
+          <div className="md:col-span-1">
+            <div className="flex items-center mb-4 h-8">
+              {siteLogoUrl && siteLogoUrl.trim() !== '' && !logoError ? (
+                <img
+                  src={siteLogoUrl}
+                  alt="EquityTake Logo"
+                  className="h-8 max-w-[200px] object-contain brightness-0 invert"
+                  onError={() => setLogoError(true)}
+                />
               ) : (
-                <Link to="/how-it-works" className="text-slate-300 hover:text-white transition-colors">
-                  How it works
-                </Link>
+                <span className="text-xl font-bold">EquityTake</span>
               )}
-            </li>
-          </ul>
-        </div>
-
-        {/* Resources */}
-        <div>
-          <h4 className="font-semibold text-white mb-4">Resources</h4>
-          <ul className="space-y-2 text-sm">
-            <li>
-              <Link to="/equity-for-cofounders" className="text-slate-300 hover:text-white transition-colors">
-                Equity for co-founders
-              </Link>
-            </li>
-            <li>
-              <Link to="/startup-equity-split" className="text-slate-300 hover:text-white transition-colors">
-                Startup equity split
-              </Link>
-            </li>
-            <li>
-              <Link to="/startup-team-building" className="text-slate-300 hover:text-white transition-colors">
-                Startup team building
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/blog"
-                className="text-slate-300 hover:text-white transition-colors"
+            </div>
+            <p className="text-slate-300 text-sm leading-relaxed mb-4">
+              EquityTake is a startup group and co-founder matching platform. Create a group around your idea, find potential co-founders, and discuss proposed equity allocations within the group.
+            </p>
+            <div className="flex items-center gap-1 text-sm text-slate-400">
+              <span>✉️</span>
+              <a
+                href="mailto:equitytake@gmail.com"
+                className="hover:text-white transition-colors"
               >
-                Blog
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/about"
-                className="text-slate-300 hover:text-white transition-colors"
-              >
-                About
-              </Link>
-            </li>
-          </ul>
-        </div>
-
-        {/* Legal & Social */}
-        <div>
-          <h4 className="font-semibold text-white mb-4">Legal & Social</h4>
-          <ul className="space-y-2 text-sm mb-6">
-            <li>
-              <button 
-                onClick={onShowPrivacyPolicy}
-                className="text-slate-300 hover:text-white transition-colors text-left"
-              >
-                Privacy Policy
-              </button>
-            </li>
-            <li>
-              <button 
-                onClick={onShowTermsOfService}
-                className="text-slate-300 hover:text-white transition-colors text-left"
-              >
-                Terms of Service
-              </button>
-            </li>
-            <li>
-              <button
-                onClick={onShowCookiePolicy}
-                className="text-slate-300 hover:text-white transition-colors text-left"
-              >
-                Cookie Policy
-              </button>
-            </li>
-          </ul>
-          
-          {/* Social Media Links */}
-          <div>
-            <h5 className="font-medium text-white mb-3 text-sm">Follow Us</h5>
-            <div className="flex items-center gap-3">
-              <a 
-                href="#" 
-                className="w-8 h-8 bg-slate-700 rounded-lg flex items-center justify-center hover:bg-slate-600 transition-colors"
-                title="LinkedIn"
-              >
-                <span className="text-sm">💼</span>
-              </a>
-              <a 
-                href="#" 
-                className="w-8 h-8 bg-slate-700 rounded-lg flex items-center justify-center hover:bg-slate-600 transition-colors"
-                title="Twitter"
-              >
-                <span className="text-sm">🐦</span>
-              </a>
-              <a 
-                href="#" 
-                className="w-8 h-8 bg-slate-700 rounded-lg flex items-center justify-center hover:bg-slate-600 transition-colors"
-                title="Facebook"
-              >
-                <span className="text-sm">📘</span>
+                equitytake@gmail.com
               </a>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Bottom Bar */}
-      <div className="border-t border-slate-700 mt-8 pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
-        <div className="text-sm text-slate-400">
-          © 2025 EquityTake. All rights reserved.
+          {/* Platform Links */}
+          <div>
+            <h4 className="font-semibold text-white mb-4">Platform</h4>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <Link to="/" className="text-slate-300 hover:text-white transition-colors">
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link to="/startup-groups" className="text-slate-300 hover:text-white transition-colors">
+                  Startup groups
+                </Link>
+              </li>
+              <li>
+                <Link to="/create-startup-group" className="text-slate-300 hover:text-white transition-colors">
+                  Create a startup group
+                </Link>
+              </li>
+              <li>
+                <Link to="/cofounder-matching" className="text-slate-300 hover:text-white transition-colors">
+                  Co-founder matching
+                </Link>
+              </li>
+              <li>
+                <Link to="/find-a-cofounder" className="text-slate-300 hover:text-white transition-colors">
+                  Find a co-founder
+                </Link>
+              </li>
+              <li>
+                {onShowHowItWorks ? (
+                  <button
+                    onClick={onShowHowItWorks}
+                    className="text-slate-300 hover:text-white transition-colors text-left"
+                  >
+                    How it works
+                  </button>
+                ) : (
+                  <Link to="/how-it-works" className="text-slate-300 hover:text-white transition-colors">
+                    How it works
+                  </Link>
+                )}
+              </li>
+            </ul>
+          </div>
+
+          {/* Resources */}
+          <div>
+            <h4 className="font-semibold text-white mb-4">Resources</h4>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <Link to="/equity-for-cofounders" className="text-slate-300 hover:text-white transition-colors">
+                  Equity for co-founders
+                </Link>
+              </li>
+              <li>
+                <Link to="/startup-equity-split" className="text-slate-300 hover:text-white transition-colors">
+                  Startup equity split
+                </Link>
+              </li>
+              <li>
+                <Link to="/startup-team-building" className="text-slate-300 hover:text-white transition-colors">
+                  Startup team building
+                </Link>
+              </li>
+              <li>
+                <Link to="/blog" className="text-slate-300 hover:text-white transition-colors">
+                  Blog
+                </Link>
+              </li>
+              <li>
+                <Link to="/about" className="text-slate-300 hover:text-white transition-colors">
+                  About
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Legal */}
+          <div>
+            <h4 className="font-semibold text-white mb-4">Legal</h4>
+            <ul className="space-y-2 text-sm">
+              <li>
+                <button
+                  onClick={onShowPrivacyPolicy}
+                  className="text-slate-300 hover:text-white transition-colors text-left"
+                >
+                  Privacy Policy
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={onShowTermsOfService}
+                  className="text-slate-300 hover:text-white transition-colors text-left"
+                >
+                  Terms of Service
+                </button>
+              </li>
+              <li>
+                <button
+                  onClick={onShowCookiePolicy}
+                  className="text-slate-300 hover:text-white transition-colors text-left"
+                >
+                  Cookie Policy
+                </button>
+              </li>
+            </ul>
+          </div>
         </div>
-        <div className="flex items-center gap-6 text-sm text-slate-400">
-          <span>Made with ❤️ for entrepreneurs</span>
-          <div className="flex items-center gap-1">
-            <span>🚀</span>
-            <span>Building the future together</span>
+
+        {/* Bottom Bar */}
+        <div className="border-t border-slate-700 mt-8 pt-6 text-center">
+          <div className="text-sm text-slate-400">
+            &copy; EquityTake
           </div>
         </div>
       </div>
-    </div>
-  </footer>
-);
+    </footer>
+  );
+};
 
 export default Footer;
