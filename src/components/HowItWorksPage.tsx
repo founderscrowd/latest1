@@ -265,7 +265,7 @@ const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onBack, siteLogoUrl }) 
                   onClick={onBack}
                   className="text-white underline underline-offset-4 hover:text-white/80 transition-colors text-sm font-medium"
                 >
-                  Find a co-founder
+                  Browse groups
                 </button>
               </div>
             </div>
