@@ -15,6 +15,8 @@ const CreateStartupGroupPage: React.FC<CreateStartupGroupPageProps> = ({ onBack,
     title="Create a Startup Group"
     metaDescription="Create a startup group on EquityTake. Name your idea, describe the problem, say which co-founders you need, and propose equity to discuss. Creating a group is not creating a company."
     h1="Create a startup group"
+    secondaryCtaTo="/"
+    secondaryCtaLabel="Browse groups"
   >
     <div className="space-y-6 text-slate-700">
       <p className="leading-relaxed">
