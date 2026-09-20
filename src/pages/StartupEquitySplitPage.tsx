@@ -15,6 +15,8 @@ const StartupEquitySplitPage: React.FC<StartupEquitySplitPageProps> = ({ onBack,
     title="Startup Equity Split"
     metaDescription="Talk through startup equity splits on EquityTake. Discuss who is doing what, when they joined, and what they are contributing. Everything is a discussion proposal, not a final cap table."
     h1="Startup equity split"
+    secondaryCtaTo="/"
+    secondaryCtaLabel="Browse groups"
   >
     <div className="space-y-6 text-slate-700">
       <p className="leading-relaxed">
