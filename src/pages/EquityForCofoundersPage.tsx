@@ -16,6 +16,8 @@ const EquityForCofoundersPage: React.FC<EquityForCofoundersPageProps> = ({ onBac
     title="Equity for Co-founders"
     metaDescription="Equity for co-founders on EquityTake is about discussing proposed equity inside a group. It is not a stock exchange and not a law firm."
     h1="Equity for co-founders"
+    secondaryCtaTo="/"
+    secondaryCtaLabel="Browse groups"
   >
     <div className="space-y-6 text-slate-700">
       <p className="leading-relaxed">
