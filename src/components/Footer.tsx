@@ -69,8 +69,8 @@ const Footer: React.FC<FooterProps> = ({
               </Link>
             </li>
             <li>
-              <Link to="/find-a-cofounder" className="text-slate-300 hover:text-white transition-colors">
-                Find a co-founder
+              <Link to="/" className="text-slate-300 hover:text-white transition-colors">
+                Browse groups
               </Link>
             </li>
             <li>

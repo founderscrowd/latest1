@@ -19,7 +19,7 @@ const footerLinks = [
   { to: '/startup-groups', label: 'Startup groups' },
   { to: '/create-startup-group', label: 'Create a startup group' },
   { to: '/cofounder-matching', label: 'Co-founder matching' },
-  { to: '/find-a-cofounder', label: 'Find a co-founder' },
+  { to: '/', label: 'Browse groups' },
   { to: '/equity-for-cofounders', label: 'Equity for co-founders' },
   { to: '/startup-equity-split', label: 'Startup equity split' },
   { to: '/startup-team-building', label: 'Startup team building' },
