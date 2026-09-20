@@ -11,6 +11,8 @@ interface MarketingPageProps {
   metaDescription: string;
   h1: string;
   children: React.ReactNode;
+  secondaryCtaTo?: string;
+  secondaryCtaLabel?: string;
 }
 
 const footerLinks = [
@@ -32,6 +34,8 @@ const MarketingPage: React.FC<MarketingPageProps> = ({
   metaDescription,
   h1,
   children,
+  secondaryCtaTo,
+  secondaryCtaLabel,
 }) => {
   const canonicalUrl = `${window.location.origin}${window.location.pathname}`;
 
@@ -90,10 +94,10 @@ const MarketingPage: React.FC<MarketingPageProps> = ({
             Create a startup group
           </button>
           <Link
-            to="/startup-groups"
+            to={secondaryCtaTo ?? "/find-a-cofounder"}
             className="px-6 py-3 text-sm font-semibold border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-100 hover:-translate-y-0.5 transition-all"
           >
-            Find a co-founder
+            {secondaryCtaLabel ?? "Find a co-founder"}
           </Link>
         </div>
 
