@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Routes, Route, useNavigate, useLocation, Link, Navigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { Plus, X, LogOut, User, CircleUser as UserCircle, Settings, Crown, CreditCard, Landmark, Coins, Sprout, MessageSquare } from 'lucide-react';
+import { Plus, X, LogOut, User, CircleUser as UserCircle, Settings, Crown, CreditCard, Landmark, Coins, Sprout, MessageSquare, Users, Search, Scale, Building2, Gift, ShieldCheck, ArrowRight, HelpCircle } from 'lucide-react';
 import AuthModal from './components/AuthModal';
 import ProfilePage from './components/ProfilePage';
 import GroupDetailsPage from './components/GroupDetailsPage';
@@ -1270,23 +1270,31 @@ const App: React.FC = () => {
           path="/"
           element={
             <>
+          {/* TODO: Add prerender/SSG for "/" so raw View Source shows hero + content text.
+              Recommended approach: vite-plugin-prerender or a build-time render of
+              the homepage route. Low risk to add separately — static index.html
+              already carries title, meta description, and JSON-LD for crawlers. */}
           <Helmet>
-            <title>EquityTake - Connect with Co-Founders & Build Startups Together</title>
-            <meta name="description" content="Join EquityTake to find co-founders, create startup groups, and claim equity in innovative ventures. Build your dream team and launch your startup today." />
-            <link rel="canonical" href={window.location.origin} />
+            <title>EquityTake – Find Co-Founders & Startup Groups</title>
+            <meta name="description" content="EquityTake helps early builders find co-founders, create startup groups, and discuss proposed equity splits — free to use. Sign up to join or create a group." />
+            <meta name="robots" content="index, follow" />
+            <link rel="canonical" href="https://equitytakeaway.com/" />
 
             {/* Open Graph tags for social sharing */}
-            <meta property="og:title" content="EquityTake - Connect with Co-Founders & Build Startups" />
-            <meta property="og:description" content="Join EquityTake to find co-founders, create startup groups, and claim equity in innovative ventures." />
-            <meta property="og:url" content={window.location.origin} />
+            <meta property="og:title" content="EquityTake – Find Co-Founders & Startup Groups" />
+            <meta property="og:description" content="EquityTake helps early builders find co-founders, create startup groups, and discuss proposed equity splits — free to use. Sign up to join or create a group." />
+            <meta property="og:url" content="https://equitytakeaway.com/" />
             <meta property="og:type" content="website" />
-            {siteLogoUrl && <meta property="og:image" content={siteLogoUrl} />}
+            <meta property="og:site_name" content="EquityTake" />
+            <meta property="og:image" content="https://equitytakeaway.com/social-share-default.jpg" />
+            <meta property="og:image:width" content="1200" />
+            <meta property="og:image:height" content="630" />
 
             {/* Twitter Card tags */}
             <meta name="twitter:card" content="summary_large_image" />
-            <meta name="twitter:title" content="EquityTake - Connect with Co-Founders & Build Startups" />
-            <meta name="twitter:description" content="Join EquityTake to find co-founders, create startup groups, and claim equity in innovative ventures." />
-            {siteLogoUrl && <meta name="twitter:image" content={siteLogoUrl} />}
+            <meta name="twitter:title" content="EquityTake – Find Co-Founders & Startup Groups" />
+            <meta name="twitter:description" content="EquityTake helps early builders find co-founders, create startup groups, and discuss proposed equity splits — free to use." />
+            <meta name="twitter:image" content="https://equitytakeaway.com/social-share-default.jpg" />
           </Helmet>
 
           {/* Header */}
@@ -1428,13 +1436,19 @@ const App: React.FC = () => {
 
             <div className="relative z-20 max-w-6xl mx-auto px-4 text-center">
               <h1 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight leading-tight">
-                EquityTake is a startup group and co-founder matching platform.
+                Find co-founders and build in startup groups
               </h1>
               <p className="text-base md:text-lg mb-6 text-slate-300 max-w-2xl mx-auto leading-relaxed">
-                Create a startup group around your idea, find potential co-founders, build your team, and discuss proposed equity allocations within the group.
+                Create or join a startup group, match with potential co-founders, and discuss proposed equity splits within the group. EquityTake is a co-founder matching and startup groups platform — it is not a stock exchange and does not incorporate companies or issue shares.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button 
+                <Link
+                  to="/groups"
+                  className="px-6 py-3 text-sm font-semibold bg-orange-600 text-white rounded-lg hover:bg-red-600 hover:-translate-y-0.5 transition-all"
+                >
+                  Browse groups
+                </Link>
+                <button
                   onClick={() => {
                     if (!user) {
                       setInitialAuthModeSignUp(true);
@@ -1443,22 +1457,13 @@ const App: React.FC = () => {
                       setIsCreateModalOpen(true);
                     }
                   }}
-                  className="px-5 py-2.5 text-sm font-semibold bg-orange-600 text-white rounded-lg hover:bg-red-600 hover:-translate-y-0.5 transition-all"
+                  className="px-6 py-3 text-sm font-semibold border border-white/30 text-white rounded-lg hover:bg-white/10 hover:-translate-y-0.5 transition-all"
                 >
-                  Create Group
-                </button>
-                <button 
-                  onClick={scrollToMainContent}
-                  className="px-5 py-2.5 text-sm font-semibold border border-white/30 text-white rounded-lg hover:bg-white/10 hover:-translate-y-0.5 transition-all"
-                  style={{ backgroundColor: '#FF69B4' }}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#E91E63'}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#FF69B4'}
-                >
-                  Browse Groups
+                  Create a group
                 </button>
               </div>
               <p className="mt-5 text-sm text-slate-400 font-medium">
-                Form a group. Match co-founders. Talk equity inside the group.
+                Free to use. Sign up to join or create a group.
               </p>
             </div>
           </section>
@@ -1664,6 +1669,188 @@ const App: React.FC = () => {
               )}
             </div>
           </main>
+
+          {/* How It Works Section */}
+          <section className="bg-white py-16 border-t border-slate-100">
+            <div className="max-w-5xl mx-auto px-4">
+              <h2 className="text-3xl font-bold text-slate-900 mb-2 text-center">How it works</h2>
+              <p className="text-slate-600 text-center mb-12 max-w-2xl mx-auto">Three steps from idea to co-founder conversations.</p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="text-center">
+                  <div className="w-14 h-14 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Building2 size={28} className="text-orange-600" />
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900 mb-2">Create or join a group</h3>
+                  <p className="text-sm text-slate-600 leading-relaxed">Start a startup group around your idea, or browse existing groups and request to join one that fits your skills and interests.</p>
+                </div>
+                <div className="text-center">
+                  <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Users size={28} className="text-blue-600" />
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900 mb-2">Match with builders</h3>
+                  <p className="text-sm text-slate-600 leading-relaxed">Connect with potential co-founders inside the group. See what skills each member brings and find the right fit for your team.</p>
+                </div>
+                <div className="text-center">
+                  <div className="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Scale size={28} className="text-emerald-600" />
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900 mb-2">Discuss proposed equity</h3>
+                  <p className="text-sm text-slate-600 leading-relaxed">Talk through proposed equity splits within the group. Numbers are discussion proposals — not legal shares or formal allocations.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Who It's For Section */}
+          <section className="bg-slate-50 py-16">
+            <div className="max-w-4xl mx-auto px-4">
+              <h2 className="text-3xl font-bold text-slate-900 mb-2 text-center">Who it's for</h2>
+              <p className="text-slate-600 text-center mb-12 max-w-2xl mx-auto">EquityTake is built for people at the earliest stage of building something new.</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-white rounded-xl p-6 border border-slate-200">
+                  <h3 className="text-lg font-bold text-slate-900 mb-2">Solo founders looking for co-founders</h3>
+                  <p className="text-sm text-slate-600 leading-relaxed">You have an idea and need the right people to make it real. Create a group, describe what you're building, and find co-founders with complementary skills.</p>
+                </div>
+                <div className="bg-white rounded-xl p-6 border border-slate-200">
+                  <h3 className="text-lg font-bold text-slate-900 mb-2">Builders looking to join a team</h3>
+                  <p className="text-sm text-slate-600 leading-relaxed">You have skills and want to contribute to a startup. Browse groups, find one that matches your interests, and request to join.</p>
+                </div>
+                <div className="bg-white rounded-xl p-6 border border-slate-200">
+                  <h3 className="text-lg font-bold text-slate-900 mb-2">Early-stage teams forming</h3>
+                  <p className="text-sm text-slate-600 leading-relaxed">You're a small group starting out and want a structured space to discuss who does what and how equity might be split — before anything is formalised.</p>
+                </div>
+                <div className="bg-white rounded-xl p-6 border border-slate-200">
+                  <h3 className="text-lg font-bold text-slate-900 mb-2">People exploring startup ideas</h3>
+                  <p className="text-sm text-slate-600 leading-relaxed">You're curious about startup building and want to see what others are working on. Browse groups freely — no account needed to look around.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Why EquityTake Section */}
+          <section className="bg-white py-16 border-t border-slate-100">
+            <div className="max-w-4xl mx-auto px-4">
+              <h2 className="text-3xl font-bold text-slate-900 mb-2 text-center">Why EquityTake</h2>
+              <p className="text-slate-600 text-center mb-12 max-w-2xl mx-auto">A focused space for building, not just networking.</p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <Building2 size={22} className="text-orange-600" />
+                    <h3 className="text-lg font-bold text-slate-900">Useful building groups</h3>
+                  </div>
+                  <p className="text-sm text-slate-600 leading-relaxed">Every group is centred on a specific idea or venture. Instead of empty networking, you join a group with a purpose — finding co-founders and working through the early questions together.</p>
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <Gift size={22} className="text-emerald-600" />
+                    <h3 className="text-lg font-bold text-slate-900">Free to use</h3>
+                  </div>
+                  <p className="text-sm text-slate-600 leading-relaxed">EquityTake is fully free. Browse groups, create a group, join a group, and discuss proposed equity — no subscription, no paywall, no hidden costs.</p>
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <ShieldCheck size={22} className="text-blue-600" />
+                    <h3 className="text-lg font-bold text-slate-900">Auth for trust</h3>
+                  </div>
+                  <p className="text-sm text-slate-600 leading-relaxed">You can browse groups without signing in. Creating a group, joining a group, and chatting require an account — so every member is a real person, not an anonymous post.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* FAQ Section */}
+          <section className="bg-slate-50 py-16">
+            <div className="max-w-3xl mx-auto px-4">
+              <h2 className="text-3xl font-bold text-slate-900 mb-2 text-center">Frequently asked questions</h2>
+              <p className="text-slate-600 text-center mb-10">Quick answers about how EquityTake works.</p>
+              <div className="space-y-4">
+                <details className="bg-white rounded-xl border border-slate-200 p-5 group">
+                  <summary className="flex items-center justify-between cursor-pointer font-semibold text-slate-900 list-none">
+                    Is EquityTake free to use?
+                    <HelpCircle size={20} className="text-slate-400 group-open:rotate-180 transition-transform" />
+                  </summary>
+                  <p className="mt-3 text-sm text-slate-600 leading-relaxed">Yes. EquityTake is fully free. You can browse, create, and join groups, and discuss proposed equity splits at no cost. There is no subscription or paywall.</p>
+                </details>
+                <details className="bg-white rounded-xl border border-slate-200 p-5 group">
+                  <summary className="flex items-center justify-between cursor-pointer font-semibold text-slate-900 list-none">
+                    Do I need an account to browse groups?
+                    <HelpCircle size={20} className="text-slate-400 group-open:rotate-180 transition-transform" />
+                  </summary>
+                  <p className="mt-3 text-sm text-slate-600 leading-relaxed">No. You can browse all public groups freely without signing in. You only need an account to create a group, join a group, or participate in group discussions.</p>
+                </details>
+                <details className="bg-white rounded-xl border border-slate-200 p-5 group">
+                  <summary className="flex items-center justify-between cursor-pointer font-semibold text-slate-900 list-none">
+                    Are the equity numbers legal shares?
+                    <HelpCircle size={20} className="text-slate-400 group-open:rotate-180 transition-transform" />
+                  </summary>
+                  <p className="mt-3 text-sm text-slate-600 leading-relaxed">No. Equity numbers shown on a group are proposals for discussion only. EquityTake does not issue shares, allocate legal ownership, or incorporate companies. If anyone asks you for funds, shares, or formal incorporation, get independent legal advice first.</p>
+                </details>
+                <details className="bg-white rounded-xl border border-slate-200 p-5 group">
+                  <summary className="flex items-center justify-between cursor-pointer font-semibold text-slate-900 list-none">
+                    Is EquityTake a stock exchange or investment platform?
+                    <HelpCircle size={20} className="text-slate-400 group-open:rotate-180 transition-transform" />
+                  </summary>
+                  <p className="mt-3 text-sm text-slate-600 leading-relaxed">No. EquityTake is a co-founder matching and startup groups platform. It is not a stock exchange, investment platform, or legal incorporation service. The equity discussions are non-binding proposals to help teams talk through ownership before formalising anything.</p>
+                </details>
+                <details className="bg-white rounded-xl border border-slate-200 p-5 group">
+                  <summary className="flex items-center justify-between cursor-pointer font-semibold text-slate-900 list-none">
+                    How does co-founder matching work?
+                    <HelpCircle size={20} className="text-slate-400 group-open:rotate-180 transition-transform" />
+                  </summary>
+                  <p className="mt-3 text-sm text-slate-600 leading-relaxed">Create or join a group around a startup idea. Inside the group, you can see other members' skills and interests. From there, you can connect directly and discuss whether you'd make a good co-founder team.</p>
+                </details>
+                <details className="bg-white rounded-xl border border-slate-200 p-5 group">
+                  <summary className="flex items-center justify-between cursor-pointer font-semibold text-slate-900 list-none">
+                    Can I discuss a startup equity split before incorporating?
+                    <HelpCircle size={20} className="text-slate-400 group-open:rotate-180 transition-transform" />
+                  </summary>
+                  <p className="mt-3 text-sm text-slate-600 leading-relaxed">Yes — that's exactly what the proposed equity feature is for. Team members can suggest equity splits and discuss them openly within the group. These are non-binding proposals to help you align before spending money on legal incorporation.</p>
+                </details>
+              </div>
+            </div>
+          </section>
+
+          {/* Explore More Section - Internal Links */}
+          <section className="bg-white py-16 border-t border-slate-100">
+            <div className="max-w-5xl mx-auto px-4">
+              <h2 className="text-3xl font-bold text-slate-900 mb-2 text-center">Explore more</h2>
+              <p className="text-slate-600 text-center mb-10">Learn more about co-founder matching, startup groups, and equity splits.</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <Link to="/how-it-works" className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-orange-400 hover:-translate-y-0.5 transition-all">
+                  <span className="text-sm font-semibold text-slate-800">How it works</span>
+                  <ArrowRight size={18} className="text-slate-400" />
+                </Link>
+                <Link to="/groups" className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-orange-400 hover:-translate-y-0.5 transition-all">
+                  <span className="text-sm font-semibold text-slate-800">Browse all groups</span>
+                  <ArrowRight size={18} className="text-slate-400" />
+                </Link>
+                <Link to="/cofounder-matching" className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-orange-400 hover:-translate-y-0.5 transition-all">
+                  <span className="text-sm font-semibold text-slate-800">Co-founder matching</span>
+                  <ArrowRight size={18} className="text-slate-400" />
+                </Link>
+                <Link to="/find-a-cofounder" className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-orange-400 hover:-translate-y-0.5 transition-all">
+                  <span className="text-sm font-semibold text-slate-800">Find a co-founder</span>
+                  <ArrowRight size={18} className="text-slate-400" />
+                </Link>
+                <Link to="/startup-groups" className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-orange-400 hover:-translate-y-0.5 transition-all">
+                  <span className="text-sm font-semibold text-slate-800">Startup groups</span>
+                  <ArrowRight size={18} className="text-slate-400" />
+                </Link>
+                <Link to="/startup-equity-split" className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-orange-400 hover:-translate-y-0.5 transition-all">
+                  <span className="text-sm font-semibold text-slate-800">Startup equity split</span>
+                  <ArrowRight size={18} className="text-slate-400" />
+                </Link>
+                <Link to="/about" className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-orange-400 hover:-translate-y-0.5 transition-all">
+                  <span className="text-sm font-semibold text-slate-800">About EquityTake</span>
+                  <ArrowRight size={18} className="text-slate-400" />
+                </Link>
+                <Link to="/blog" className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-orange-400 hover:-translate-y-0.5 transition-all">
+                  <span className="text-sm font-semibold text-slate-800">Blog</span>
+                  <ArrowRight size={18} className="text-slate-400" />
+                </Link>
+              </div>
+            </div>
+          </section>
 
           {/* Floating Action Button */}
           <button 
