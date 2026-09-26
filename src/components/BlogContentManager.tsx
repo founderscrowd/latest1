@@ -299,6 +299,27 @@ const BlogContentManager: React.FC<BlogContentManagerProps> = ({ contentType, ti
               </div>
             )}
 
+            {contentType === 'blog_post' && (
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  SEO meta description
+                </label>
+                <textarea
+                  value={formData.meta_description}
+                  onChange={(e) => setFormData({ ...formData, meta_description: e.target.value.slice(0, 180) })}
+                  className="w-full p-3 border border-slate-300 rounded-lg focus:outline-none focus:border-blue-500 resize-none"
+                  rows={2}
+                  placeholder="Short description for search engine results"
+                />
+                <div className="flex items-center justify-between mt-1">
+                  <p className="text-xs text-slate-500">Shown in Google results. Aim for 150–160 characters. Leave blank and we'll fall back to the excerpt.</p>
+                  <span className={`text-xs font-medium ${formData.meta_description.length > 160 ? 'text-red-600' : 'text-slate-400'}`}>
+                    {formData.meta_description.length}/180
+                  </span>
+                </div>
+              </div>
+            )}
+
             <div>
               <div className="flex items-center justify-between mb-2">
                 <label className="block text-sm font-semibold text-slate-700">

@@ -92,18 +92,19 @@ const BlogPostPage: React.FC<BlogPostPageProps> = ({ siteLogoUrl }) => {
     );
   }
 
-  const canonicalUrl = `${window.location.origin}/blog/${post.slug}`;
+  const canonicalUrl = `https://equitytakeaway.com/blog/${post.slug}`;
+  const metaDescription = post.meta_description || post.excerpt || `${post.title} — read on EquityTake.`;
 
   return (
     <div className="min-h-screen bg-slate-50">
       <Helmet>
-        <title>{post.title} | EquityTake Blog</title>
-        <meta name="description" content={post.meta_description || post.excerpt} />
+        <title>{post.title} | EquityTake</title>
+        <meta name="description" content={metaDescription} />
         <link rel="canonical" href={canonicalUrl} />
 
         {/* Open Graph tags for social sharing */}
         <meta property="og:title" content={post.title} />
-        <meta property="og:description" content={post.meta_description || post.excerpt} />
+        <meta property="og:description" content={metaDescription} />
         <meta property="og:url" content={canonicalUrl} />
         <meta property="og:type" content="article" />
         {post.featured_image_url && (
@@ -113,7 +114,7 @@ const BlogPostPage: React.FC<BlogPostPageProps> = ({ siteLogoUrl }) => {
         {/* Twitter Card tags */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={post.title} />
-        <meta name="twitter:description" content={post.meta_description || post.excerpt} />
+        <meta name="twitter:description" content={metaDescription} />
         {post.featured_image_url && (
           <meta name="twitter:image" content={post.featured_image_url} />
         )}
@@ -124,7 +125,7 @@ const BlogPostPage: React.FC<BlogPostPageProps> = ({ siteLogoUrl }) => {
             "@context": "https://schema.org",
             "@type": "BlogPosting",
             "headline": post.title,
-            "description": post.meta_description || post.excerpt,
+            "description": metaDescription,
             "image": post.featured_image_url,
             "datePublished": post.published_at,
             "dateModified": post.updated_at,
