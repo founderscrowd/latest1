@@ -232,8 +232,14 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuccess, i
 
         if (isSignUp) {
           trackCompleteRegistration();
+          if (typeof window.gtag === 'function') {
+            window.gtag('event', 'auth_complete');
+          }
         } else {
           trackLogin();
+          if (typeof window.gtag === 'function') {
+            window.gtag('event', 'login');
+          }
         }
 
         onAuthSuccess();

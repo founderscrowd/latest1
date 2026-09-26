@@ -64,7 +64,14 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
       };
 
       await groupAPI.createGroup(groupData, user.id);
-      
+
+      if (typeof window.gtag === 'function') {
+        window.gtag('event', 'group_created');
+      }
+      if (typeof window.fbq === 'function') {
+        window.fbq('trackCustom', 'GroupCreated');
+      }
+
       // Reset form
       setFormData({
         name: '',
