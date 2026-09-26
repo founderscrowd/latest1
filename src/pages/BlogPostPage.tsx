@@ -17,6 +17,11 @@ const BlogPostPage: React.FC<BlogPostPageProps> = ({ siteLogoUrl }) => {
 
   useEffect(() => {
     if (slug) {
+      if (slug.startsWith('-')) {
+        const cleanSlug = slug.replace(/^-+/, '');
+        navigate(`/blog/${cleanSlug}`, { replace: true });
+        return;
+      }
       loadPost(slug);
     }
   }, [slug]);

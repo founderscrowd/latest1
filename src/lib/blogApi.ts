@@ -28,6 +28,7 @@ export interface CreateContentData {
   is_published?: boolean;
   display_order?: number;
   meta_description?: string;
+  slug?: string;
   published_at?: string;
 }
 
@@ -40,16 +41,18 @@ export interface UpdateContentData {
   is_published?: boolean;
   display_order?: number;
   meta_description?: string;
+  slug?: string;
   published_at?: string;
 }
 
 const generateSlug = (title: string): string => {
   return title
+    .trim()
     .toLowerCase()
     .replace(/[^\w\s-]/g, '')
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-')
-    .trim();
+    .replace(/^-+|-+$/g, '');
 };
 
 export const blogAPI = {
@@ -134,7 +137,9 @@ export const blogAPI = {
   async createContent(contentData: CreateContentData): Promise<SiteContent> {
     const { data: userData } = await supabase.auth.getUser();
 
-    const slug = generateSlug(contentData.title);
+    const slug = (contentData.slug && contentData.slug.trim())
+      ? contentData.slug.trim().toLowerCase().replace(/^-+|-+$/g, '')
+      : generateSlug(contentData.title);
 
     const { data, error } = await supabase
       .from('site_content')
@@ -160,7 +165,11 @@ export const blogAPI = {
   async updateContent(id: string, contentData: UpdateContentData): Promise<SiteContent> {
     const updateData: any = { ...contentData };
 
-    if (contentData.title) {
+    if (contentData.slug !== undefined) {
+      updateData.slug = (contentData.slug && contentData.slug.trim())
+        ? contentData.slug.trim().toLowerCase().replace(/^-+|-+$/g, '')
+        : generateSlug(contentData.title || '');
+    } else if (contentData.title) {
       updateData.slug = generateSlug(contentData.title);
     }
 

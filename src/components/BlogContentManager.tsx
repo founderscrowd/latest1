@@ -18,6 +18,7 @@ const BlogContentManager: React.FC<BlogContentManagerProps> = ({ contentType, ti
     content_body: '',
     excerpt: '',
     meta_description: '',
+    slug: '',
     is_published: false,
     display_order: 0,
   });
@@ -96,6 +97,7 @@ const BlogContentManager: React.FC<BlogContentManagerProps> = ({ contentType, ti
       content_body: item.content_body,
       excerpt: item.excerpt || '',
       meta_description: item.meta_description || '',
+      slug: item.slug || '',
       is_published: item.is_published,
       display_order: item.display_order,
     });
@@ -110,6 +112,7 @@ const BlogContentManager: React.FC<BlogContentManagerProps> = ({ contentType, ti
       content_body: '',
       excerpt: '',
       meta_description: '',
+      slug: '',
       is_published: false,
       display_order: content.length,
     });
@@ -150,6 +153,11 @@ const BlogContentManager: React.FC<BlogContentManagerProps> = ({ contentType, ti
 
     if (!formData.content_body.trim()) {
       showMessage('Content is required', 'error');
+      return;
+    }
+
+    if (formData.slug.trim() && formData.slug.trim().startsWith('-')) {
+      showMessage('URL name cannot start with a hyphen.', 'error');
       return;
     }
 
@@ -283,6 +291,22 @@ const BlogContentManager: React.FC<BlogContentManagerProps> = ({ contentType, ti
                 placeholder="Enter title"
               />
             </div>
+
+            {contentType === 'blog_post' && (
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  URL name (slug)
+                </label>
+                <input
+                  type="text"
+                  value={formData.slug}
+                  onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                  className="w-full p-3 border border-slate-300 rounded-lg focus:outline-none focus:border-blue-500"
+                  placeholder="auto-generated-from-title"
+                />
+                <p className="text-xs text-slate-500 mt-1">This becomes the end of the link, e.g. equitytakeaway.com/blog/your-url-name. Use lowercase letters, numbers and hyphens only. Do not start with a hyphen.</p>
+              </div>
+            )}
 
             {contentType === 'blog_post' && (
               <div>
