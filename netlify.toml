@@ -35,12 +35,6 @@
 # buildDir = "dist"
 
 [[redirects]]
-  from = "/sitemap.xml"
-  to = "https://jdpugmeoocezzxqegmsu.supabase.co/functions/v2/sitemap"
-  status = 200
-  force = true
-
-[[redirects]]
   from = "/robots.txt"
   to = "/robots.txt"
   status = 200
