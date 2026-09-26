@@ -1436,7 +1436,7 @@ const App: React.FC = () => {
 
             <div className="relative z-20 max-w-6xl mx-auto px-4 text-center">
               <h1 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight leading-tight">
-                Find co-founders and build in startup groups
+                Find co-founders and build startup groups
               </h1>
               <p className="text-base md:text-lg mb-6 text-slate-300 max-w-2xl mx-auto leading-relaxed">
                 Create or join a startup group, match with co-founders, and talk through proposed equity splits.
