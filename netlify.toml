@@ -36,7 +36,7 @@
 
 [[redirects]]
   from = "/sitemap.xml"
-  to = "/sitemap.xml"
+  to = "https://jdpugmeoocezzxqegmsu.supabase.co/functions/v2/sitemap"
   status = 200
   force = true
 
