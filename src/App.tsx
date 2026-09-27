@@ -1447,7 +1447,7 @@ const App: React.FC = () => {
                 Find co-founders and build startup groups
               </h1>
               <p className="text-base md:text-lg mb-6 text-slate-300 max-w-2xl mx-auto leading-relaxed">
-                Create or join a startup group, match with co-founders, and talk through proposed equity splits.
+                Start or join a group built on one idea — then match with co-founders and talk through proposed equity splits.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
@@ -1471,7 +1471,7 @@ const App: React.FC = () => {
                 </button>
               </div>
               <p className="mt-5 text-sm text-slate-400 font-medium">
-                Free to use. Sign up to join or create a group. EquityTake is not a stock exchange and does not issue shares.
+                Not profile dating. Not a hobby meetup.
               </p>
             </div>
           </section>

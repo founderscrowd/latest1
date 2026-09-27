@@ -10,6 +10,8 @@ interface MarketingPageProps {
   title: string;
   metaDescription: string;
   h1: string;
+  subtitle?: string;
+  greyLine?: string;
   children: React.ReactNode;
   secondaryCtaTo?: string;
   secondaryCtaLabel?: string;
@@ -33,6 +35,8 @@ const MarketingPage: React.FC<MarketingPageProps> = ({
   title,
   metaDescription,
   h1,
+  subtitle,
+  greyLine,
   children,
   secondaryCtaTo,
   secondaryCtaLabel,
@@ -80,7 +84,7 @@ const MarketingPage: React.FC<MarketingPageProps> = ({
           {h1}
         </h1>
         <p className="text-base md:text-lg text-slate-600 leading-relaxed mb-8">
-          EquityTake is a startup group and co-founder matching platform. Create a startup group around your idea, find potential co-founders, build your team, and discuss proposed equity allocations within the group.
+          {subtitle || 'EquityTake is a startup group and co-founder matching platform. Create a startup group around your idea, find potential co-founders, build your team, and discuss proposed equity allocations within the group.'}
         </p>
 
         {children}
@@ -100,6 +104,12 @@ const MarketingPage: React.FC<MarketingPageProps> = ({
             {secondaryCtaLabel ?? "Browse groups"}
           </Link>
         </div>
+
+        {greyLine && (
+          <p className="mt-5 text-sm text-slate-400 font-medium text-center">
+            {greyLine}
+          </p>
+        )}
 
         <div className="mt-6 text-center">
           <Link

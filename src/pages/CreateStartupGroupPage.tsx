@@ -12,9 +12,11 @@ const CreateStartupGroupPage: React.FC<CreateStartupGroupPageProps> = ({ onBack,
     onBack={onBack}
     siteLogoUrl={siteLogoUrl}
     onCreateGroup={onCreateGroup}
-    title="Create a Startup Group"
-    metaDescription="Create a startup group on EquityTake. Name your idea, describe the problem, say which co-founders you need, and propose equity to discuss. Creating a group is not creating a company."
-    h1="Create a startup group"
+    title="Create a startup group around your idea"
+    metaDescription="Start or join a startup group built on one idea or project. Match co-founders inside the group and discuss proposed equity before you incorporate. Free to use."
+    h1="Create a startup group around your idea"
+    subtitle="Gather founders around a project — then match as co-founders and talk through proposed equity splits inside the group."
+    greyLine="Not profile dating. Not a hobby meetup."
     secondaryCtaTo="/"
     secondaryCtaLabel="Browse groups"
   >

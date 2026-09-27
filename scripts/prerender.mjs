@@ -214,19 +214,19 @@ function marketingShell(h1, subtitle, extraBody = '') {
 
 const routes = {
   '/': {
-    title: 'EquityTake – Find Co-Founders & Startup Groups',
-    description: 'EquityTake helps early builders find co-founders, create startup groups, and discuss proposed equity splits — free to use. Sign up to join or create a group.',
+    title: 'Find Co-Founders & Startup Groups | EquityTake',
+    description: 'Browse or create a startup group around an idea or project. Match co-founders inside the group and discuss proposed equity before you incorporate. Free to use.',
     h1: 'Find co-founders and build startup groups',
     bodyHtml: `<main class="seo-snapshot" style="font-family:system-ui,-apple-system,sans-serif;color:#1e293b;max-width:800px;margin:0 auto;padding:20px;">
   <h1 style="font-size:2rem;font-weight:700;margin:0 0 16px;">Find co-founders and build startup groups</h1>
   <p style="font-size:1.1rem;line-height:1.6;color:#475569;margin:0 0 20px;">
-    Create or join a startup group, match with co-founders, and talk through proposed equity splits.
+    Start or join a group built on one idea — then match with co-founders and talk through proposed equity splits.
   </p>
   <p style="margin:0 0 24px;">
     <a href="/groups" style="display:inline-block;padding:12px 24px;background:#ea580c;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;margin-right:12px;">Browse groups</a>
     <a href="/create-startup-group" style="display:inline-block;padding:12px 24px;border:1px solid #cbd5e1;color:#1e293b;text-decoration:none;border-radius:8px;font-weight:600;">Create a group</a>
   </p>
-  <p style="font-size:0.9rem;color:#94a3b8;font-weight:500;margin:0 0 40px;">Free to use. Sign up to join or create a group. EquityTake is not a stock exchange and does not issue shares.</p>
+  <p style="font-size:0.9rem;color:#94a3b8;font-weight:500;margin:0 0 40px;">Not profile dating. Not a hobby meetup.</p>
 
   <h2 style="font-size:1.5rem;font-weight:700;margin:0 0 12px;">How it works</h2>
   <p style="color:#475569;margin:0 0 20px;">Three steps from idea to co-founder conversations.</p>
@@ -299,12 +299,13 @@ const routes = {
     ),
   },
   '/create-startup-group': {
-    title: 'Create a Startup Group – EquityTake',
-    description: 'Create a startup group on EquityTake. Name your idea, describe the problem, say which co-founders you need, and propose equity to discuss. Creating a group is not creating a company.',
-    h1: 'Create a startup group',
+    title: 'Create a startup group around your idea | EquityTake',
+    description: 'Start or join a startup group built on one idea or project. Match co-founders inside the group and discuss proposed equity before you incorporate. Free to use.',
+    h1: 'Create a startup group around your idea',
     bodyHtml: marketingShell(
-      'Create a startup group',
-      'Creating a group is not creating a company. It is the first step in finding people who want to build the same idea as you. Name the idea, describe the problem, say which co-founders you need, and propose a starting equity split for the group to discuss. Once your group exists, people can find it, join it, and start talking with you in group chat.'
+      'Create a startup group around your idea',
+      'Gather founders around a project — then match as co-founders and talk through proposed equity splits inside the group. Creating a group is not creating a company. It is the first step in finding people who want to build the same idea as you. Name the idea, describe the problem, say which co-founders you need, and propose a starting equity split for the group to discuss. Once your group exists, people can find it, join it, and start talking with you in group chat.',
+      '<p style="font-size:0.9rem;color:#94a3b8;font-weight:500;margin:16px 0 0 0;">Not profile dating. Not a hobby meetup.</p>'
     ),
   },
   '/cofounder-matching': {
