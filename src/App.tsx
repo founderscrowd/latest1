@@ -164,6 +164,14 @@ const App: React.FC = () => {
     console.log('✅✅✅ TEST useEffect FIRED - user:', user?.id, 'loading:', loading);
   }, [user, loading]);
 
+  // Google Analytics 4: fire page_view on every route change (SPA navigation)
+  useEffect(() => {
+    const w = window as unknown as { gtag?: (...args: unknown[]) => void };
+    if (typeof w.gtag === 'function') {
+      w.gtag('event', 'page_view', { page_path: location.pathname + location.search });
+    }
+  }, [location.pathname, location.search]);
+
   console.log('>>> APP RENDER - loading:', loading, 'user:', user?.id, 'isUserSiteAdmin:', isUserSiteAdmin);
   const [groups, setGroups] = useState<GroupData[]>([]);
   const [groupsLoading, setGroupsLoading] = useState(true);
