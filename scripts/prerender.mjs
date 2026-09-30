@@ -514,6 +514,31 @@ function buildBlogListPage(posts) {
   return body;
 }
 
+// Convert Markdown links [text](url) to HTML <a> tags, leaving existing HTML untouched
+function convertMarkdownLinks(text) {
+  return text.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, text, url) => {
+    return `<a href="${url}">${text}</a>`;
+  });
+}
+
+// Strip all HTML tags except <a> (preserves existing and converted links)
+function stripHtmlPreserveLinks(html) {
+  if (!html) return '';
+  // Protect <a ...>text</a> by replacing with placeholders, strip other tags, then restore
+  const links = [];
+  let protectedHtml = String(html).replace(/<a\s+[^>]*>[\s\S]*?<\/a>/gi, (match) => {
+    links.push(match);
+    return `\x00LINK${links.length - 1}\x00`;
+  });
+  // Strip remaining HTML tags
+  let text = protectedHtml.replace(/<[^>]*>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  // Restore links
+  text = text.replace(/\x00LINK(\d+)\x00/g, (_, i) => links[Number(i)]);
+  return text;
+}
+
 // ---------- Generate a single blog post page ----------
 function buildBlogPostPage(post) {
   const title = esc(post.title || 'Untitled');
@@ -521,14 +546,17 @@ function buildBlogPostPage(post) {
   const date = post.published_at
     ? new Date(post.published_at).toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })
     : '';
-  const bodyText = stripHtml(post.content_body || '');
-  // Show full content (stripped of HTML tags) for crawlers, truncated to 5000 chars
+  // Convert Markdown links to real <a> tags, then strip other HTML but preserve links
+  const rawBody = post.content_body || '';
+  const withLinks = convertMarkdownLinks(rawBody);
+  const bodyText = stripHtmlPreserveLinks(withLinks);
+  // Show full content for crawlers, truncated to 5000 chars
   const fullBody = truncate(bodyText, 5000);
 
   const body = `<main style="font-family:system-ui,-apple-system,sans-serif;color:#1e293b;max-width:800px;margin:0 auto;padding:20px;">
   <h1 style="font-size:2rem;font-weight:700;margin:0 0 8px;">${title}</h1>
   ${date ? `<p style="color:#94a3b8;margin:0 0 24px;font-size:0.9rem;">Published ${date}</p>` : ''}
-  <div style="color:#475569;line-height:1.7;font-size:1.05rem;">${esc(fullBody)}</div>
+  <div style="color:#475569;line-height:1.7;font-size:1.05rem;">${fullBody}</div>
   <p style="margin:32px 0 16px;"><a href="/blog" style="color:#ea580c;">← Back to blog</a></p>
 </main>`;
   return body;

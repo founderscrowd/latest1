@@ -8,6 +8,12 @@ interface BlogPostPageProps {
   siteLogoUrl: string | null;
 }
 
+function convertMarkdownLinks(html: string): string {
+  return html.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, text, url) => {
+    return `<a href="${url}">${text}</a>`;
+  });
+}
+
 const BlogPostPage: React.FC<BlogPostPageProps> = ({ siteLogoUrl }) => {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
@@ -196,8 +202,8 @@ const BlogPostPage: React.FC<BlogPostPageProps> = ({ siteLogoUrl }) => {
             <div
               dangerouslySetInnerHTML={{
                 __html: post.content_body.includes('<')
-                  ? post.content_body
-                  : post.content_body.replace(/\n/g, '<br />')
+                  ? convertMarkdownLinks(post.content_body)
+                  : convertMarkdownLinks(post.content_body).replace(/\n/g, '<br />')
               }}
               className="text-slate-700 leading-relaxed [&_a]:text-blue-600 [&_a]:underline [&_a:hover]:text-blue-800 [&_h1]:text-3xl [&_h1]:font-bold [&_h1]:mt-6 [&_h1]:mb-4 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:mt-5 [&_h2]:mb-3 [&_p]:mb-4 [&_ul]:list-disc [&_ul]:ml-6 [&_ul]:mb-4 [&_ol]:list-decimal [&_ol]:ml-6 [&_ol]:mb-4 [&_li]:mb-2"
             />
