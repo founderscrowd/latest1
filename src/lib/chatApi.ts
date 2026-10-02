@@ -165,19 +165,13 @@ class ChatAPI {
 
   async createGroupConversation(groupId: string, name?: string): Promise<string> {
     try {
-      console.log('Creating group conversation for group:', groupId, 'with name:', name);
-      
       const { data, error } = await supabase.rpc('create_group_conversation', {
         group_id_param: groupId,
         conversation_name: name
       });
 
-      console.log('RPC response - data:', data, 'error:', error);
-      
       if (error) throw error;
-      
-      console.log('Successfully created group conversation with ID:', data);
-      
+
       // Ensure the creator is properly added as an active participant
       try {
         const { data: user } = await supabase.auth.getUser();
@@ -190,7 +184,7 @@ class ChatAPI {
               role: 'starter',
               joined_at: new Date().toISOString(),
               last_read_at: new Date().toISOString(),
-              left_at: null, // Explicitly set to null for active participation
+              left_at: null,
               is_muted: false,
               notification_settings: { mentions: true, all_messages: true }
             }, {
@@ -199,21 +193,17 @@ class ChatAPI {
         }
       } catch (participantError) {
         console.warn('Could not ensure creator participation:', participantError);
-        // Don't throw error as conversation was created successfully
       }
-      
+
       return data;
     } catch (error) {
       console.error('Error creating group conversation:', error);
-      console.error('Error details:', error.message, error.details, error.hint);
       throw error;
     }
   }
 
   async getGroupConversation(groupId: string): Promise<Conversation | null> {
     try {
-      console.log('Fetching group conversation for group:', groupId);
-      
       const { data, error } = await supabase
         .from('conversations')
         .select(`
@@ -225,15 +215,14 @@ class ChatAPI {
         `)
         .eq('group_id', groupId)
         .eq('type', 'group')
+        .order('created_at', { ascending: true })
+        .limit(1)
         .maybeSingle();
 
-      console.log('Group conversation query result - data:', data, 'error:', error);
-      
       if (error && error.code !== 'PGRST116') throw error;
       return data || null;
     } catch (error) {
       console.error('Error fetching group conversation:', error);
-      console.error('Error details:', error.message, error.details, error.hint);
       return null;
     }
   }
