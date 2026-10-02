@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Bell, BellOff, Check, CheckCheck, X, User, Calendar, CreditCard, DollarSign } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Bell, BellOff, Check, CheckCheck, X, User, Calendar, CreditCard, MessageSquare, MessagesSquare, FileText, ArrowRight } from 'lucide-react';
 import { notificationApi, Notification } from '../lib/notificationApi';
+import { useNavigate } from 'react-router-dom';
 
 interface NotificationsPanelProps {
   onClose?: () => void;
@@ -13,30 +14,23 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ onClose, showAs
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [unreadCount, setUnreadCount] = useState(0);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (isAdmin) {
-      fetchNotifications();
-      fetchUnreadCount();
+    fetchNotifications();
+    fetchUnreadCount();
 
-      const unsubscribe = notificationApi.subscribeToNotifications((newNotification) => {
-        setNotifications((prev) => [newNotification, ...prev]);
-        setUnreadCount((prev) => prev + 1);
-      });
+    const unsubscribe = notificationApi.subscribeToNotifications((newNotification) => {
+      setNotifications((prev) => [newNotification, ...prev]);
+      setUnreadCount((prev) => prev + 1);
+    });
 
-      return () => {
-        unsubscribe();
-      };
-    } else {
-      setLoading(false);
-      setNotifications([]);
-      setUnreadCount(0);
-    }
-  }, [isAdmin]);
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   const fetchNotifications = async () => {
-    if (!isAdmin) return;
-    
     try {
       setLoading(true);
       const data = await notificationApi.getNotifications();
@@ -50,8 +44,6 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ onClose, showAs
   };
 
   const fetchUnreadCount = async () => {
-    if (!isAdmin) return;
-    
     try {
       const count = await notificationApi.getUnreadCount();
       setUnreadCount(count);
@@ -61,13 +53,11 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ onClose, showAs
   };
 
   const handleMarkAsRead = async (notificationId: string) => {
-    if (!isAdmin) return;
-    
     try {
       await notificationApi.markAsRead(notificationId);
       setNotifications((prev) =>
         prev.map((n) =>
-          n.id === notificationId ? { ...n, read: true, read_at: new Date().toISOString() } : n
+          n.id === notificationId ? { ...n, read: true, is_read: true, read_at: new Date().toISOString() } : n
         )
       );
       setUnreadCount((prev) => Math.max(0, prev - 1));
@@ -77,18 +67,39 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ onClose, showAs
   };
 
   const handleMarkAllAsRead = async () => {
-    if (!isAdmin) return;
-    
     try {
       await notificationApi.markAllAsRead();
       setNotifications((prev) =>
-        prev.map((n) => ({ ...n, read: true, read_at: new Date().toISOString() }))
+        prev.map((n) => ({ ...n, read: true, is_read: true, read_at: new Date().toISOString() }))
       );
       setUnreadCount(0);
     } catch (err) {
       console.error('Error marking all as read:', err);
     }
   };
+
+  const handleNotificationClick = useCallback(async (notification: Notification) => {
+    await handleMarkAsRead(notification.id);
+    const data = notification.data || {};
+
+    if (notification.type === 'new_message') {
+      if (data.group_id && data.group_slug) {
+        navigate(`/groups/${data.group_slug}/manage`);
+      } else if (data.group_id) {
+        navigate(`/groups/${data.group_id}/manage`);
+      }
+    } else if (notification.type === 'forum_reply' || notification.type === 'forum_topic') {
+      if (data.group_slug) {
+        navigate(`/groups/${data.group_slug}/manage`);
+      } else if (data.group_id) {
+        navigate(`/groups/${data.group_id}/manage`);
+      }
+    } else if (notification.type === 'user_registered' && isAdmin) {
+      navigate('/settings');
+    }
+
+    if (onClose) onClose();
+  }, [navigate, onClose, isAdmin]);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -110,11 +121,33 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ onClose, showAs
     switch (type) {
       case 'user_registered':
         return <User className="w-5 h-5 text-blue-500" />;
+      case 'new_message':
+        return <MessageSquare className="w-5 h-5 text-emerald-500" />;
+      case 'forum_reply':
+        return <MessagesSquare className="w-5 h-5 text-orange-500" />;
+      case 'forum_topic':
+        return <FileText className="w-5 h-5 text-orange-500" />;
       case 'subscription_activated':
         return <CreditCard className="w-5 h-5 text-green-500" />;
+      case 'equity_claim_status':
+        return <User className="w-5 h-5 text-purple-500" />;
+      case 'feedback':
+        return <MessageSquare className="w-5 h-5 text-blue-500" />;
       default:
         return <Bell className="w-5 h-5 text-gray-500" />;
     }
+  };
+
+  const getNotificationLink = (notification: Notification) => {
+    const data = notification.data || {};
+    if (notification.type === 'new_message') {
+      return data.group_slug ? `/groups/${data.group_slug}/manage` : data.group_id ? `/groups/${data.group_id}/manage` : null;
+    }
+    if (notification.type === 'forum_reply' || notification.type === 'forum_topic') {
+      return data.group_slug ? `/groups/${data.group_slug}/manage` : data.group_id ? `/groups/${data.group_id}/manage` : null;
+    }
+    if (notification.type === 'user_registered' && isAdmin) return '/settings';
+    return null;
   };
 
   const containerClasses = showAsModal
@@ -174,110 +207,79 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ onClose, showAs
               Try again
             </button>
           </div>
-        ) : !isAdmin ? (
-          <div className="flex flex-col items-center justify-center py-12 px-4">
-            <BellOff className="w-12 h-12 text-gray-400 mb-3" />
-            <p className="text-gray-500 text-center">Access Denied</p>
-            <p className="text-gray-400 text-sm text-center mt-1">
-              Only site administrators can view notifications
-            </p>
-          </div>
         ) : notifications.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 px-4">
             <BellOff className="w-12 h-12 text-gray-400 mb-3" />
             <p className="text-gray-500 text-center">No notifications yet</p>
             <p className="text-gray-400 text-sm text-center mt-1">
-              You'll be notified when users register or subscribe
+              You'll be notified when someone sends you a message or replies in a forum
             </p>
           </div>
         ) : (
           <div className="divide-y divide-gray-100">
-            {notifications.map((notification) => (
-              <div
-                key={notification.id}
-                className={`p-4 transition-colors ${
-                  notification.read ? 'bg-white' : 'bg-blue-50'
-                } hover:bg-gray-50`}
-              >
-                <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 mt-1">
-                    {getNotificationIcon(notification.type)}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between gap-2">
-                      <h3 className="font-semibold text-gray-900 text-sm">
-                        {notification.title}
-                      </h3>
-                      {!notification.read && (
-                        <button
-                          onClick={() => handleMarkAsRead(notification.id)}
-                          className="flex-shrink-0 text-blue-600 hover:text-blue-700 transition-colors"
-                          title="Mark as read"
-                        >
-                          <Check className="w-4 h-4" />
-                        </button>
-                      )}
+            {notifications.map((notification) => {
+              const link = getNotificationLink(notification);
+              return (
+                <div
+                  key={notification.id}
+                  className={`p-4 transition-colors cursor-pointer ${
+                    notification.read ? 'bg-white' : 'bg-blue-50'
+                  } hover:bg-gray-50`}
+                  onClick={() => handleNotificationClick(notification)}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="flex-shrink-0 mt-1">
+                      {getNotificationIcon(notification.type)}
                     </div>
-                    <p className="text-gray-600 text-sm mt-1">{notification.message}</p>
-                    {notification.data && Object.keys(notification.data).length > 0 && (
-                      <div className="mt-2 text-xs text-gray-500 space-y-1">
-                        {notification.data.user_email && (
-                          <div className="flex items-center gap-1">
-                            <User className="w-3 h-3" />
-                            <span>{notification.data.user_email}</span>
-                          </div>
-                        )}
-                        {notification.data.email && (
-                          <div className="flex items-center gap-1">
-                            <User className="w-3 h-3" />
-                            <span>{notification.data.email}</span>
-                          </div>
-                        )}
-                        {notification.data.created_at && (
-                          <div className="flex items-center gap-1">
-                            <Calendar className="w-3 h-3" />
-                            <span>
-                              Registered: {new Date(notification.data.created_at).toLocaleString()}
-                            </span>
-                          </div>
-                        )}
-                        {notification.data.activated_at && (
-                          <div className="flex items-center gap-1">
-                            <CreditCard className="w-3 h-3" />
-                            <span>
-                              Subscribed: {new Date(notification.data.activated_at).toLocaleString()}
-                            </span>
-                          </div>
-                        )}
-                        {notification.data.price_id && (
-                          <div className="flex items-center gap-1">
-                            <DollarSign className="w-3 h-3" />
-                            <span>Plan: {notification.data.price_id}</span>
-                          </div>
-                        )}
-                        {notification.data.status && (
-                          <div className="flex items-center gap-1">
-                            <span className="capitalize">Status: {notification.data.status}</span>
-                          </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2">
+                        <h3 className="font-semibold text-gray-900 text-sm">
+                          {notification.title || notification.message}
+                        </h3>
+                        {!notification.read && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleMarkAsRead(notification.id);
+                            }}
+                            className="flex-shrink-0 text-blue-600 hover:text-blue-700 transition-colors"
+                            title="Mark as read"
+                          >
+                            <Check className="w-4 h-4" />
+                          </button>
                         )}
                       </div>
-                    )}
-                    <div className="flex items-center gap-2 mt-2 text-xs text-gray-400">
-                      <span>{formatDate(notification.created_at)}</span>
-                      {notification.read && notification.read_at && (
-                        <>
-                          <span>•</span>
-                          <span className="flex items-center gap-1">
-                            <Check className="w-3 h-3" />
-                            Read
-                          </span>
-                        </>
+                      <p className="text-gray-600 text-sm mt-1">
+                        {notification.title ? notification.message : null}
+                      </p>
+                      {notification.data && notification.data.message_preview && (
+                        <p className="text-gray-500 text-xs mt-1 italic line-clamp-2">
+                          "{notification.data.message_preview}"
+                        </p>
                       )}
+                      {link && (
+                        <div className="mt-2 flex items-center gap-1 text-xs text-blue-600 font-medium">
+                          <ArrowRight size={12} />
+                          <span>Click to view</span>
+                        </div>
+                      )}
+                      <div className="flex items-center gap-2 mt-2 text-xs text-gray-400">
+                        <span>{formatDate(notification.created_at)}</span>
+                        {notification.read && notification.read_at && (
+                          <>
+                            <span>•</span>
+                            <span className="flex items-center gap-1">
+                              <Check className="w-3 h-3" />
+                              Read
+                            </span>
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

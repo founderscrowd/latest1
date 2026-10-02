@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Routes, Route, useNavigate, useLocation, Link, Navigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { Plus, X, LogOut, User, CircleUser as UserCircle, Settings, Crown, CreditCard, Landmark, Coins, Sprout, MessageSquare, Users, Search, Scale, Building2, Gift, ShieldCheck, ArrowRight, HelpCircle, Menu } from 'lucide-react';
+import { Plus, X, LogOut, User, CircleUser as UserCircle, Settings, Crown, CreditCard, Landmark, Coins, Sprout, MessageSquare, Users, Search, Scale, Building2, Gift, ShieldCheck, ArrowRight, HelpCircle, Menu, Bell } from 'lucide-react';
 import AuthModal from './components/AuthModal';
 import ProfilePage from './components/ProfilePage';
 import GroupDetailsPage from './components/GroupDetailsPage';
@@ -19,6 +19,9 @@ import CookiePolicyPage from './components/CookiePolicyPage';
 import ContactModal from './components/ContactModal';
 import FeedbackModal from './components/FeedbackModal';
 import AiSupportWidget from './components/AiSupportWidget';
+import NotificationsPanel from './components/NotificationsPanel';
+import NotificationToasts from './components/NotificationToasts';
+import { notificationApi } from './lib/notificationApi';
 import BlogAndAboutPage from './components/BlogAndAboutPage';
 import HowItWorksPage from './components/HowItWorksPage';
 import BlogListPage from './pages/BlogListPage';
@@ -128,6 +131,8 @@ const App: React.FC = () => {
   const [showBlogAndAbout, setShowBlogAndAbout] = useState(false);
   const [showHowItWorks, setShowHowItWorks] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showNotificationsPanel, setShowNotificationsPanel] = useState(false);
+  const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
   
   // Debug logging for modal states
   useEffect(() => {
@@ -497,6 +502,33 @@ const App: React.FC = () => {
       console.log('🔴🔴🔴 No user in useEffect, setting admin to false');
       setIsUserSiteAdmin(false);
     }
+  }, [user]);
+
+  // Fetch and subscribe to unread notification count for all signed-in users
+  useEffect(() => {
+    if (!user) {
+      setUnreadNotificationCount(0);
+      return;
+    }
+
+    const fetchCount = async () => {
+      try {
+        const count = await notificationApi.getUnreadCount();
+        setUnreadNotificationCount(count);
+      } catch (err) {
+        console.error('Error fetching notification count:', err);
+      }
+    };
+
+    fetchCount();
+
+    const unsubscribe = notificationApi.subscribeToNotifications(() => {
+      setUnreadNotificationCount((prev) => prev + 1);
+    });
+
+    return () => {
+      unsubscribe();
+    };
   }, [user]);
 
   const avatarEmojis = ['👨‍💼', '👩‍💼', '👨‍💻', '👩‍💻', '👨‍🔬', '👩‍🔬', '👨‍🎨', '👩‍🎨', '👨‍🚀', '👩‍🚀', '👨‍⚕️', '👩‍⚕️', '👨‍🏫', '👩‍🏫', '👨‍🔧', '👩‍🔧'];
@@ -1360,6 +1392,18 @@ const App: React.FC = () => {
                       </button>
                     )}
                     <button
+                      onClick={() => setShowNotificationsPanel(true)}
+                      className="relative flex items-center justify-center p-2 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors"
+                      title="Notifications"
+                    >
+                      <Bell size={16} className="text-slate-600" />
+                      {unreadNotificationCount > 0 && (
+                        <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-[10px] font-bold min-w-[18px] h-[18px] flex items-center justify-center rounded-full px-1">
+                          {unreadNotificationCount > 99 ? '99+' : unreadNotificationCount}
+                        </span>
+                      )}
+                    </button>
+                    <button
                       onClick={() => navigate('/profile')}
                       className="flex items-center gap-1 px-2 py-1.5 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors"
                     >
@@ -1395,13 +1439,27 @@ const App: React.FC = () => {
               {/* Mobile: hamburger + auth buttons always visible */}
               <div className="flex md:hidden items-center gap-2 shrink-0">
                 {user ? (
-                  <button
-                    onClick={handleSignOut}
+                  <>
+                    <button
+                      onClick={() => setShowNotificationsPanel(true)}
+                      className="relative flex items-center justify-center p-2 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors"
+                      title="Notifications"
+                    >
+                      <Bell size={16} className="text-slate-600" />
+                      {unreadNotificationCount > 0 && (
+                        <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-[10px] font-bold min-w-[18px] h-[18px] flex items-center justify-center rounded-full px-1">
+                          {unreadNotificationCount > 99 ? '99+' : unreadNotificationCount}
+                        </span>
+                      )}
+                    </button>
+                    <button
+                      onClick={handleSignOut}
                     className="flex items-center gap-1 px-2.5 py-2 rounded-lg font-semibold text-xs text-slate-600 border border-slate-200 hover:bg-slate-50 transition-colors"
                   >
                     <LogOut size={14} />
                     <span className="hidden sm:inline">Sign Out</span>
                   </button>
+                  </>
                 ) : (
                   <>
                     <button
@@ -2011,6 +2069,16 @@ const App: React.FC = () => {
       />
 
       <AiSupportWidget />
+
+      {showNotificationsPanel && (
+        <NotificationsPanel
+          showAsModal
+          isAdmin={isUserSiteAdmin}
+          onClose={() => setShowNotificationsPanel(false)}
+        />
+      )}
+
+      <NotificationToasts />
     </div>
   );
 };

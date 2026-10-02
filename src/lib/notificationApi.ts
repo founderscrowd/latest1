@@ -3,13 +3,16 @@ import { supabase } from './supabase';
 export interface Notification {
   id: string;
   type: string;
-  title: string;
+  title: string | null;
   message: string;
   data: Record<string, any>;
   read: boolean;
+  is_read: boolean;
   recipient_id: string | null;
-  created_at: string;
+  user_id: string;
+  related_entity_id: string | null;
   read_at: string | null;
+  created_at: string;
 }
 
 export const notificationApi = {
@@ -25,18 +28,21 @@ export const notificationApi = {
       throw error;
     }
 
-    return data || [];
+    return (data || []).map((n: any) => ({
+      ...n,
+      read: n.read ?? n.is_read ?? false,
+    })) as Notification[];
   },
 
   async getUnreadCount(): Promise<number> {
     const { count, error } = await supabase
       .from('notifications')
       .select('*', { count: 'exact', head: true })
-      .eq('read', false);
+      .or('read.eq.false,is_read.eq.false');
 
     if (error) {
       console.error('Error fetching unread count:', error);
-      throw error;
+      return 0;
     }
 
     return count || 0;
@@ -45,7 +51,7 @@ export const notificationApi = {
   async markAsRead(notificationId: string): Promise<void> {
     const { error } = await supabase
       .from('notifications')
-      .update({ read: true, read_at: new Date().toISOString() })
+      .update({ read: true, is_read: true, read_at: new Date().toISOString() })
       .eq('id', notificationId);
 
     if (error) {
@@ -57,8 +63,8 @@ export const notificationApi = {
   async markAllAsRead(): Promise<void> {
     const { error } = await supabase
       .from('notifications')
-      .update({ read: true, read_at: new Date().toISOString() })
-      .eq('read', false);
+      .update({ read: true, is_read: true, read_at: new Date().toISOString() })
+      .or('read.eq.false,is_read.eq.false');
 
     if (error) {
       console.error('Error marking all notifications as read:', error);
@@ -79,7 +85,7 @@ export const notificationApi = {
           table: 'notifications',
         },
         (payload) => {
-          onNewNotification(payload.new as Notification);
+          onNewNotification({ ...payload.new, read: (payload.new as any).read ?? (payload.new as any).is_read ?? false } as Notification);
         }
       )
       .subscribe();
