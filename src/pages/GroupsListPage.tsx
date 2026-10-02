@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { ArrowLeft, Plus, Landmark, Coins, Sprout } from 'lucide-react';
+import { Link as RouterLink } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { groupAPI, formatLegalStructure } from '../lib/groupApi';
 import Footer from '../components/Footer';
@@ -179,6 +180,12 @@ const GroupsListPage: React.FC<GroupsListPageProps> = ({
             </h1>
             <p className="text-slate-600 max-w-2xl mx-auto">
               Join these innovative startups and claim your equity stake. Connect with co-founders and turn your startup ideas into reality.
+            </p>
+            <p className="mt-3 text-sm text-slate-500">
+              New here?{' '}
+              <RouterLink to="/blog/how-to-join-a-startup-group-without-wasting-months" className="text-orange-600 hover:text-orange-700 hover:underline font-medium">
+                How to join a startup group without wasting months →
+              </RouterLink>
             </p>
           </div>
 

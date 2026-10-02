@@ -196,6 +196,17 @@ function pageShell(h1, bodyContent, linksHtml = '') {
 </main>`;
 }
 
+function relatedReadingHtml(links) {
+  if (!links || links.length === 0) return '';
+  const items = links.map((l) =>
+    `<a href="${esc(l.href)}" style="color:#ea580c;font-size:0.95rem;">${esc(l.text)}</a>`
+  ).join('<br>');
+  return `<div style="border-top:1px solid #e2e8f0;padding-top:16px;margin-top:24px;">
+    <p style="font-size:0.85rem;color:#94a3b8;font-weight:600;margin:0 0 8px;">Related reading</p>
+    ${items}
+  </div>`;
+}
+
 function marketingShell(h1, subtitle, extraBody = '') {
   const body = `
   <p style="font-size:1.1rem;line-height:1.6;color:#475569;margin:0 0 20px;">${esc(subtitle)}</p>
@@ -295,7 +306,10 @@ const routes = {
     bodyHtml: marketingShell(
       'Startup groups',
       'A group is one idea and one team conversation. You create a group, invite or match people, and talk about roles and proposed equity inside that group. Each group has its own chat, its own members, and its own proposed equity numbers. The numbers are there to start a discussion — they are not a signed cap table.',
-      `<p style="color:#475569;line-height:1.7;margin:0 0 20px;"><a href="/groups" style="color:#ea580c;">Browse all groups →</a></p>`
+      `<p style="color:#475569;line-height:1.7;margin:0 0 20px;"><a href="/groups" style="color:#ea580c;">Browse all groups →</a></p>${relatedReadingHtml([
+        { href: '/blog/startup-groups-that-actually-help-you-build', text: 'What useful startup groups look like →' },
+        { href: '/blog/how-to-join-a-startup-group-without-wasting-months', text: 'Join playbook so you don\u2019t waste months →' },
+      ])}`
     ),
   },
   '/create-startup-group': {
@@ -305,7 +319,9 @@ const routes = {
     bodyHtml: marketingShell(
       'Create a startup group around your idea',
       'Gather founders around a project — then match as co-founders and talk through proposed equity splits inside the group. Creating a group is not creating a company. It is the first step in finding people who want to build the same idea as you. Name the idea, describe the problem, say which co-founders you need, and propose a starting equity split for the group to discuss. Once your group exists, people can find it, join it, and start talking with you in group chat.',
-      '<p style="font-size:0.9rem;color:#94a3b8;font-weight:500;margin:16px 0 0 0;">Not profile dating. Not a hobby meetup.</p>'
+      `<p style="font-size:0.9rem;color:#94a3b8;font-weight:500;margin:16px 0 0 0;">Not profile dating. Not a hobby meetup.</p>${relatedReadingHtml([
+        { href: '/blog/create-a-startup-group-around-your-idea', text: 'Step-by-step: create a startup group around your idea →' },
+      ])}`
     ),
   },
   '/cofounder-matching': {
@@ -332,7 +348,10 @@ const routes = {
     h1: 'Equity for co-founders',
     bodyHtml: marketingShell(
       'Equity for co-founders',
-      'This product is for discussing proposed co-founder equity inside a group. It is not a stock exchange and not a law firm. When you see equity percentages on a group, they are starting points for a conversation. The group talks through who is doing what, when they joined, and what they are putting in — then decides together what feels fair.'
+      'This product is for discussing proposed co-founder equity inside a group. It is not a stock exchange and not a law firm. When you see equity percentages on a group, they are starting points for a conversation. The group talks through who is doing what, when they joined, and what they are putting in — then decides together what feels fair.',
+      relatedReadingHtml([
+        { href: '/blog/how-to-split-startup-equity-fairly', text: 'Practical guide to splitting equity fairly →' },
+      ])
     ),
   },
   '/startup-equity-split': {
@@ -341,7 +360,10 @@ const routes = {
     h1: 'Startup equity split',
     bodyHtml: marketingShell(
       'Startup equity split',
-      'A startup equity split is one of the hardest early conversations. EquityTake gives your group a place to have it — out in the open, with the people who are actually going to build the thing. Talk about: who is doing what (roles, responsibilities, time commitment), when they joined (early members often carry more risk), what they are putting in (skills, capital, network, or sweat equity), and what happens if someone leaves (vesting and cliff concepts to discuss). Everything on EquityTake is labelled as a discussion proposal, not a final cap table. No tax, securities, or legal advice. If you are formalising a split, get independent legal advice first.'
+      'A startup equity split is one of the hardest early conversations. EquityTake gives your group a place to have it — out in the open, with the people who are actually going to build the thing. Talk about: who is doing what (roles, responsibilities, time commitment), when they joined (early members often carry more risk), what they are putting in (skills, capital, network, or sweat equity), and what happens if someone leaves (vesting and cliff concepts to discuss). Everything on EquityTake is labelled as a discussion proposal, not a final cap table. No tax, securities, or legal advice. If you are formalising a split, get independent legal advice first.',
+      relatedReadingHtml([
+        { href: '/blog/how-to-split-startup-equity-fairly', text: 'Practical guide to splitting equity fairly →' },
+      ])
     ),
   },
   '/startup-team-building': {
@@ -480,6 +502,7 @@ function buildGroupsPage(groups) {
   </p>
   ${groupsHtml}
   <p style="font-size:0.85rem;color:#94a3b8;margin:24px 0;">Numbers and percentages on a group are proposals for discussion. EquityTake does not issue shares, collect investment, or incorporate companies.</p>
+  <p style="font-size:0.9rem;color:#64748b;margin:16px 0 0 0;">New here? <a href="/blog/how-to-join-a-startup-group-without-wasting-months" style="color:#ea580c;">How to join a startup group without wasting months →</a></p>
 </main>`;
   return body;
 }

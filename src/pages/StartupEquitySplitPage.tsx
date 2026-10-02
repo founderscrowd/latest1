@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import MarketingPage from '../components/MarketingPage';
 
 interface StartupEquitySplitPageProps {
@@ -50,6 +51,12 @@ const StartupEquitySplitPage: React.FC<StartupEquitySplitPageProps> = ({ onBack,
         <p className="text-amber-900 text-sm leading-relaxed">
           <strong>No tax, securities, or legal advice.</strong> EquityTake does not provide legal, tax, or investment advice. If you are formalising a split, get independent legal advice first.
         </p>
+      </div>
+      <div className="border-t border-slate-200 pt-5 mt-2">
+        <p className="text-sm text-slate-500 mb-2 font-medium">Related reading</p>
+        <Link to="/blog/how-to-split-startup-equity-fairly" className="text-sm text-orange-600 hover:text-orange-700 hover:underline font-medium">
+          Practical guide to splitting equity fairly →
+        </Link>
       </div>
     </div>
   </MarketingPage>

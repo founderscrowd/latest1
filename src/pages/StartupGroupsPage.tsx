@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import MarketingPage from '../components/MarketingPage';
 
 interface StartupGroupsPageProps {
@@ -25,6 +26,17 @@ const StartupGroupsPage: React.FC<StartupGroupsPageProps> = ({ onBack, siteLogoU
       <p className="leading-relaxed">
         Each group has its own chat, its own members, and its own proposed equity numbers. The numbers are there to start a discussion — they are not a signed cap table.
       </p>
+      <div className="border-t border-slate-200 pt-5 mt-2">
+        <p className="text-sm text-slate-500 mb-2 font-medium">Related reading</p>
+        <div className="flex flex-col gap-1.5">
+          <Link to="/blog/startup-groups-that-actually-help-you-build" className="text-sm text-orange-600 hover:text-orange-700 hover:underline font-medium">
+            What useful startup groups look like →
+          </Link>
+          <Link to="/blog/how-to-join-a-startup-group-without-wasting-months" className="text-sm text-orange-600 hover:text-orange-700 hover:underline font-medium">
+            Join playbook so you don't waste months →
+          </Link>
+        </div>
+      </div>
     </div>
   </MarketingPage>
 );

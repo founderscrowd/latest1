@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import MarketingPage from '../components/MarketingPage';
 
 interface CreateStartupGroupPageProps {
@@ -52,6 +53,12 @@ const CreateStartupGroupPage: React.FC<CreateStartupGroupPageProps> = ({ onBack,
       <p className="leading-relaxed">
         Once your group exists, people can find it, join it, and start talking with you in group chat.
       </p>
+      <div className="border-t border-slate-200 pt-5 mt-2">
+        <p className="text-sm text-slate-500 mb-2 font-medium">Related reading</p>
+        <Link to="/blog/create-a-startup-group-around-your-idea" className="text-sm text-orange-600 hover:text-orange-700 hover:underline font-medium">
+          Step-by-step: create a startup group around your idea →
+        </Link>
+      </div>
     </div>
   </MarketingPage>
 );
