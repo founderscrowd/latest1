@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Bell, BellOff, Check, CheckCheck, X, User, Calendar, CreditCard, MessageSquare, MessagesSquare, FileText, ArrowRight } from 'lucide-react';
+import { Bell, BellOff, Check, CheckCheck, X, User, Calendar, CreditCard, MessageSquare, MessagesSquare, FileText, ArrowRight, UserPlus, UserCheck, Scale, Gift } from 'lucide-react';
 import { notificationApi, Notification } from '../lib/notificationApi';
 import { useNavigate } from 'react-router-dom';
 
@@ -96,6 +96,17 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ onClose, showAs
       }
     } else if (notification.type === 'user_registered' && isAdmin) {
       navigate('/settings');
+    } else if (
+      notification.type === 'group_join_request' ||
+      notification.type === 'group_joined' ||
+      notification.type === 'equity_claim_submitted' ||
+      notification.type === 'group_join_approved' ||
+      notification.type === 'group_join_rejected' ||
+      notification.type === 'equity_claim_approved' ||
+      notification.type === 'equity_claim_rejected'
+    ) {
+      if (data.group_slug) navigate(`/groups/${data.group_slug}/manage`);
+      else if (data.group_id) navigate(`/groups/${data.group_id}/manage`);
     }
 
     if (onClose) onClose();
@@ -129,8 +140,20 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ onClose, showAs
         return <FileText className="w-5 h-5 text-orange-500" />;
       case 'subscription_activated':
         return <CreditCard className="w-5 h-5 text-green-500" />;
-      case 'equity_claim_status':
-        return <User className="w-5 h-5 text-purple-500" />;
+      case 'group_join_request':
+        return <UserPlus className="w-5 h-5 text-blue-500" />;
+      case 'group_joined':
+        return <UserPlus className="w-5 h-5 text-emerald-500" />;
+      case 'group_join_approved':
+        return <UserCheck className="w-5 h-5 text-emerald-500" />;
+      case 'group_join_rejected':
+        return <UserPlus className="w-5 h-5 text-red-400" />;
+      case 'equity_claim_submitted':
+        return <Scale className="w-5 h-5 text-orange-500" />;
+      case 'equity_claim_approved':
+        return <Gift className="w-5 h-5 text-emerald-500" />;
+      case 'equity_claim_rejected':
+        return <Scale className="w-5 h-5 text-red-400" />;
       case 'feedback':
         return <MessageSquare className="w-5 h-5 text-blue-500" />;
       default:
@@ -140,10 +163,12 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ onClose, showAs
 
   const getNotificationLink = (notification: Notification) => {
     const data = notification.data || {};
-    if (notification.type === 'new_message') {
-      return data.group_slug ? `/groups/${data.group_slug}/manage` : data.group_id ? `/groups/${data.group_id}/manage` : null;
-    }
-    if (notification.type === 'forum_reply' || notification.type === 'forum_topic') {
+    const groupTypes = [
+      'new_message', 'forum_reply', 'forum_topic',
+      'group_join_request', 'group_joined', 'group_join_approved', 'group_join_rejected',
+      'equity_claim_submitted', 'equity_claim_approved', 'equity_claim_rejected'
+    ];
+    if (groupTypes.includes(notification.type)) {
       return data.group_slug ? `/groups/${data.group_slug}/manage` : data.group_id ? `/groups/${data.group_id}/manage` : null;
     }
     if (notification.type === 'user_registered' && isAdmin) return '/settings';

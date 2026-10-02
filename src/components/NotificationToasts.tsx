@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { X, MessageSquare, MessagesSquare, FileText, User, Bell } from 'lucide-react';
+import { X, MessageSquare, MessagesSquare, FileText, User, Bell, UserPlus, UserCheck, Scale, Gift } from 'lucide-react';
 import { notificationApi, Notification } from '../lib/notificationApi';
 import { useNavigate } from 'react-router-dom';
 
@@ -24,12 +24,16 @@ const NotificationToasts: React.FC = () => {
 
   const handleNotificationClick = useCallback((notification: Notification) => {
     const data = notification.data || {};
-    if (notification.type === 'new_message') {
+    const groupTypes = [
+      'new_message', 'forum_reply', 'forum_topic',
+      'group_join_request', 'group_joined', 'group_join_approved', 'group_join_rejected',
+      'equity_claim_submitted', 'equity_claim_approved', 'equity_claim_rejected'
+    ];
+    if (groupTypes.includes(notification.type)) {
       if (data.group_slug) navigate(`/groups/${data.group_slug}/manage`);
       else if (data.group_id) navigate(`/groups/${data.group_id}/manage`);
-    } else if (notification.type === 'forum_reply' || notification.type === 'forum_topic') {
-      if (data.group_slug) navigate(`/groups/${data.group_slug}/manage`);
-      else if (data.group_id) navigate(`/groups/${data.group_id}/manage`);
+    } else if (notification.type === 'user_registered') {
+      navigate('/settings');
     }
     removeToast(notification.id);
   }, [navigate, removeToast]);
@@ -60,6 +64,20 @@ const NotificationToasts: React.FC = () => {
         return <FileText className="w-5 h-5 text-orange-500" />;
       case 'user_registered':
         return <User className="w-5 h-5 text-blue-500" />;
+      case 'group_join_request':
+        return <UserPlus className="w-5 h-5 text-blue-500" />;
+      case 'group_joined':
+        return <UserPlus className="w-5 h-5 text-emerald-500" />;
+      case 'group_join_approved':
+        return <UserCheck className="w-5 h-5 text-emerald-500" />;
+      case 'group_join_rejected':
+        return <UserPlus className="w-5 h-5 text-red-400" />;
+      case 'equity_claim_submitted':
+        return <Scale className="w-5 h-5 text-orange-500" />;
+      case 'equity_claim_approved':
+        return <Gift className="w-5 h-5 text-emerald-500" />;
+      case 'equity_claim_rejected':
+        return <Scale className="w-5 h-5 text-red-400" />;
       default:
         return <Bell className="w-5 h-5 text-blue-500" />;
     }
