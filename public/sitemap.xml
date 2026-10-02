@@ -68,7 +68,7 @@
   </url>
   <url>
     <loc>https://equitytakeaway.com/blog</loc>
-    <lastmod>2026-09-30</lastmod>
+    <lastmod>2026-10-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -123,6 +123,18 @@
   <url>
     <loc>https://equitytakeaway.com/blog/how-to-split-startup-equity-fairly</loc>
     <lastmod>2026-09-30</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://equitytakeaway.com/blog/how-to-join-a-startup-group-without-wasting-months</loc>
+    <lastmod>2026-10-02</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://equitytakeaway.com/blog/create-a-startup-group-around-your-idea</loc>
+    <lastmod>2026-10-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
