@@ -106,6 +106,7 @@ const GroupProfilePage: React.FC<GroupProfilePageProps> = ({ groupId, onBack, si
   const [showMessageOrganizer, setShowMessageOrganizer] = useState(false);
   const [selectedTopicId, setSelectedTopicId] = useState<string | null>(null);
   const [showCreateTopicModal, setShowCreateTopicModal] = useState(false);
+  const [forumRefreshKey, setForumRefreshKey] = useState(0);
   
   // Popover states
   const [showDescriptionPopover, setShowDescriptionPopover] = useState(false);
@@ -1114,6 +1115,7 @@ Are you absolutely sure you want to leave this group and forfeit your equity?`
             onTopicSelect={setSelectedTopicId}
             onCreateTopic={() => setShowCreateTopicModal(true)}
             canCreateTopics={isMember}
+            refreshTrigger={forumRefreshKey}
           />
         )}
 
@@ -1237,9 +1239,10 @@ Are you absolutely sure you want to leave this group and forfeit your equity?`
           isOpen={showCreateTopicModal}
           onClose={() => setShowCreateTopicModal(false)}
           groupId={groupId}
-          onTopicCreated={() => {
+          onTopicCreated={(topicId: string) => {
             setShowCreateTopicModal(false);
-            // Refresh forum topics
+            setForumRefreshKey(k => k + 1);
+            setSelectedTopicId(topicId);
           }}
         />
       )}

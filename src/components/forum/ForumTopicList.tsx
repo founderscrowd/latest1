@@ -8,13 +8,15 @@ interface ForumTopicListProps {
   onTopicSelect: (topicId: string) => void;
   onCreateTopic: () => void;
   canCreateTopics: boolean;
+  refreshTrigger?: number;
 }
 
 const ForumTopicList: React.FC<ForumTopicListProps> = ({
   groupId,
   onTopicSelect,
   onCreateTopic,
-  canCreateTopics
+  canCreateTopics,
+  refreshTrigger = 0
 }) => {
   const { user } = useAuth();
   const [topics, setTopics] = useState<ForumTopic[]>([]);
@@ -24,7 +26,7 @@ const ForumTopicList: React.FC<ForumTopicListProps> = ({
 
   useEffect(() => {
     fetchTopics();
-  }, [groupId, searchQuery, sortBy]);
+  }, [groupId, searchQuery, sortBy, refreshTrigger]);
 
   const fetchTopics = async () => {
     try {
