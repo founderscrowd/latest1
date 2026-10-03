@@ -5,6 +5,9 @@ interface CompanyValueInfoPopoverProps {
   isOpen: boolean;
   onClose: () => void;
   targetRef: React.RefObject<HTMLElement | null>;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
+  onPointerDown?: (e: React.PointerEvent) => void;
 }
 
 const POPOVER_WIDTH = 280;
@@ -14,6 +17,9 @@ const CompanyValueInfoPopover: React.FC<CompanyValueInfoPopoverProps> = ({
   isOpen,
   onClose,
   targetRef,
+  onMouseEnter,
+  onMouseLeave,
+  onPointerDown,
 }) => {
   const popoverRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ top: 0, left: 0, arrowLeft: 0, showBelow: true });
@@ -34,7 +40,7 @@ const CompanyValueInfoPopover: React.FC<CompanyValueInfoPopoverProps> = ({
     if (left < GAP) left = GAP;
     if (left + POPOVER_WIDTH > viewportWidth - GAP) left = viewportWidth - POPOVER_WIDTH - GAP;
 
-    const arrowLeft = target.left + target.width / 2 - left;
+    const arrowLeft = Math.max(12, Math.min(target.left + target.width / 2 - left, POPOVER_WIDTH - 12));
 
     setPosition({ top, left, arrowLeft, showBelow });
   }, [isOpen, targetRef]);
@@ -52,13 +58,28 @@ const CompanyValueInfoPopover: React.FC<CompanyValueInfoPopoverProps> = ({
 
   return (
     <>
-      <div className="fixed inset-0 z-40" onClick={onClose} />
+      {/* Transparent backdrop — captures taps/clicks outside to close, stops propagation so the card click never fires */}
+      <div
+        className="fixed inset-0"
+        style={{ zIndex: 40 }}
+        onClick={(e) => { e.stopPropagation(); onClose(); }}
+        onPointerDown={(e) => { e.stopPropagation(); }}
+      />
 
       <div
         ref={popoverRef}
         role="tooltip"
-        className="fixed z-50 bg-white rounded-lg shadow-xl border border-slate-200"
-        style={{ top: `${position.top}px`, left: `${position.left}px`, width: `${POPOVER_WIDTH}px` }}
+        className="fixed bg-white rounded-lg shadow-xl border border-slate-200"
+        style={{
+          top: `${position.top}px`,
+          left: `${position.left}px`,
+          width: `${POPOVER_WIDTH}px`,
+          zIndex: 60,
+        }}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+        onPointerDown={onPointerDown}
+        onClick={(e) => e.stopPropagation()}
       >
         <div
           className={`absolute w-3 h-3 bg-white border-slate-200 transform rotate-45 ${
@@ -75,7 +96,9 @@ const CompanyValueInfoPopover: React.FC<CompanyValueInfoPopoverProps> = ({
             <h4 className="text-sm font-semibold text-slate-900">Proposed Company Value</h4>
           </div>
           <button
-            onClick={onClose}
+            type="button"
+            onClick={(e) => { e.stopPropagation(); onClose(); }}
+            onPointerDown={(e) => e.stopPropagation()}
             className="text-slate-400 hover:text-slate-600 transition-colors p-0.5 rounded hover:bg-slate-100"
             aria-label="Close"
           >
@@ -85,9 +108,8 @@ const CompanyValueInfoPopover: React.FC<CompanyValueInfoPopoverProps> = ({
 
         <div className="p-3">
           <p className="text-xs text-slate-600 leading-relaxed">
-            The value assigned to 100% of this business/project by the group creator. It is used to
-            calculate the reference value of equity claims and is not an independently verified
-            valuation.
+            The value assigned to 100% of this business by the group creator. It is used to calculate
+            the reference value of equity claims and is not an independently verified valuation.
           </p>
         </div>
       </div>
