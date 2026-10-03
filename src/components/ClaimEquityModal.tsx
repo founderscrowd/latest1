@@ -245,7 +245,9 @@ const ClaimEquityModal: React.FC<ClaimEquityModalProps> = ({
           <p className="font-semibold mb-2">Thank you for your interest in {groupName}!</p>
           <p className="flex items-start gap-2">
             <Info size={16} className="mt-0.5" />
-            Generally for pre-incorporation stage funds will be collected at the time of incorporation, please contact Starter or admin for further details.
+            {groupStage === 'funding'
+              ? 'This is a proposed equity allocation for discussion and review. It is not legally issued shares or confirmed legal ownership. Please ask the Starter or an admin about the company and its legal documents.'
+              : 'This is an informal proposed equity allocation, not legally issued shares. Funds are not collected on EquityTake; please ask the Starter or an admin for further details.'}
           </p>
         </div>
 
@@ -258,8 +260,8 @@ const ClaimEquityModal: React.FC<ClaimEquityModalProps> = ({
             </div>
             <div className="space-y-2">
               <p>
-                <strong>This equity claim is not legally binding.</strong> This platform facilitates discussions 
-                and preliminary agreements only. No legal ownership is transferred through this platform.
+                <strong>This proposed equity allocation is not legally binding.</strong> This platform facilitates discussions
+                and preliminary agreements only. No legal ownership or issued shares are transferred through this platform.
               </p>
               <div className="bg-orange-100 border border-orange-300 rounded p-3 mt-3">
                 <div className="flex items-start gap-2 mb-2">

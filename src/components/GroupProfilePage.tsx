@@ -889,7 +889,9 @@ Are you absolutely sure you want to leave this group and forfeit your equity?`
                   <span className="text-orange-100 text-xs">Target</span>
                 </div>
                 <div className="text-xl font-bold">{group.funding_needed}</div>
-                <div className="text-orange-100 text-xs uppercase tracking-wide">FUNDING</div>
+                <div className="text-orange-100 text-xs uppercase tracking-wide">
+                  {group.stage === 'pre-incorporation' ? 'PROJECT VALUE' : 'COMPANY VALUATION'}
+                </div>
               </div>
               
               {/* Group Details Block */}

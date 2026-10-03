@@ -23,6 +23,7 @@ interface Group {
   id: string;
   name: string;
   funding_needed: string;
+  stage: string;
   equity_available: number;
   max_members: number;
   creator_id: string;
@@ -198,7 +199,8 @@ const GroupEquityStructureContent: React.FC<GroupEquityStructureContentProps> = 
   const fundingNeeded = parseFundingNeeded(group.funding_needed);
   const totalClaimedEquity = aggregatedEquityHolders.reduce((sum, holder) => sum + holder.total_equity, 0);
   const totalEquityPool = 100; // Always 100% for complete equity structure
-  const companyValuation = calculateCompanyValuation(fundingNeeded, totalEquityPool);
+  const referenceValue = calculateCompanyValuation(fundingNeeded, totalEquityPool);
+  const valueLabel = group.stage === 'pre-incorporation' ? 'Proposed Project Value' : 'Proposed Company Valuation';
   
   // Get co-founder count (anyone who has equity in the company)
   const cofounderCount = aggregatedEquityHolders.length;
@@ -208,23 +210,14 @@ const GroupEquityStructureContent: React.FC<GroupEquityStructureContentProps> = 
   return (
     <div className="space-y-8">
       {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl p-4 text-white">
           <div className="flex items-center justify-between mb-2">
             <Target size={20} />
             <span className="text-blue-100 text-xs">Target</span>
           </div>
-          <div className="text-2xl font-bold">{formatCurrency(fundingNeeded)}</div>
-          <div className="text-blue-100 text-xs uppercase tracking-wide">Funding Needed</div>
-        </div>
-
-        <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl p-4 text-white">
-          <div className="flex items-center justify-between mb-2">
-            <Building size={20} />
-            <span className="text-green-100 text-xs">Implied</span>
-          </div>
-          <div className="text-2xl font-bold">{formatCurrency(companyValuation)}</div>
-          <div className="text-green-100 text-xs uppercase tracking-wide">Company Valuation</div>
+          <div className="text-2xl font-bold">{formatCurrency(referenceValue)}</div>
+          <div className="text-blue-100 text-xs uppercase tracking-wide">{valueLabel}</div>
         </div>
 
         <div className="bg-gradient-to-br from-orange-500 to-red-600 rounded-xl p-4 text-white">
@@ -261,7 +254,7 @@ const GroupEquityStructureContent: React.FC<GroupEquityStructureContentProps> = 
         ) : (
           <div className="space-y-3">
             {aggregatedEquityHolders.map((holder, index) => {
-              const equityValue = calculateEquityValue(holder.total_equity, companyValuation);
+              const equityValue = calculateEquityValue(holder.total_equity, referenceValue);
               const isHighest = holder.total_equity === highestEquityAmount;
               
               return (
@@ -362,7 +355,7 @@ const GroupEquityStructureContent: React.FC<GroupEquityStructureContentProps> = 
                         {formatCurrency(equityValue)}
                       </div>
                       <div className="text-xs text-slate-500">
-                        Estimated Value
+                        Reference Value
                       </div>
                     </div>
                   </div>
@@ -384,7 +377,7 @@ const GroupEquityStructureContent: React.FC<GroupEquityStructureContentProps> = 
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
             <div className="space-y-3">
               {pendingClaims.map((claim) => {
-                const equityValue = calculateEquityValue(claim.amount, companyValuation);
+                const equityValue = calculateEquityValue(claim.amount, referenceValue);
                 
                 return (
                   <div
@@ -442,7 +435,7 @@ const GroupEquityStructureContent: React.FC<GroupEquityStructureContentProps> = 
                         {formatCurrency(equityValue)}
                       </div>
                       <div className="text-xs text-slate-500">
-                        Requested Value
+                        Reference Value
                       </div>
                     </div>
                   </div>
@@ -483,10 +476,10 @@ const GroupEquityStructureContent: React.FC<GroupEquityStructureContentProps> = 
                   {group.equity_available}%
                 </div>
                 <div className="text-sm font-semibold text-blue-600">
-                  {formatCurrency(calculateEquityValue(group.equity_available, companyValuation))}
+                  {formatCurrency(calculateEquityValue(group.equity_available, referenceValue))}
                 </div>
                 <div className="text-xs text-blue-600">
-                  Estimated Value
+                  Reference Value
                 </div>
               </div>
             </div>
@@ -504,21 +497,19 @@ const GroupEquityStructureContent: React.FC<GroupEquityStructureContentProps> = 
           <div className="flex items-start gap-2">
             <Info size={14} className="text-blue-600 mt-0.5 flex-shrink-0" />
             <div>
-              <strong>Company Valuation:</strong> Based on funding needed ({formatCurrency(fundingNeeded)}) 
-              divided by total equity pool ({totalEquityPool}%)
+              <strong>{valueLabel}:</strong> Based on the proposed value ({formatCurrency(referenceValue)}) and total equity pool ({totalEquityPool}%)
             </div>
           </div>
           <div className="flex items-start gap-2">
             <Info size={14} className="text-blue-600 mt-0.5 flex-shrink-0" />
             <div>
-              <strong>Individual Equity Value:</strong> Member's equity percentage multiplied by company valuation
+              <strong>Reference Value:</strong> Member's equity percentage multiplied by the proposed value
             </div>
           </div>
           <div className="flex items-start gap-2">
             <Info size={14} className="text-blue-600 mt-0.5 flex-shrink-0" />
             <div>
-              <strong>Note:</strong> These are estimated values based on current funding requirements. 
-              Actual values may vary based on future funding rounds and company performance.
+              <strong>Note:</strong> Reference values are based on the proposed project value or company valuation. They do not represent legally issued shares or confirmed legal ownership.
             </div>
           </div>
         </div>

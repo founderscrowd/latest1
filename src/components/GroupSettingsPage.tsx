@@ -687,7 +687,7 @@ Are you sure you want to remove this member and revoke their equity?`
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block mb-1 font-semibold text-sm text-slate-700">
-                      Funding Required ($) *
+                      {formData.stage === 'funding' ? 'Proposed Company Valuation ($)' : 'Proposed Project Value ($)'} *
                     </label>
                     <input 
                       type="text" 
@@ -698,6 +698,11 @@ Are you sure you want to remove this member and revoke their equity?`
                       placeholder="e.g., $250K or 250000" 
                       required 
                     />
+                    <p className="text-xs text-slate-500 mt-1">
+                      {formData.stage === 'funding'
+                        ? 'Your proposed valuation for 100% of the company. Used to calculate reference values for proposed equity claims.'
+                        : 'Your proposed reference value for 100% of the project. Used to calculate reference values for informal equity claims.'}
+                    </p>
                   </div>
                   
                   <div>
@@ -732,7 +737,7 @@ Are you sure you want to remove this member and revoke their equity?`
                   >
                     <option value="">Select stage</option>
                     <option value="pre-incorporation">Pre-incorporation Stage</option>
-                    <option value="funding">Funding Stage</option>
+                    <option value="funding">Incorporated Stage</option>
                   </select>
                 </div>
                 
