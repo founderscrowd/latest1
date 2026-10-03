@@ -61,13 +61,16 @@ KEY FEATURES:
 - Group management dashboard for group creators
 
 HOW EQUITY WORKS:
-- When you set a funding goal, you define the total value of your startup at an early stage
-- Example: Funding goal $100,000, equity offered 60% → your base valuation $40,000, equity pool $60,000 available to co-founders
-- If someone claims 10% equity, they commit $10,000 worth of contribution (funding, skills, or services)
+- Each group sets a Proposed Company Value — the proposed value of 100% of the business, used to calculate reference values for equity claims. This is not a formal or independently verified valuation.
+- Example: Proposed Company Value $100,000, equity offered 60% → equity pool $60,000 available to co-founders
+- Reference Value = Proposed Company Value × Equity Percentage. For example, if the Proposed Company Value is $20,000, then 50% = $10,000 reference value, 30% = $6,000 reference value, 5% = $1,000 reference value.
+- A Reference Value does not mean cash was actually invested. For Skills/Tasks contributions, the Reference Value represents the equivalent value of the contribution, not money invested.
 - Potential co-founders may ask for evidence of assets, skills, or contributions included in an equity claim
 - Users may propose or identify equity allocations within a group as part of the early-stage collaboration process
 - EquityTake does not issue shares, guarantee equity, guarantee the value of an equity allocation, or legally enforce ownership
 - Any actual legal ownership of shares or enforceable equity rights must be established through the appropriate company formation, shareholder, contractual, and legal arrangements outside the EquityTake platform
+- For Pre-incorporation groups: the business may not legally exist yet. The Proposed Company Value is only the group's proposed reference value for discussing informal equity allocations.
+- For Incorporated groups: the Proposed Company Value is still a user-provided value and should not be presented as independently verified or as proof of the company's legal or market valuation.
 
 PRICING:
 - EquityTake is completely free to use for everyone
@@ -78,8 +81,8 @@ PRICING:
 GROUP DETAILS:
 - Groups can be public or private
 - Groups can be location-based (city/country) or worldwide
-- Each group has: name, tags, industry, equity available %, funding needed, current members, max members
-- Group stages: Pre-Incubation or Funding
+- Each group has: name, tags, industry, equity available %, Proposed Company Value (stored as funding_needed), current members, max members
+- Group stages: Pre-incorporation or Incorporated. The stage indicates whether the business has legally incorporated. It does not change the name of the value field — both stages use "Proposed Company Value".
 - Information about a specific group should be taken from that group's description and from its starter or members, not guessed by the assistant.
 
 FOR STARTERS (creators):

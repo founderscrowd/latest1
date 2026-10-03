@@ -1669,7 +1669,7 @@ const App: React.FC = () => {
                               {group.fundingNeeded}
                             </span>
                             <span className="text-xs text-slate-600 uppercase tracking-wide mt-1">
-                              {(group as any).stage === 'pre-incorporation' ? 'Project Value' : 'Company Valuation'}
+                              Company Value
                             </span>
                           </div>
                         </div>

@@ -25,7 +25,7 @@ function buildShareDescription(group: any): string {
   if (desc) parts.push(desc + (group.description.length > 140 ? "..." : ""));
   if (group.industry) parts.push(`Industry: ${group.industry}`);
   if (group.equity_available != null) parts.push(`${group.equity_available}% equity available`);
-  if (group.funding_needed) parts.push(`Funding: ${group.funding_needed}`);
+  if (group.funding_needed) parts.push(`Company Value: ${group.funding_needed}`);
   return parts.join(" | ") || `Join ${group.name} on EquityTake - connect with co-founders and build startups together`;
 }
 

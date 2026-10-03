@@ -200,7 +200,7 @@ const GroupEquityStructureContent: React.FC<GroupEquityStructureContentProps> = 
   const totalClaimedEquity = aggregatedEquityHolders.reduce((sum, holder) => sum + holder.total_equity, 0);
   const totalEquityPool = 100; // Always 100% for complete equity structure
   const referenceValue = calculateCompanyValuation(fundingNeeded, totalEquityPool);
-  const valueLabel = group.stage === 'pre-incorporation' ? 'Proposed Project Value' : 'Proposed Company Valuation';
+  const valueLabel = 'Proposed Company Value';
   
   // Get co-founder count (anyone who has equity in the company)
   const cofounderCount = aggregatedEquityHolders.length;
@@ -497,19 +497,19 @@ const GroupEquityStructureContent: React.FC<GroupEquityStructureContentProps> = 
           <div className="flex items-start gap-2">
             <Info size={14} className="text-blue-600 mt-0.5 flex-shrink-0" />
             <div>
-              <strong>{valueLabel}:</strong> Based on the proposed value ({formatCurrency(referenceValue)}) and total equity pool ({totalEquityPool}%)
+              <strong>{valueLabel}:</strong> The proposed value of 100% of the business ({formatCurrency(referenceValue)}). Used to calculate reference values for equity claims. This is not a formal or independently verified valuation.
             </div>
           </div>
           <div className="flex items-start gap-2">
             <Info size={14} className="text-blue-600 mt-0.5 flex-shrink-0" />
             <div>
-              <strong>Reference Value:</strong> Member's equity percentage multiplied by the proposed value
+              <strong>Reference Value:</strong> Equity percentage multiplied by the Proposed Company Value. For Skills/Tasks contributions, this represents the equivalent value of the contribution, not cash invested.
             </div>
           </div>
           <div className="flex items-start gap-2">
             <Info size={14} className="text-blue-600 mt-0.5 flex-shrink-0" />
             <div>
-              <strong>Note:</strong> Reference values are based on the proposed project value or company valuation. They do not represent legally issued shares or confirmed legal ownership.
+              <strong>Note:</strong> Reference values are based on the Proposed Company Value and do not represent legally issued shares, confirmed legal ownership, or an independently verified valuation. For pre-incorporation groups, the business may not legally exist yet — the value is only a proposed reference for discussing informal equity allocations.
             </div>
           </div>
         </div>

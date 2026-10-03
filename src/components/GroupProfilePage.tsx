@@ -890,7 +890,7 @@ Are you absolutely sure you want to leave this group and forfeit your equity?`
                 </div>
                 <div className="text-xl font-bold">{group.funding_needed}</div>
                 <div className="text-orange-100 text-xs uppercase tracking-wide">
-                  {group.stage === 'pre-incorporation' ? 'PROJECT VALUE' : 'COMPANY VALUATION'}
+                  COMPANY VALUE
                 </div>
               </div>
               

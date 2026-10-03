@@ -242,7 +242,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
               <label className="block mb-1 font-semibold text-sm text-slate-700">
-                {formData.stage === 'funding' ? 'Proposed Company Valuation ($)' : 'Proposed Project Value ($)'} *
+                Proposed Company Value ($) *
               </label>
               <input 
                 type="text" 
@@ -254,9 +254,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
                 required 
               />
               <p className="text-xs text-slate-500 mt-1">
-                {formData.stage === 'funding'
-                  ? 'Your proposed valuation for 100% of the company. Used to calculate reference values for proposed equity claims.'
-                  : 'Your proposed reference value for 100% of the project. Used to calculate reference values for informal equity claims.'}
+                The proposed value of 100% of the business, used to calculate reference values for equity claims. This is not a formal or independently verified valuation.
               </p>
             </div>
             

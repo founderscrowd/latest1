@@ -261,7 +261,7 @@ const GroupsListPage: React.FC<GroupsListPageProps> = ({
                           {group.fundingNeeded}
                         </span>
                         <span className="text-xs text-slate-600 uppercase tracking-wide">
-                          {group.stage === 'pre-incorporation' ? 'Project Value' : 'Company Valuation'}
+                          Company Value
                         </span>
                       </div>
                     </div>

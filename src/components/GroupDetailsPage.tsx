@@ -426,13 +426,13 @@ Are you sure you want to leave this group and lose all access to your engagement
                   {group.funding_needed}
                 </div>
                 <div className="text-xs text-slate-600 uppercase tracking-wide font-medium">
-                  {group.stage === 'pre-incorporation' ? 'Proposed Project Value' : 'Proposed Company Valuation'}
+                  Proposed Company Value
                 </div>
               </div>
               <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200 text-center">
                 <div className="text-lg font-bold text-purple-600 mb-2 capitalize">
                   {group.stage === 'pre-incorporation' ? 'Pre-Incorporation' : 
-                   group.stage === 'funding' ? 'Funding Stage' : group.stage}
+                   group.stage === 'funding' ? 'Incorporated' : group.stage}
                 </div>
                 <div className="text-xs text-slate-600 uppercase tracking-wide font-medium">
                   Business Stage
