@@ -1,4 +1,5 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Info, X } from 'lucide-react';
 
 interface CompanyValueInfoPopoverProps {
@@ -56,12 +57,11 @@ const CompanyValueInfoPopover: React.FC<CompanyValueInfoPopoverProps> = ({
 
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <>
-      {/* Transparent backdrop — captures taps/clicks outside to close, stops propagation so the card click never fires */}
       <div
         className="fixed inset-0"
-        style={{ zIndex: 40 }}
+        style={{ zIndex: 9998 }}
         onClick={(e) => { e.stopPropagation(); onClose(); }}
         onPointerDown={(e) => { e.stopPropagation(); }}
       />
@@ -74,7 +74,7 @@ const CompanyValueInfoPopover: React.FC<CompanyValueInfoPopoverProps> = ({
           top: `${position.top}px`,
           left: `${position.left}px`,
           width: `${POPOVER_WIDTH}px`,
-          zIndex: 60,
+          zIndex: 9999,
         }}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
@@ -113,7 +113,8 @@ const CompanyValueInfoPopover: React.FC<CompanyValueInfoPopoverProps> = ({
           </p>
         </div>
       </div>
-    </>
+    </>,
+    document.body,
   );
 };
 

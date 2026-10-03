@@ -57,26 +57,21 @@ const CompanyValueCell: React.FC<CompanyValueCellProps> = ({ value, valueClassNa
     e.preventDefault();
   }, []);
 
-  // Native listener: stops the click from ever reaching the card div at the DOM level
   useEffect(() => {
     const el = iconRef.current;
     if (!el) return;
-    const nativeClick = (e: MouseEvent) => {
-      e.stopPropagation();
-    };
-    const nativePointerDown = (e: PointerEvent) => {
-      e.stopPropagation();
-    };
-    el.addEventListener('click', nativeClick);
-    el.addEventListener('pointerdown', nativePointerDown);
+    const nativeClick = (e: MouseEvent) => { e.stopPropagation(); };
+    const nativePointerDown = (e: PointerEvent) => { e.stopPropagation(); };
+    el.addEventListener('click', nativeClick, true);
+    el.addEventListener('pointerdown', nativePointerDown, true);
     return () => {
-      el.removeEventListener('click', nativeClick);
-      el.removeEventListener('pointerdown', nativePointerDown);
+      el.removeEventListener('click', nativeClick, true);
+      el.removeEventListener('pointerdown', nativePointerDown, true);
     };
   }, []);
 
   return (
-    <div className="bg-slate-50 p-2 rounded-lg text-center">
+    <div className="bg-slate-50 p-2 rounded-lg text-center pointer-events-auto">
       <span className={`text-base font-bold ${valueClassName} block`}>{value}</span>
       <span className="text-xs text-slate-600 uppercase tracking-wide mt-1 inline-flex items-center gap-0.5">
         Company Value
