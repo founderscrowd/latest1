@@ -385,12 +385,81 @@ const routes = {
     ),
   },
   '/how-it-works': {
-    title: 'How EquityTake Works – EquityTake',
-    description: 'EquityTake is a startup group and co-founder matching platform. Create a group around your idea, find potential co-founders, build a team, and discuss proposed equity allocations inside the group.',
-    h1: 'How EquityTake works',
-    bodyHtml: marketingShell(
-      'How EquityTake works',
-      'EquityTake is a startup group and co-founder matching platform. Create a group around your idea, find potential co-founders, build a team, and discuss proposed equity allocations inside the group. Create a group around your idea. Describe the problem, the kind of co-founders you want, and what you are trying to build. Share a proposed equity split and how big you want the early team to be. These are proposals for discussion inside the group — not a legal issuance of shares. On EquityTake, numbers you see on a group (equity %, funding target, team size) are discussion starters for that group. A proposal is not a signed cap table, not a share certificate, and not investment advice.'
+    title: 'How EquityTake Works | Idea to Team to Startup',
+    description: 'See how EquityTake turns an idea into a founding team: create a group, discuss contributions, and propose equity using Proposed Company Value and Reference Value. Free to use.',
+    h1: 'How EquityTake Works',
+    bodyHtml: pageShell(
+      'How EquityTake Works',
+      `<p style="font-size:1.1rem;line-height:1.6;color:#475569;margin:0 0 20px;">From Idea to Team to Startup. Great businesses often start with an idea. An idea still needs the right people around it before it becomes something real.</p>
+  <p style="font-weight:600;color:#1e293b;margin:0 0 20px;">Idea &rarr; Group &rarr; Contributions &rarr; Proposed Equity &rarr; Team &rarr; Startup</p>
+  <p style="margin:0 0 24px;">
+    <a href="/create-startup-group" style="display:inline-block;padding:12px 24px;background:#ea580c;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;margin-right:12px;">Create a group</a>
+    <a href="/groups" style="display:inline-block;padding:12px 24px;border:1px solid #cbd5e1;color:#1e293b;text-decoration:none;border-radius:8px;font-weight:600;">Browse startup groups</a>
+  </p>
+
+  <h2 style="font-size:1.5rem;font-weight:700;margin:0 0 12px;">1. Start With an Idea</h2>
+  <p style="color:#475569;line-height:1.7;margin:0 0 16px;">Have an idea for a business, project or startup? Create a group and explain what you want to build. It does not need to be fully developed. The group is where interested people explore the opportunity, ask questions and help shape it.</p>
+  <p style="color:#475569;line-height:1.7;margin:0 0 8px;">When you create a group, you can set:</p>
+  <ul style="color:#475569;line-height:1.7;padding-left:20px;margin:0 0 16px;">
+    <li>what the business or project is about</li>
+    <li>the type of people you are looking for</li>
+    <li>the maximum number of co-founders</li>
+    <li>the <strong>Proposed Company Value</strong></li>
+    <li>how much equity is available</li>
+    <li>whether the business is pre-incorporation or already incorporated</li>
+  </ul>
+  <p style="color:#475569;line-height:1.7;margin:0 0 16px;"><strong>Proposed Company Value</strong> is the value the group creator assigns to 100% of the business. It is a shared reference for discussing proposed equity. It is not an independent or professional valuation. Example: Proposed Company Value of $100,000. A proposed 5% equity allocation has a <strong>$5,000 Reference Value</strong>.</p>
+  <p style="color:#475569;line-height:1.7;margin:0 0 40px;">Step-by-step: <a href="/blog/create-a-startup-group-around-your-idea" style="color:#ea580c;">create a startup group around your idea</a>.</p>
+
+  <h2 style="font-size:1.5rem;font-weight:700;margin:0 0 12px;">2. Build a Group Around the Idea</h2>
+  <p style="color:#475569;line-height:1.7;margin:0 0 16px;">Once the group is published, other people can discover it and learn what you are trying to build. EquityTake brings people together <strong>around the idea</strong>, not by matching profiles. Potential co-founders can explore the opportunity, join the discussion and decide whether their experience, skills, resources or capital fit.</p>
+  <p style="color:#475569;line-height:1.7;margin:0 0 40px;">
+    <a href="/blog/startup-groups-that-actually-help-you-build" style="color:#ea580c;">What useful startup groups look like</a> &middot;
+    <a href="/blog/how-to-join-a-startup-group-without-wasting-months" style="color:#ea580c;">How to join without wasting months</a>
+  </p>
+
+  <h2 style="font-size:1.5rem;font-weight:700;margin:0 0 12px;">3. Decide What You Can Contribute</h2>
+  <p style="color:#475569;line-height:1.7;margin:0 0 16px;"><strong>Cash</strong> is money someone is prepared to put toward building the business. <strong>Skills / Tasks</strong> is work, expertise, time or specific responsibilities they are prepared to take on. A group might include the person with the original idea, a developer who can build the product, a marketer who can acquire customers, and someone prepared to contribute capital.</p>
+
+  <h2 style="font-size:1.5rem;font-weight:700;margin:0 0 12px;">4. Propose an Equity Claim</h2>
+  <p style="color:#475569;line-height:1.7;margin:0 0 16px;">If someone wants to join, they can propose an equity claim showing: the percentage of equity requested, whether the contribution is Cash or Skills / Tasks, what the person proposes to contribute, and the corresponding <strong>Reference Value</strong>.</p>
+  <p style="color:#475569;line-height:1.7;margin:0 0 16px;"><strong>Reference Value = Proposed Company Value &times; equity percentage.</strong> Example: Proposed Company Value $20,000, proposed equity 5%, Reference Value $1,000. If the contribution is Skills / Tasks, it does <strong>not</strong> mean that cash was invested.</p>
+  <p style="color:#475569;line-height:1.7;margin:0 0 40px;">More on the conversation: <a href="/blog/how-to-split-startup-equity-fairly" style="color:#ea580c;">how to split startup equity fairly</a>.</p>
+
+  <h2 style="font-size:1.5rem;font-weight:700;margin:0 0 12px;">5. Review, Discuss and Agree</h2>
+  <p style="color:#475569;line-height:1.7;margin:0 0 40px;">An equity claim is not accepted automatically. Claims stay <strong>Pending</strong> while the group administrator and members consider them. If the claim is approved, that proposed equity is allocated to the member and removed from the equity still available.</p>
+
+  <h2 style="font-size:1.5rem;font-weight:700;margin:0 0 12px;">6. Build the Team</h2>
+  <p style="color:#475569;line-height:1.7;margin:0 0 16px;">As people join and proposed equity is allocated, an idea can become a structured founding team. The equity picture is: <strong>Founder equity + approved proposed allocations + available equity</strong>. Full allocation can mean a potential founding team has formed. It does not mean a company has been incorporated, or that legal shares have been issued.</p>
+
+  <h2 style="font-size:1.5rem;font-weight:700;margin:0 0 12px;">7. Take the Startup Forward</h2>
+  <p style="color:#475569;line-height:1.7;margin:0 0 40px;">EquityTake covers the stage between "I have an idea" and "we have a team that can build it." When a team is ready, the next steps are theirs: build the product, validate the business, prepare founder agreements, incorporate, raise finance, or get professional legal and financial advice.</p>
+
+  <h2 style="font-size:1.5rem;font-weight:700;margin:0 0 12px;">Pre-incorporation and incorporated groups</h2>
+  <p style="color:#475569;line-height:1.7;margin:0 0 16px;"><strong>Pre-incorporation.</strong> The business is not yet a company. Equity on EquityTake is a proposed, informal arrangement. It does not create legal shares or ownership.</p>
+  <p style="color:#475569;line-height:1.7;margin:0 0 40px;"><strong>Incorporated.</strong> The business already exists. Equity on EquityTake is still a proposed allocation until the company has properly agreed and legally implemented it.</p>
+
+  <h2 style="font-size:1.5rem;font-weight:700;margin:0 0 12px;">EquityTake does not sell shares</h2>
+  <p style="color:#475569;line-height:1.7;margin:0 0 16px;">EquityTake does not issue shares, transfer legal ownership, hold investment funds, or automatically create legally binding equity agreements. Proposed Company Value, Reference Value and equity claims are discussion tools. Before formalising ownership, investment or company arrangements, get independent legal, financial and tax advice.</p>
+
+  <h2 style="font-size:1.5rem;font-weight:700;margin:0 0 12px;">FAQ</h2>
+  <dl style="color:#475569;line-height:1.7;margin:0 0 40px;">
+    <dt style="font-weight:600;color:#1e293b;margin-top:16px;">What is Proposed Company Value?</dt>
+    <dd style="margin:4px 0 0 0;">The value the group creator assigns to 100% of the business. It is a reference for equity talks, not a professional valuation.</dd>
+    <dt style="font-weight:600;color:#1e293b;margin-top:16px;">How is Reference Value calculated?</dt>
+    <dd style="margin:4px 0 0 0;">Proposed Company Value multiplied by the equity percentage. A $20,000 Proposed Company Value and 5% equity is a $1,000 Reference Value.</dd>
+    <dt style="font-weight:600;color:#1e293b;margin-top:16px;">Does a Skills / Tasks claim mean cash was invested?</dt>
+    <dd style="margin:4px 0 0 0;">No. Reference Value is only the reference attached to that proposed equity. It is not cash invested.</dd>
+    <dt style="font-weight:600;color:#1e293b;margin-top:16px;">Does EquityTake issue shares?</dt>
+    <dd style="margin:4px 0 0 0;">No. Claims and allocations on EquityTake are proposed. They do not issue shares, transfer ownership, or create a binding agreement by themselves.</dd>
+    <dt style="font-weight:600;color:#1e293b;margin-top:16px;">Is EquityTake free?</dt>
+    <dd style="margin:4px 0 0 0;">Yes. Sign-in is the only gate. Create a group or browse groups after you sign in.</dd>
+  </dl>
+
+  <p style="margin:24px 0;">
+    <a href="/create-startup-group" style="display:inline-block;padding:12px 24px;background:#ea580c;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;margin-right:12px;">Create a group</a>
+    <a href="/groups" style="display:inline-block;padding:12px 24px;border:1px solid #cbd5e1;color:#1e293b;text-decoration:none;border-radius:8px;font-weight:600;">Explore active groups</a>
+  </p>`
     ),
   },
   '/blog': {
