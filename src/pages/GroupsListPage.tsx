@@ -120,6 +120,9 @@ const GroupsListPage: React.FC<GroupsListPageProps> = ({
     if (target.tagName === 'BUTTON' || target.closest('button')) {
       return;
     }
+    if (target.closest('[data-company-value-info]')) {
+      return;
+    }
 
     if (isGroupOwner(group) || group.joined) {
       navigate(`/groups/${group.slug}/manage`);

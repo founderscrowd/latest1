@@ -918,6 +918,9 @@ const App: React.FC = () => {
     if (target.closest('button, a, [role="button"], input, select, textarea')) {
       return;
     }
+    if (target.closest('[data-company-value-info]')) {
+      return;
+    }
 
     if (isGroupOwner(group) || group.joined) {
       navigate(`/groups/${group.slug}/manage`);

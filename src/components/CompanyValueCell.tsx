@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Info } from 'lucide-react';
 import CompanyValueInfoPopover from './CompanyValueInfoPopover';
 
@@ -34,6 +34,7 @@ const CompanyValueCell: React.FC<CompanyValueCellProps> = ({ value, valueClassNa
   const handleIconClick = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    e.nativeEvent.stopImmediatePropagation();
     clearCloseTimer();
     setIsOpen((prev) => !prev);
   }, [clearCloseTimer]);
@@ -56,6 +57,24 @@ const CompanyValueCell: React.FC<CompanyValueCellProps> = ({ value, valueClassNa
     e.preventDefault();
   }, []);
 
+  // Native listener: stops the click from ever reaching the card div at the DOM level
+  useEffect(() => {
+    const el = iconRef.current;
+    if (!el) return;
+    const nativeClick = (e: MouseEvent) => {
+      e.stopPropagation();
+    };
+    const nativePointerDown = (e: PointerEvent) => {
+      e.stopPropagation();
+    };
+    el.addEventListener('click', nativeClick);
+    el.addEventListener('pointerdown', nativePointerDown);
+    return () => {
+      el.removeEventListener('click', nativeClick);
+      el.removeEventListener('pointerdown', nativePointerDown);
+    };
+  }, []);
+
   return (
     <div className="bg-slate-50 p-2 rounded-lg text-center">
       <span className={`text-base font-bold ${valueClassName} block`}>{value}</span>
@@ -64,8 +83,9 @@ const CompanyValueCell: React.FC<CompanyValueCellProps> = ({ value, valueClassNa
         <button
           ref={iconRef}
           type="button"
-          className="inline-flex items-center justify-center text-slate-400 hover:text-slate-600 transition-colors align-middle"
+          className="inline-flex items-center justify-center text-slate-400 hover:text-slate-600 transition-colors align-middle relative z-10"
           aria-label="About Company Value"
+          data-company-value-info="true"
           onMouseEnter={open}
           onMouseLeave={scheduleClose}
           onFocus={open}
@@ -74,9 +94,9 @@ const CompanyValueCell: React.FC<CompanyValueCellProps> = ({ value, valueClassNa
           onKeyDown={handleIconKeyDown}
           onPointerDown={stopProp}
           onMouseDown={stopProp}
-          style={{ lineHeight: 0 }}
+          style={{ padding: '2px', margin: '-2px' }}
         >
-          <Info size={11} aria-hidden="true" />
+          <Info size={13} aria-hidden="true" />
         </button>
       </span>
 
