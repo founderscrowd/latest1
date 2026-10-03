@@ -36,6 +36,7 @@ import PaymentCancelRoute from './pages/PaymentCancelRoute';
 import LegacyGroupRedirect from './pages/LegacyGroupRedirect';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
+import SignInPage from './pages/SignInPage';
 import StartupGroupsPage from './pages/StartupGroupsPage';
 import CommunitiesAndCooperativesPage from './pages/CommunitiesAndCooperativesPage';
 import CreateStartupGroupPage from './pages/CreateStartupGroupPage';
@@ -223,6 +224,14 @@ const App: React.FC = () => {
     // Handle Stripe cancel redirect
     if (cancelled === 'true') {
       navigate('/payment/cancelled', { replace: true });
+    }
+
+    // Handle sign-up link from /sign-in page
+    const authMode = urlParams.get('auth');
+    if (authMode === 'signup') {
+      setInitialAuthModeSignUp(true);
+      setIsAuthModalOpen(true);
+      navigate('/', { replace: true });
     }
   }, [navigate]); // Run on mount and when navigate changes
 
@@ -1090,6 +1099,12 @@ const App: React.FC = () => {
           element={<PaymentCancelRoute onShowPricingModal={() => setShowPricingModal(true)} />}
         />
 
+        {/* Sign In Route */}
+        <Route
+          path="/sign-in"
+          element={<SignInPage siteLogoUrl={siteLogoUrl} />}
+        />
+
         {/* Password Reset Routes */}
         <Route
           path="/forgot-password"
@@ -1425,7 +1440,7 @@ const App: React.FC = () => {
                 ) : (
                   <>
                     <button
-                      onClick={() => setIsAuthModalOpen(true)}
+                      onClick={() => navigate('/sign-in')}
                       className="px-3 py-2 rounded-lg font-semibold text-xs text-slate-600 border border-slate-200 hover:bg-slate-50 transition-colors"
                     >
                       Sign In
@@ -1467,7 +1482,7 @@ const App: React.FC = () => {
                 ) : (
                   <>
                     <button
-                      onClick={() => setIsAuthModalOpen(true)}
+                      onClick={() => navigate('/sign-in')}
                       className="px-2.5 py-2 rounded-lg font-semibold text-xs text-slate-600 border border-slate-200 hover:bg-slate-50 transition-colors"
                     >
                       Sign In

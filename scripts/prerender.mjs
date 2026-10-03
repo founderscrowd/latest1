@@ -62,6 +62,7 @@ function buildHtml({
   bodyHtml,
   canonical,
   ogType = 'website',
+  robots = 'index, follow',
 }) {
   const fullTitle = title;
   const url = `https://equitytakeaway.com${path}`;
@@ -85,7 +86,7 @@ function buildHtml({
     <meta name="theme-color" content="#0a1e2e" />
     <title>${esc(fullTitle)}</title>
     <meta name="description" content="${esc(description)}" />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content="${esc(robots)}" />
     <link rel="canonical" href="${esc(canonical || url)}" />
 
     <!-- Open Graph / Social sharing -->
@@ -535,6 +536,38 @@ const routes = {
   <p style="color:#475569;line-height:1.7;margin:0 0 40px;">You can manage cookies through your browser settings. Last updated January 15, 2025. Contact: equitytake@gmail.com.</p>`
     ),
   },
+  '/sign-in': {
+    title: 'Sign in to EquityTake',
+    description: 'Sign in to your EquityTake account to find co-founders, join startup groups, and discuss proposed equity splits.',
+    h1: 'Sign in to EquityTake',
+    robots: 'noindex',
+    canonical: 'https://equitytakeaway.com/sign-in',
+    bodyHtml: `<main style="font-family:system-ui,-apple-system,sans-serif;color:#1e293b;max-width:480px;margin:0 auto;padding:20px;">
+  <p style="text-align:center;margin:0 0 8px;font-size:1.5rem;font-weight:700;color:#1e293b;">EquityTake</p>
+  <h1 style="font-size:1.75rem;font-weight:700;text-align:center;margin:0 0 8px;">Sign in to EquityTake</h1>
+  <p style="font-size:0.9rem;color:#64748b;text-align:center;margin:0 0 24px;">Use your EquityTake account. This is not a Google, bank, or other site login.</p>
+  <form style="display:flex;flex-direction:column;gap:16px;">
+    <div>
+      <label style="font-size:0.85rem;font-weight:600;color:#475569;display:block;margin:0 0 4px;" for="email">Email address</label>
+      <input id="email" type="email" placeholder="Email address" style="width:100%;padding:10px 12px;border:1px solid #cbd5e1;border-radius:8px;font-size:0.9rem;" />
+    </div>
+    <div>
+      <label style="font-size:0.85rem;font-weight:600;color:#475569;display:block;margin:0 0 4px;" for="password">Password</label>
+      <input id="password" type="password" placeholder="Password" style="width:100%;padding:10px 12px;border:1px solid #cbd5e1;border-radius:8px;font-size:0.9rem;" />
+    </div>
+    <button type="submit" style="width:100%;padding:10px 12px;background:#ea580c;color:#fff;border:none;border-radius:8px;font-weight:600;font-size:0.9rem;cursor:pointer;">Sign In</button>
+  </form>
+  <p style="font-size:0.85rem;color:#475569;text-align:center;margin:20px 0 8px;">
+    Don't have an account? <a href="https://equitytakeaway.com/?auth=signup" style="color:#2563eb;font-weight:600;">Sign Up</a>
+  </p>
+  <p style="font-size:0.8rem;color:#94a3b8;text-align:center;margin:0 0 12px;">
+    <a href="https://equitytakeaway.com/forgot-password" style="color:#2563eb;">Forgot password?</a>
+  </p>
+  <p style="font-size:0.8rem;color:#94a3b8;text-align:center;">
+    <a href="https://equitytakeaway.com" style="color:#64748b;">equitytakeaway.com</a>
+  </p>
+</main>`,
+  },
 };
 
 // ---------- Generate /groups page with live data ----------
@@ -729,6 +762,8 @@ async function main() {
       h1: config.h1,
       bodyHtml,
       ogType: 'website',
+      robots: config.robots,
+      canonical: config.canonical,
     });
     writeRoute(distDir, routePath, html);
     generated++;
