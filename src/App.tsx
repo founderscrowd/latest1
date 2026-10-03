@@ -1669,7 +1669,7 @@ const App: React.FC = () => {
                               {group.fundingNeeded}
                             </span>
                             <span className="text-xs text-slate-600 uppercase tracking-wide mt-1">
-                              Funding Needed
+                              {(group as any).stage === 'pre-incorporation' ? 'Project Value' : 'Company Valuation'}
                             </span>
                           </div>
                         </div>
@@ -1684,7 +1684,7 @@ const App: React.FC = () => {
                                ? 'bg-purple-100 text-purple-800' 
                                : 'bg-green-100 text-green-800'
                            }`}>
-                             {(group as any).stage === 'funding' ? 'Funding' : 'Pre-Inc'}
+                             {(group as any).stage === 'funding' ? 'Incorporated' : 'Pre-Inc'}
                            </span>
                             <span className={`px-2 py-1 rounded-md text-xs font-semibold ${
                               group.is_public 

@@ -261,7 +261,7 @@ const GroupsListPage: React.FC<GroupsListPageProps> = ({
                           {group.fundingNeeded}
                         </span>
                         <span className="text-xs text-slate-600 uppercase tracking-wide">
-                          Funding
+                          {group.stage === 'pre-incorporation' ? 'Project Value' : 'Company Valuation'}
                         </span>
                       </div>
                     </div>
@@ -276,7 +276,7 @@ const GroupsListPage: React.FC<GroupsListPageProps> = ({
                             ? 'bg-purple-100 text-purple-800'
                             : 'bg-green-100 text-green-800'
                         }`}>
-                          {group.stage === 'funding' ? 'Funding' : 'Pre-Inc'}
+                          {group.stage === 'funding' ? 'Incorporated' : 'Pre-Inc'}
                         </span>
                       )}
                       <span className={`px-2 py-1 rounded-md text-xs font-semibold ${
