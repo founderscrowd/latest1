@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { ArrowLeft, Plus, Landmark, Coins, Sprout } from 'lucide-react';
+import CompanyValueCell from '../components/CompanyValueCell';
 import { Link as RouterLink } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { groupAPI, formatLegalStructure } from '../lib/groupApi';
@@ -256,14 +257,7 @@ const GroupsListPage: React.FC<GroupsListPageProps> = ({
                           Equity
                         </span>
                       </div>
-                      <div className="bg-slate-50 p-2 rounded-lg text-center">
-                        <span className="text-base font-bold text-red-600 block">
-                          {group.fundingNeeded}
-                        </span>
-                        <span className="text-xs text-slate-600 uppercase tracking-wide">
-                          Company Value
-                        </span>
-                      </div>
+                      <CompanyValueCell value={group.fundingNeeded} />
                     </div>
 
                     <div className="flex flex-wrap gap-1 mb-3">

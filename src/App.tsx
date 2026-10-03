@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Routes, Route, useNavigate, useLocation, Link, Navigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { Plus, X, LogOut, User, CircleUser as UserCircle, Settings, Crown, CreditCard, Landmark, Coins, Sprout, MessageSquare, Users, Search, Scale, Building2, Gift, ShieldCheck, ArrowRight, HelpCircle, Menu, Bell } from 'lucide-react';
+import CompanyValueCell from './components/CompanyValueCell';
 import AuthModal from './components/AuthModal';
 import ProfilePage from './components/ProfilePage';
 import GroupDetailsPage from './components/GroupDetailsPage';
@@ -1664,14 +1665,7 @@ const App: React.FC = () => {
                               Equity Available
                             </span>
                           </div>
-                          <div className="bg-slate-50 p-2 rounded-lg text-center">
-                            <span className="text-base font-bold text-red-600 block">
-                              {group.fundingNeeded}
-                            </span>
-                            <span className="text-xs text-slate-600 uppercase tracking-wide mt-1">
-                              Company Value
-                            </span>
-                          </div>
+                          <CompanyValueCell value={group.fundingNeeded} />
                         </div>
 
                         <div className="flex justify-between items-center pt-3 border-t border-slate-100">
