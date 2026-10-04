@@ -337,26 +337,37 @@ const ClaimEquityModal: React.FC<ClaimEquityModalProps> = ({
           {/* Investment Type */}
           <div>
             <label className="block mb-2 font-semibold text-sm text-slate-700">
-              How would you like to make your investment? *
+              How you make your commitment? *
             </label>
+            <p className="text-xs text-slate-500 mb-3 leading-relaxed">
+              You are registering interest in equity. The group creator can accept or reject your offer. Get independent legal advice before you pay, sign anything, or treat this as equity. EquityTake is not responsible for any payment or agreement between founders or group members.
+            </p>
             <div className="flex flex-col sm:flex-row gap-3">
-              <label
-                className={`flex items-center gap-3 p-3 border rounded-lg cursor-pointer flex-1 transition-colors ${
-                  investmentType === 'cash' ? 'border-blue-500 bg-blue-50' : 'border-slate-300 hover:border-slate-400'
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="investmentType"
-                  value="cash"
-                  checked={investmentType === 'cash'}
-                  onChange={() => setInvestmentType('cash')}
-                  className="form-radio text-blue-600"
-                  disabled={loading || hasPendingClaim}
-                />
-                <DollarSign size={20} className="text-green-600" />
-                <span className="font-medium text-slate-800">Cash</span>
-              </label>
+              <div className="flex-1">
+                <label
+                  title="You are registering interest in equity. The group creator can accept or reject your offer. Get independent legal advice before you pay, sign anything, or treat this as equity. EquityTake is not responsible for any payment or agreement between founders or group members."
+                  className={`flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-colors ${
+                    investmentType === 'cash' ? 'border-blue-500 bg-blue-50' : 'border-slate-300 hover:border-slate-400'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="investmentType"
+                    value="cash"
+                    checked={investmentType === 'cash'}
+                    onChange={() => setInvestmentType('cash')}
+                    className="form-radio text-blue-600"
+                    disabled={loading || hasPendingClaim}
+                  />
+                  <DollarSign size={20} className="text-green-600" />
+                  <span className="font-medium text-slate-800">Cash</span>
+                </label>
+                {investmentType === 'cash' && (
+                  <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-800 leading-relaxed">
+                    You are registering interest in equity. The group creator can accept or reject your offer. Get independent legal advice before you pay, sign anything, or treat this as equity. EquityTake is not responsible for any payment or agreement between founders or group members.
+                  </div>
+                )}
+              </div>
               <label
                 className={`flex items-center gap-3 p-3 border rounded-lg cursor-pointer flex-1 transition-colors ${
                   investmentType === 'skills/tasks' ? 'border-blue-500 bg-blue-50' : 'border-slate-300 hover:border-slate-400'
