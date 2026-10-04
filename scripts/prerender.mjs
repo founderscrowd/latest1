@@ -259,9 +259,9 @@ const routes = {
   </ul>
 
   <h2 style="font-size:1.5rem;font-weight:700;margin:0 0 12px;">Why EquityTake</h2>
-  <p style="color:#475569;margin:0 0 20px;">A focused space for building, not just networking.</p>
+  <p style="color:#475569;margin:0 0 20px;">A place that starts from an idea or a project, not from a profile.</p>
   <ul style="color:#475569;line-height:1.7;padding-left:20px;margin:0 0 40px;">
-    <li><strong>Useful building groups.</strong> Every group is centred on a specific idea or venture. Instead of empty networking, you join a group with a purpose — finding co-founders and working through the early questions together.</li>
+    <li><strong>One idea, one group.</strong> You do not match profiles with no reason. You start a group around one idea or project, for profit or not, and the people join that.</li>
     <li><strong>Free to use.</strong> EquityTake is fully free. Browse groups, create a group, join a group, and discuss proposed equity — no subscription, no paywall, no hidden costs.</li>
     <li><strong>Auth for trust.</strong> You can browse groups without signing in. Creating a group, joining a group, and chatting require an account — so every member is a real person, not an anonymous post.</li>
   </ul>

@@ -1880,14 +1880,14 @@ const App: React.FC = () => {
           <section className="bg-white py-16 border-t border-slate-100">
             <div className="max-w-4xl mx-auto px-4">
               <h2 className="text-3xl font-bold text-slate-900 mb-2 text-center">Why EquityTake</h2>
-              <p className="text-slate-600 text-center mb-12 max-w-2xl mx-auto">A focused space for building, not just networking.</p>
+              <p className="text-slate-600 text-center mb-12 max-w-2xl mx-auto">A place that starts from an idea or a project, not from a profile.</p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div>
                   <div className="flex items-center gap-2 mb-3">
                     <Building2 size={22} className="text-orange-600" />
-                    <h3 className="text-lg font-bold text-slate-900">Useful building groups</h3>
+                    <h3 className="text-lg font-bold text-slate-900">One idea, one group.</h3>
                   </div>
-                  <p className="text-sm text-slate-600 leading-relaxed">Every group is centred on a specific idea or venture. Instead of empty networking, you join a group with a purpose — finding co-founders and working through the early questions together.</p>
+                  <p className="text-sm text-slate-600 leading-relaxed">You do not match profiles with no reason. You start a group around one idea or project, for profit or not, and the people join that.</p>
                 </div>
                 <div>
                   <div className="flex items-center gap-2 mb-3">
