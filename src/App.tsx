@@ -1868,6 +1868,10 @@ const App: React.FC = () => {
                   <h3 className="text-lg font-bold text-slate-900 mb-2">People exploring startup ideas</h3>
                   <p className="text-sm text-slate-600 leading-relaxed">You're curious about startup building and want to see what others are working on. Browse groups freely — no account needed to look around.</p>
                 </div>
+                <div className="bg-white rounded-xl p-6 border border-slate-200">
+                  <h3 className="text-lg font-bold text-slate-900 mb-2">People starting a self-governing community</h3>
+                  <p className="text-sm text-slate-600 leading-relaxed">You want to create a community that governs itself, for profit or not for profit visions.</p>
+                </div>
               </div>
             </div>
           </section>
