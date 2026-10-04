@@ -93,7 +93,7 @@ const CompanyValueInfoPopover: React.FC<CompanyValueInfoPopoverProps> = ({
         <div className="flex items-center justify-between p-3 border-b border-slate-100">
           <div className="flex items-center gap-1.5">
             <Info size={14} className="text-blue-600" />
-            <h4 className="text-sm font-semibold text-slate-900">Proposed Company Value</h4>
+            <h4 className="text-sm font-semibold text-slate-900">Proposed Value</h4>
           </div>
           <button
             type="button"

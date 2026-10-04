@@ -74,12 +74,12 @@ const CompanyValueCell: React.FC<CompanyValueCellProps> = ({ value, valueClassNa
     <div className="bg-slate-50 p-2 rounded-lg text-center pointer-events-auto">
       <span className={`text-base font-bold ${valueClassName} block`}>{value}</span>
       <span className="text-xs text-slate-600 uppercase tracking-wide mt-1 inline-flex items-center gap-0.5">
-        Company Value
+        Proposed Value
         <button
           ref={iconRef}
           type="button"
           className="inline-flex items-center justify-center text-slate-400 hover:text-slate-600 transition-colors align-middle relative z-10"
-          aria-label="About Company Value"
+          aria-label="About Proposed Value"
           data-company-value-info="true"
           onMouseEnter={open}
           onMouseLeave={scheduleClose}

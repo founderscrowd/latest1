@@ -9,9 +9,9 @@ interface FooterProps {
   setIsCreateModalOpen: (open: boolean) => void;
   setShowProfile: (show: boolean) => void;
   setIsAuthModalOpen: (open: boolean) => void;
-  onShowPrivacyPolicy: () => void;
-  onShowTermsOfService: () => void;
-  onShowCookiePolicy: () => void;
+  onShowPrivacyPolicy?: () => void;
+  onShowTermsOfService?: () => void;
+  onShowCookiePolicy?: () => void;
   onShowBlogAndAbout?: () => void;
   onShowHowItWorks?: () => void;
 }
@@ -132,28 +132,46 @@ const Footer: React.FC<FooterProps> = ({
           <h4 className="font-semibold text-white mb-4">Legal</h4>
           <ul className="space-y-2 text-sm">
             <li>
-              <button
-                onClick={onShowPrivacyPolicy}
-                className="text-slate-300 hover:text-white transition-colors text-left"
-              >
-                Privacy Policy
-              </button>
+              {onShowPrivacyPolicy ? (
+                <button
+                  onClick={onShowPrivacyPolicy}
+                  className="text-slate-300 hover:text-white transition-colors text-left"
+                >
+                  Privacy Policy
+                </button>
+              ) : (
+                <Link to="/privacy" className="text-slate-300 hover:text-white transition-colors">
+                  Privacy Policy
+                </Link>
+              )}
             </li>
             <li>
-              <button
-                onClick={onShowTermsOfService}
-                className="text-slate-300 hover:text-white transition-colors text-left"
-              >
-                Terms of Service
-              </button>
+              {onShowTermsOfService ? (
+                <button
+                  onClick={onShowTermsOfService}
+                  className="text-slate-300 hover:text-white transition-colors text-left"
+                >
+                  Terms of Service
+                </button>
+              ) : (
+                <Link to="/terms" className="text-slate-300 hover:text-white transition-colors">
+                  Terms of Service
+                </Link>
+              )}
             </li>
             <li>
-              <button
-                onClick={onShowCookiePolicy}
-                className="text-slate-300 hover:text-white transition-colors text-left"
-              >
-                Cookie Policy
-              </button>
+              {onShowCookiePolicy ? (
+                <button
+                  onClick={onShowCookiePolicy}
+                  className="text-slate-300 hover:text-white transition-colors text-left"
+                >
+                  Cookie Policy
+                </button>
+              ) : (
+                <Link to="/cookies" className="text-slate-300 hover:text-white transition-colors">
+                  Cookie Policy
+                </Link>
+              )}
             </li>
           </ul>
         </div>

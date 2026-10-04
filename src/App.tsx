@@ -1680,7 +1680,7 @@ const App: React.FC = () => {
                               {group.equityAvailable}%
                             </span>
                             <span className="text-xs text-slate-600 uppercase tracking-wide mt-1">
-                              Equity Available
+                              Proposed Interest
                             </span>
                           </div>
                           <CompanyValueCell value={group.fundingNeeded} />
@@ -2031,9 +2031,9 @@ const App: React.FC = () => {
             setIsCreateModalOpen={setIsCreateModalOpen}
             setShowProfile={setShowProfile}
             setIsAuthModalOpen={setIsAuthModalOpen}
-            onShowPrivacyPolicy={handleShowPrivacyPolicy}
-            onShowTermsOfService={handleShowTermsOfService}
-            onShowCookiePolicy={handleShowCookiePolicy}
+            onShowPrivacyPolicy={() => navigate('/privacy')}
+            onShowTermsOfService={() => navigate('/terms')}
+            onShowCookiePolicy={() => navigate('/cookies')}
             onShowBlogAndAbout={() => navigate('/blog')}
             onShowHowItWorks={() => navigate('/how-it-works')}
           />

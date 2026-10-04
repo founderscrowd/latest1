@@ -588,7 +588,7 @@ Are you sure you want to leave this group and lose all access to your engagement
                 </h3>
                 {group.is_public ? (
                   <p className="text-sm mb-4 text-orange-100">
-                    Sign up to connect with this startup and claim your equity stake.
+                    Sign up to connect with this startup and register your interest in the group.
                   </p>
                 ) : (
                   <p className="text-sm mb-4 text-orange-100">

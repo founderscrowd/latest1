@@ -135,7 +135,7 @@ const GroupsListPage: React.FC<GroupsListPageProps> = ({
     <div className="min-h-screen bg-slate-50 flex flex-col">
       <Helmet>
         <title>Browse Startup Groups - EquityTake</title>
-        <meta name="description" content="Browse and join innovative startup groups. Find co-founders and claim equity in exciting ventures." />
+        <meta name="description" content="Browse and join innovative startup groups. Find co-founders and register interest in exciting ventures." />
         <link rel="canonical" href={`${window.location.origin}/groups`} />
       </Helmet>
 
@@ -183,7 +183,7 @@ const GroupsListPage: React.FC<GroupsListPageProps> = ({
               Browse Startup Groups
             </h1>
             <p className="text-slate-600 max-w-2xl mx-auto">
-              Join these innovative startups and claim your equity stake. Connect with co-founders and turn your startup ideas into reality.
+              Register interest in a group. Connect with co-founders and turn your startup ideas into reality.
             </p>
             <p className="mt-3 text-sm text-slate-500">
               New here?{' '}
@@ -257,7 +257,7 @@ const GroupsListPage: React.FC<GroupsListPageProps> = ({
                           {group.equityAvailable}%
                         </span>
                         <span className="text-xs text-slate-600 uppercase tracking-wide">
-                          Equity
+                          Proposed Interest
                         </span>
                       </div>
                       <CompanyValueCell value={group.fundingNeeded} />

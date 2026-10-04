@@ -100,7 +100,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ siteLogoUrl }) => {
             <ul className="list-disc list-inside text-slate-700 leading-relaxed mb-6 space-y-2">
               <li>Browse and join startup groups with innovative ideas</li>
               <li>Connect with potential co-founders who share your passion</li>
-              <li>Claim equity stakes in promising ventures</li>
+              <li>Register interest in promising ventures</li>
               <li>Collaborate with team members to bring ideas to life</li>
               <li>Access resources and tools to help your startup succeed</li>
             </ul>
