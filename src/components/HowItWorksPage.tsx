@@ -241,10 +241,10 @@ const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onBack, siteLogoUrl }) 
               <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg flex items-center justify-center">
                 <MessageCircle size={20} className="text-white" />
               </div>
-              <h2 className="text-2xl font-bold text-slate-900">4. Propose an Equity Claim</h2>
+              <h2 className="text-2xl font-bold text-slate-900">4. Apply for Equity</h2>
             </div>
             <div className="space-y-4 text-slate-700 leading-relaxed">
-              <p>If someone wants to join, they can propose an equity claim. The claim shows:</p>
+              <p>If someone wants to join, they can submit an equity application. The application shows:</p>
               <ul className="list-disc pl-6 space-y-1.5">
                 <li>the percentage of equity requested</li>
                 <li>whether the contribution is <strong>Cash</strong> or <strong>Skills / Tasks</strong></li>
@@ -287,7 +287,7 @@ const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onBack, siteLogoUrl }) 
             </div>
             <div className="space-y-4 text-slate-700 leading-relaxed">
               <p>
-                An equity claim is not accepted automatically. Claims stay{' '}
+                An equity application is not accepted automatically. Applications stay{' '}
                 <strong>Pending</strong> while the group administrator and members consider them.
               </p>
               <p>
@@ -295,7 +295,7 @@ const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onBack, siteLogoUrl }) 
                 cash, and the equity percentage requested.
               </p>
               <p>
-                If the claim is approved, that proposed equity is allocated to the member and removed
+                If the application is approved, that proposed equity is allocated to the member and removed
                 from the equity still available. The group can see how the potential founding team is
                 taking shape.
               </p>
@@ -385,7 +385,7 @@ const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onBack, siteLogoUrl }) 
               </strong>
             </p>
             <p className="text-slate-700 leading-relaxed mt-4">
-              Proposed Company Value, Reference Value and equity claims are discussion tools. Before
+              Proposed Company Value, Reference Value and equity applications are discussion tools. Before
               formalising ownership, investment or company arrangements, get independent legal,
               financial and tax advice.
             </p>

@@ -263,7 +263,7 @@ const StripeSuccessPage: React.FC<StripeSuccessPageProps> = ({ onBack, sessionId
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle size={16} />
-                  <span className="font-medium">Equity Management & Claims</span>
+                  <span className="font-medium">Equity Management & Applications</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle size={16} />

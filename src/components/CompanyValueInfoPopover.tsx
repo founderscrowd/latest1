@@ -109,7 +109,7 @@ const CompanyValueInfoPopover: React.FC<CompanyValueInfoPopoverProps> = ({
         <div className="p-3">
           <p className="text-xs text-slate-600 leading-relaxed">
             The value assigned to 100% of this business by the group creator. It is used to calculate
-            the reference value of equity claims and is not an independently verified valuation.
+            the reference value of equity applications and is not an independently verified valuation.
           </p>
         </div>
       </div>

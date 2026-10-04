@@ -71,25 +71,25 @@ const SubscriptionManager: React.FC<SubscriptionManagerProps> = ({ onUpgrade }) 
     const confirmMessage = `⚠️ CRITICAL WARNING: SUBSCRIPTION CANCELLATION WILL RESULT IN EQUITY LOSS
 
 🚨 IMMEDIATE CONSEQUENCES:
-• ALL PENDING EQUITY CLAIMS will be automatically CANCELLED
-• ALL APPROVED EQUITY CLAIMS may be REVOKED at group discretion
+• ALL PENDING EQUITY APPLICATIONS will be automatically CANCELLED
+• ALL APPROVED EQUITY APPLICATIONS may be REVOKED at group discretion
 • You will LOSE ACCESS to all equity management tools
 • You will be REMOVED from premium groups you created
 • You will LOSE all equity tracking and analytics
 • NO REFUNDS will be provided for lost equity
 
 💰 FINANCIAL IMPACT:
-Any equity you have claimed or been approved for in startup groups may be permanently forfeited. This could represent significant financial value that cannot be recovered.
+Any equity you have applied for or been approved for in startup groups may be permanently forfeited. This could represent significant financial value that cannot be recovered.
 
 📋 WHAT HAPPENS NEXT:
 • Your subscription will remain active until ${new Date(subscription.current_period_end * 1000).toLocaleDateString()}
 • After that date, you'll lose access to premium features
-• Group creators may choose to revoke your equity claims
+• Group creators may choose to revoke your equity applications
 • You'll be downgraded to the free plan with limited features
 
 🔒 THIS ACTION CANNOT BE UNDONE
 
-Are you absolutely sure you want to cancel your subscription and risk losing your equity claims?`;
+Are you absolutely sure you want to cancel your subscription and risk losing your equity applications?`;
 
     // Use custom confirmation instead of browser confirm
     setShowCancelConfirm(true);
@@ -503,8 +503,8 @@ Are you absolutely sure you want to cancel your subscription and risk losing you
                   <div>
                     <h5 className="font-semibold mb-2">🚨 IMMEDIATE CONSEQUENCES:</h5>
                     <ul className="list-disc list-inside space-y-1 ml-4 text-sm">
-                      <li>ALL PENDING EQUITY CLAIMS will be automatically CANCELLED</li>
-                      <li>ALL APPROVED EQUITY CLAIMS may be REVOKED at group discretion</li>
+                      <li>ALL PENDING EQUITY APPLICATIONS will be automatically CANCELLED</li>
+                      <li>ALL APPROVED EQUITY APPLICATIONS may be REVOKED at group discretion</li>
                       <li>You will LOSE ACCESS to all equity management tools</li>
                       <li>You will be REMOVED from premium groups you created</li>
                       <li>You will LOSE all equity tracking and analytics</li>
@@ -515,7 +515,7 @@ Are you absolutely sure you want to cancel your subscription and risk losing you
                   <div>
                     <h5 className="font-semibold mb-2">💰 FINANCIAL IMPACT:</h5>
                     <p className="text-sm">
-                      Any equity you have claimed or been approved for in startup groups may be permanently forfeited. 
+                      Any equity you have applied for or been approved for in startup groups may be permanently forfeited. 
                       This could represent significant financial value that cannot be recovered.
                     </p>
                   </div>
@@ -525,7 +525,7 @@ Are you absolutely sure you want to cancel your subscription and risk losing you
                     <ul className="list-disc list-inside space-y-1 ml-4 text-sm">
                       <li>Your subscription will remain active until {new Date(subscription?.current_period_end ? subscription.current_period_end * 1000 : Date.now()).toLocaleDateString()}</li>
                       <li>After that date, you'll lose access to premium features</li>
-                      <li>Group creators may choose to revoke your equity claims</li>
+                      <li>Group creators may choose to revoke your equity applications</li>
                       <li>You'll be downgraded to the free plan with limited features</li>
                     </ul>
                   </div>

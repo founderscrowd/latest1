@@ -425,13 +425,13 @@ const routes = {
   <h2 style="font-size:1.5rem;font-weight:700;margin:0 0 12px;">3. Decide What You Can Contribute</h2>
   <p style="color:#475569;line-height:1.7;margin:0 0 16px;"><strong>Cash</strong> is money someone is prepared to put toward building the business. <strong>Skills / Tasks</strong> is work, expertise, time or specific responsibilities they are prepared to take on. A group might include the person with the original idea, a developer who can build the product, a marketer who can acquire customers, and someone prepared to contribute capital.</p>
 
-  <h2 style="font-size:1.5rem;font-weight:700;margin:0 0 12px;">4. Propose an Equity Claim</h2>
-  <p style="color:#475569;line-height:1.7;margin:0 0 16px;">If someone wants to join, they can propose an equity claim showing: the percentage of equity requested, whether the contribution is Cash or Skills / Tasks, what the person proposes to contribute, and the corresponding <strong>Reference Value</strong>.</p>
+  <h2 style="font-size:1.5rem;font-weight:700;margin:0 0 12px;">4. Apply for Equity</h2>
+  <p style="color:#475569;line-height:1.7;margin:0 0 16px;">If someone wants to join, they can submit an equity application showing: the percentage of equity requested, whether the contribution is Cash or Skills / Tasks, what the person proposes to contribute, and the corresponding <strong>Reference Value</strong>.</p>
   <p style="color:#475569;line-height:1.7;margin:0 0 16px;"><strong>Reference Value = Proposed Company Value &times; equity percentage.</strong> Example: Proposed Company Value $20,000, proposed equity 5%, Reference Value $1,000. If the contribution is Skills / Tasks, it does <strong>not</strong> mean that cash was invested.</p>
   <p style="color:#475569;line-height:1.7;margin:0 0 40px;">More on the conversation: <a href="/blog/how-to-split-startup-equity-fairly" style="color:#ea580c;">how to split startup equity fairly</a>.</p>
 
   <h2 style="font-size:1.5rem;font-weight:700;margin:0 0 12px;">5. Review, Discuss and Agree</h2>
-  <p style="color:#475569;line-height:1.7;margin:0 0 40px;">An equity claim is not accepted automatically. Claims stay <strong>Pending</strong> while the group administrator and members consider them. If the claim is approved, that proposed equity is allocated to the member and removed from the equity still available.</p>
+  <p style="color:#475569;line-height:1.7;margin:0 0 40px;">An equity application is not accepted automatically. Applications stay <strong>Pending</strong> while the group administrator and members consider them. If the application is approved, that proposed equity is allocated to the member and removed from the equity still available.</p>
 
   <h2 style="font-size:1.5rem;font-weight:700;margin:0 0 12px;">6. Build the Team</h2>
   <p style="color:#475569;line-height:1.7;margin:0 0 16px;">As people join and proposed equity is allocated, an idea can become a structured founding team. The equity picture is: <strong>Founder equity + approved proposed allocations + available equity</strong>. Full allocation can mean a potential founding team has formed. It does not mean a company has been incorporated, or that legal shares have been issued.</p>
@@ -444,7 +444,7 @@ const routes = {
   <p style="color:#475569;line-height:1.7;margin:0 0 40px;"><strong>Incorporated.</strong> The business already exists. Equity on EquityTake is still a proposed allocation until the company has properly agreed and legally implemented it.</p>
 
   <h2 style="font-size:1.5rem;font-weight:700;margin:0 0 12px;">EquityTake does not sell shares</h2>
-  <p style="color:#475569;line-height:1.7;margin:0 0 16px;">EquityTake does not issue shares, transfer legal ownership, hold investment funds, or automatically create legally binding equity agreements. Proposed Company Value, Reference Value and equity claims are discussion tools. Before formalising ownership, investment or company arrangements, get independent legal, financial and tax advice.</p>
+  <p style="color:#475569;line-height:1.7;margin:0 0 16px;">EquityTake does not issue shares, transfer legal ownership, hold investment funds, or automatically create legally binding equity agreements. Proposed Company Value, Reference Value and equity applications are discussion tools. Before formalising ownership, investment or company arrangements, get independent legal, financial and tax advice.</p>
 
   <h2 style="font-size:1.5rem;font-weight:700;margin:0 0 12px;">FAQ</h2>
   <dl style="color:#475569;line-height:1.7;margin:0 0 40px;">
@@ -452,10 +452,10 @@ const routes = {
     <dd style="margin:4px 0 0 0;">The value the group creator assigns to 100% of the business. It is a reference for equity talks, not a professional valuation.</dd>
     <dt style="font-weight:600;color:#1e293b;margin-top:16px;">How is Reference Value calculated?</dt>
     <dd style="margin:4px 0 0 0;">Proposed Company Value multiplied by the equity percentage. A $20,000 Proposed Company Value and 5% equity is a $1,000 Reference Value.</dd>
-    <dt style="font-weight:600;color:#1e293b;margin-top:16px;">Does a Skills / Tasks claim mean cash was invested?</dt>
+    <dt style="font-weight:600;color:#1e293b;margin-top:16px;">Does a Skills / Tasks application mean cash was invested?</dt>
     <dd style="margin:4px 0 0 0;">No. Reference Value is only the reference attached to that proposed equity. It is not cash invested.</dd>
     <dt style="font-weight:600;color:#1e293b;margin-top:16px;">Does EquityTake issue shares?</dt>
-    <dd style="margin:4px 0 0 0;">No. Claims and allocations on EquityTake are proposed. They do not issue shares, transfer ownership, or create a binding agreement by themselves.</dd>
+    <dd style="margin:4px 0 0 0;">No. Applications and allocations on EquityTake are proposed. They do not issue shares, transfer ownership, or create a binding agreement by themselves.</dd>
     <dt style="font-weight:600;color:#1e293b;margin-top:16px;">Is EquityTake free?</dt>
     <dd style="margin:4px 0 0 0;">Yes. Sign-in is the only gate. Create a group or browse groups after you sign in.</dd>
   </dl>
@@ -480,7 +480,7 @@ const routes = {
       'About EquityTake',
       `<p style="font-size:1.1rem;color:#475569;margin:0 0 20px;">Connecting co-founders to build startups together</p>
   <p style="color:#475569;line-height:1.7;margin:0 0 20px;">EquityTake is a platform designed to help aspiring entrepreneurs connect with co-founders and build startups together. Our mission is to make starting a company more accessible by facilitating meaningful connections between people with complementary skills and shared visions.</p>
-  <p style="color:#475569;line-height:1.7;margin:0 0 20px;">Through our platform, you can: browse and join startup groups with innovative ideas; connect with potential co-founders who share your passion; claim equity stakes in promising ventures; collaborate with team members to bring ideas to life; and access resources and tools to help your startup succeed.</p>
+  <p style="color:#475569;line-height:1.7;margin:0 0 20px;">Through our platform, you can: browse and join startup groups with innovative ideas; connect with potential co-founders who share your passion; apply for equity in promising ventures; collaborate with team members to bring ideas to life; and access resources and tools to help your startup succeed.</p>
   <p style="color:#475569;line-height:1.7;margin:0 0 40px;">Whether you're a developer, designer, marketer, or business strategist, EquityTake provides the platform to find your perfect co-founder match and start building something amazing together.</p>`
     ),
   },

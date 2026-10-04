@@ -348,7 +348,7 @@ const GroupSettingsPage: React.FC<GroupSettingsPageProps> = ({ groupId, onBack, 
     const warningMessage = hasEquity 
       ? `⚠️ WARNING: ${memberToRemove.profile?.username || 'This member'} currently has ${equityAmount}% approved equity in this group.
 
-If you remove them, they will LOSE ALL their equity claims (${equityAmount}%) and the equity will be returned to the group's available equity pool.
+If you remove them, they will LOSE ALL their equity applications (${equityAmount}%) and the equity will be returned to the group's available equity pool.
 
 This action cannot be undone.
 
@@ -699,7 +699,7 @@ Are you sure you want to remove this member and revoke their equity?`
                       required 
                     />
                     <p className="text-xs text-slate-500 mt-1">
-                      The proposed value of 100% of the business, used to calculate reference values for equity claims. This is not a formal or independently verified valuation.
+                      The proposed value of 100% of the business, used to calculate reference values for equity applications. This is not a formal or independently verified valuation.
                     </p>
                   </div>
                   

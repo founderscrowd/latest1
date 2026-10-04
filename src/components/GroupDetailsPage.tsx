@@ -173,10 +173,10 @@ const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({
 You currently have ${equityAmount}% approved equity in "${group?.name}".
 
 ⚠️ LEAVING THIS GROUP WILL RESULT IN:
-• IMMEDIATE FORFEITURE of ALL your equity claims (${equityAmount}%)
+• IMMEDIATE FORFEITURE of ALL your equity applications (${equityAmount}%)
 • PERMANENT LOSS of your ownership stake in this startup
-• ALL PENDING EQUITY CLAIMS will be automatically CANCELLED
-• ALL APPROVED EQUITY CLAIMS will be REVOKED immediately
+• ALL PENDING EQUITY APPLICATIONS will be automatically CANCELLED
+• ALL APPROVED EQUITY APPLICATIONS will be REVOKED immediately
 • NO COMPENSATION or refund for your contributions
 • EQUITY RETURNED to group's available equity pool
 • LOSS OF ALL FUTURE PROFITS from this startup
@@ -202,7 +202,7 @@ Are you absolutely sure you want to leave this group and forfeit your ${equityAm
 • IMMEDIATE REMOVAL from all group communications and forums
 • LOSS OF ACCESS to all group chat history and discussions
 • REMOVAL from all future group activities and decisions
-• ANY PENDING EQUITY CLAIMS will be automatically CANCELLED and LOST
+• ANY PENDING EQUITY APPLICATIONS will be automatically CANCELLED and LOST
 • FORFEITURE of any intellectual property contributions
 • LOSS OF ALL NETWORKING CONNECTIONS within the group
 • PERMANENT LOSS of your member status and privileges

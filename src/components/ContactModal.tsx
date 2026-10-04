@@ -93,7 +93,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
               </div>
               <div className="flex items-center gap-2 text-sm text-slate-700">
                 <CheckCircle size={14} className="text-green-600" />
-                <span>Equity claims and allocations</span>
+                <span>Equity applications and allocations</span>
               </div>
               <div className="flex items-center gap-2 text-sm text-slate-700">
                 <CheckCircle size={14} className="text-green-600" />

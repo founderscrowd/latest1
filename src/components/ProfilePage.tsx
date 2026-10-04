@@ -306,7 +306,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onViewJoinedGroup, on
     const warningMessage = hasEquity 
       ? `⚠️ WARNING: You currently have ${equityAmount}% approved equity in this group.
 
-If you leave this group, you will LOSE ALL your equity claims (${equityAmount}%) and they will be returned to the group's available equity pool.
+If you leave this group, you will LOSE ALL your equity applications (${equityAmount}%) and they will be returned to the group's available equity pool.
 
 This action cannot be undone.
 
@@ -456,7 +456,7 @@ Are you absolutely sure you want to leave this group and forfeit your equity?`
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            My Equity Claims
+            My Equity Applications
           </button>
           <button
             onClick={() => setActiveTab('billing')}

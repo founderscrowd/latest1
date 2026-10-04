@@ -54,7 +54,7 @@ const GroupEquityClaimsManager: React.FC<GroupEquityClaimsManagerProps> = ({
       setClaims(fetchedClaims);
     } catch (error) {
       console.error('Error fetching equity claims:', error);
-      setMessage('Error loading equity claims. Please try again.');
+      setMessage('Error loading equity applications. Please try again.');
       setTimeout(() => setMessage(''), 5000);
     } finally {
       setLoading(false);
@@ -79,11 +79,11 @@ const GroupEquityClaimsManager: React.FC<GroupEquityClaimsManagerProps> = ({
       const updatedGroup = await groupAPI.getGroup(groupId);
       onGroupUpdated(updatedGroup);
 
-      setMessage('Equity claim approved successfully!');
+      setMessage('Equity application approved successfully!');
       setTimeout(() => setMessage(''), 5000);
     } catch (error: any) {
-      console.error('Error approving claim:', error);
-      setMessage(error.message || 'Error approving claim. Please try again.');
+      console.error('Error approving application:', error);
+      setMessage(error.message || 'Error approving application. Please try again.');
       setTimeout(() => setMessage(''), 5000);
     } finally {
       setActionLoading(null);
@@ -116,7 +116,7 @@ const GroupEquityClaimsManager: React.FC<GroupEquityClaimsManagerProps> = ({
           : claim
       ));
 
-      setMessage('Equity claim rejected.');
+      setMessage('Equity application rejected.');
       setTimeout(() => setMessage(''), 5000);
       
       // Close modal and reset state
@@ -124,8 +124,8 @@ const GroupEquityClaimsManager: React.FC<GroupEquityClaimsManagerProps> = ({
       setClaimToReject(null);
       setRejectionReason('');
     } catch (error: any) {
-      console.error('Error rejecting claim:', error);
-      setMessage(error.message || 'Error rejecting claim. Please try again.');
+      console.error('Error rejecting application:', error);
+      setMessage(error.message || 'Error rejecting application. Please try again.');
       setTimeout(() => setMessage(''), 5000);
     } finally {
       setRejecting(false);
@@ -194,7 +194,7 @@ const GroupEquityClaimsManager: React.FC<GroupEquityClaimsManagerProps> = ({
             <TrendingUp size={20} className="text-white" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-slate-900">Equity Claims Management</h3>
+            <h3 className="text-xl font-bold text-slate-900">Equity Applications Management</h3>
             <p className="text-sm text-slate-600">Review and manage equity allocation requests</p>
           </div>
         </div>
@@ -237,14 +237,14 @@ const GroupEquityClaimsManager: React.FC<GroupEquityClaimsManagerProps> = ({
         <div className="text-center py-12">
           <Award size={48} className="text-slate-300 mx-auto mb-4" />
           <h4 className="text-lg font-semibold text-slate-900 mb-2">
-            {activeFilter === 'all' ? 'No equity claims yet' : `No ${activeFilter} claims`}
+            {activeFilter === 'all' ? 'No equity applications yet' : `No ${activeFilter} applications`}
           </h4>
           <p className="text-slate-600">
             {activeFilter === 'pending' 
-              ? 'No pending claims to review at this time.'
+              ? 'No pending applications to review at this time.'
               : activeFilter === 'all'
-              ? 'Members haven\'t submitted any equity claims yet.'
-              : `No ${activeFilter} claims found.`
+              ? 'Members haven\'t submitted any equity applications yet.'
+              : `No ${activeFilter} applications found.`
             }
           </p>
         </div>
@@ -283,7 +283,7 @@ const GroupEquityClaimsManager: React.FC<GroupEquityClaimsManagerProps> = ({
                       </div>
                       <div>
                         <div className="text-lg font-bold text-green-600">{claim.amount}%</div>
-                        <div className="text-xs text-slate-600">Equity Requested</div>
+                        <div className="text-xs text-slate-600">Equity Applied For</div>
                       </div>
                     </div>
 
@@ -394,7 +394,7 @@ const GroupEquityClaimsManager: React.FC<GroupEquityClaimsManagerProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
             <div>
               <div className="text-2xl font-bold text-slate-900">{claims.length}</div>
-              <div className="text-sm text-slate-600">Total Claims</div>
+              <div className="text-sm text-slate-600">Total Applications</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-yellow-600">{pendingCount}</div>
@@ -422,7 +422,7 @@ const GroupEquityClaimsManager: React.FC<GroupEquityClaimsManagerProps> = ({
               <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
                 <XCircle size={20} className="text-red-600" />
               </div>
-              <h3 className="text-xl font-bold text-slate-900">Reject Equity Claim</h3>
+              <h3 className="text-xl font-bold text-slate-900">Reject Equity Application</h3>
             </div>
 
             <div className="mb-4">
@@ -445,7 +445,7 @@ const GroupEquityClaimsManager: React.FC<GroupEquityClaimsManagerProps> = ({
 
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4">
               <p className="text-sm text-yellow-800">
-                This reason will be visible to the user on their profile page under rejected claims.
+                This reason will be visible to the user on their profile page under rejected applications.
               </p>
             </div>
 
@@ -466,7 +466,7 @@ const GroupEquityClaimsManager: React.FC<GroupEquityClaimsManagerProps> = ({
                 disabled={rejecting}
                 className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium disabled:opacity-50"
               >
-                {rejecting ? 'Rejecting...' : 'Reject Claim'}
+                {rejecting ? 'Rejecting...' : 'Reject Application'}
               </button>
             </div>
           </div>

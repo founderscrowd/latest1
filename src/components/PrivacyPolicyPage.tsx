@@ -78,7 +78,7 @@ const PrivacyPolicyPage: React.FC<PrivacyPolicyPageProps> = ({ onBack, siteLogoU
                   <li><strong>Profile Data:</strong> Display name, avatar image, bio, and professional background</li>
                   <li><strong>Group Information:</strong> Startup descriptions, equity details, funding requirements, and business plans</li>
                   <li><strong>Communication Data:</strong> Messages, forum posts, comments, and file attachments</li>
-                  <li><strong>Contact Information:</strong> Phone numbers for equity claims and business communications</li>
+                  <li><strong>Contact Information:</strong> Phone numbers for equity applications and business communications</li>
                   <li><strong>Financial Information:</strong> Equity percentages, investment types, and funding amounts (no payment card data)</li>
                 </ul>
               </div>
@@ -119,7 +119,7 @@ const PrivacyPolicyPage: React.FC<PrivacyPolicyPageProps> = ({ onBack, siteLogoU
                   <li>Create and manage your user account and profile</li>
                   <li>Enable participation in startup groups and equity discussions</li>
                   <li>Facilitate communication between co-founders and group members</li>
-                  <li>Process equity claims and manage ownership structures</li>
+                  <li>Process equity applications and manage proposed ownership structures</li>
                   <li>Provide customer support and respond to inquiries</li>
                 </ul>
               </div>
@@ -148,7 +148,7 @@ const PrivacyPolicyPage: React.FC<PrivacyPolicyPageProps> = ({ onBack, siteLogoU
                 <h3 className="text-lg font-semibold text-slate-900 mb-2">Communication (Legal Basis: Consent & Legitimate Interest)</h3>
                 <ul className="list-disc list-inside space-y-1 text-slate-700 ml-4">
                   <li>Send important updates about your account and groups</li>
-                  <li>Notify you of equity claim status changes and group activities</li>
+                  <li>Notify you of equity application status changes and group activities</li>
                   <li>Provide technical support and customer service communications</li>
                   <li>Send promotional content (only with your explicit consent)</li>
                 </ul>

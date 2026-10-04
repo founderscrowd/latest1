@@ -50,7 +50,7 @@ const EquityClaimsTab: React.FC<EquityClaimsTabProps> = ({ equityClaims, onBack 
   return (
     <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
       <h3 className="text-lg font-semibold text-slate-900 mb-6">
-        My Equity Claims
+        My Equity Applications
       </h3>
       
       {/* Summary Stats */}
@@ -85,9 +85,9 @@ const EquityClaimsTab: React.FC<EquityClaimsTabProps> = ({ equityClaims, onBack 
       {equityClaims.length === 0 ? (
         <div className="text-center py-12">
           <TrendingUp size={48} className="text-slate-300 mx-auto mb-4" />
-          <h4 className="text-lg font-semibold text-slate-900 mb-2">No equity claims yet</h4>
+          <h4 className="text-lg font-semibold text-slate-900 mb-2">No equity applications yet</h4>
           <p className="text-slate-600 mb-4">
-            You haven't submitted any equity claims. Join groups and claim your stake!
+            You haven't submitted any equity applications. Join groups and apply for your place in a group.
           </p>
           <button
             onClick={onBack}

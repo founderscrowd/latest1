@@ -210,14 +210,14 @@ const ClaimEquityModal: React.FC<ClaimEquityModalProps> = ({
       console.log('📞 ClaimEquityModal: Submitting with phone:', fullPhoneNumber);
       await equityAPI.requestEquityClaim(groupId, percentage, investmentType, fullPhoneNumber);
       console.log('✅ ClaimEquityModal: Equity claim submitted successfully');
-      setSuccessMessage('Your equity claim has been submitted successfully!');
+      setSuccessMessage('Your equity application has been submitted successfully!');
       console.log('💬 ClaimEquityModal: Success message set, calling onSuccess...');
       // Don't call onSuccess immediately - let user see the success message first
       console.log('🎉 ClaimEquityModal: onSuccess called, success state should now be visible');
     } catch (err: any) {
       console.error('❌ ClaimEquityModal: Error submitting equity claim:', err);
       console.error('Error submitting equity claim:', err);
-      setError(err.message || 'Failed to submit equity claim. Please try again.');
+      setError(err.message || 'Failed to submit equity application. Please try again.');
     } finally {
       setLoading(false);
       console.log('🏁 ClaimEquityModal: handleSubmit completed');
@@ -230,7 +230,7 @@ const ClaimEquityModal: React.FC<ClaimEquityModalProps> = ({
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[2000] p-4">
       <div className="bg-white rounded-xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-xl font-bold text-slate-900">Claim Equity in {groupName}</h3>
+          <h3 className="text-xl font-bold text-slate-900">Apply for equity in {groupName}</h3>
           <button
             onClick={onClose}
             className="text-slate-400 hover:text-slate-600 transition-colors"
@@ -284,14 +284,14 @@ const ClaimEquityModal: React.FC<ClaimEquityModalProps> = ({
 
         {checkingPendingClaim && (
           <div className="bg-gray-50 border border-gray-200 text-gray-700 px-3 py-2 rounded-lg text-sm mb-4">
-            Checking for existing claims...
+            Checking for existing applications...
           </div>
         )}
 
         {hasPendingClaim && !checkingPendingClaim && (
           <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-3 rounded-lg text-sm mb-4">
-            <p className="font-semibold mb-1">Pending Claim Found</p>
-            <p>You already have a pending equity claim for this group. Please wait for approval or rejection before submitting a new claim.</p>
+            <p className="font-semibold mb-1">Pending Application Found</p>
+            <p>You already have a pending equity application for this group. Please wait for approval or rejection before submitting a new application.</p>
           </div>
         )}
 
@@ -314,9 +314,9 @@ const ClaimEquityModal: React.FC<ClaimEquityModalProps> = ({
                 <CheckCircle size={32} className="text-green-600" />
               </div>
               <div>
-                <h4 className="text-lg font-semibold text-slate-900 mb-2">Claim Submitted!</h4>
+                <h4 className="text-lg font-semibold text-slate-900 mb-2">Application Submitted!</h4>
                 <p className="text-slate-600 text-sm">
-                  Your equity claim for {equityPercentage}% equity has been submitted successfully and is now pending approval from the group administrators. Please follow for updates on Equity Structure page.
+                  Your equity application for {equityPercentage}% equity has been submitted successfully and is now pending approval from the group administrators. Please follow for updates on the Equity Structure page.
                 </p>
               </div>
               <button
@@ -380,7 +380,7 @@ const ClaimEquityModal: React.FC<ClaimEquityModalProps> = ({
           {/* Equity Percentage */}
           <div>
             <label className="block mb-2 font-semibold text-sm text-slate-700">
-              What percentage would you like to claim? (%) *
+              What percentage do you want to apply for? (%) *
             </label>
             <div className="relative">
               <input
@@ -447,7 +447,7 @@ const ClaimEquityModal: React.FC<ClaimEquityModalProps> = ({
               <p className="text-xs text-red-600 mt-1">{phoneError}</p>
             )}
             <p className="text-xs text-slate-500 mt-1">
-              Include your phone number with country code for direct contact regarding your equity claim
+              Include your phone number with country code for direct contact regarding your equity application
             </p>
           </div>
 
@@ -457,7 +457,7 @@ const ClaimEquityModal: React.FC<ClaimEquityModalProps> = ({
               disabled={loading || !investmentType || !equityPercentage || !phoneNumber.trim() || !!phoneError || hasPendingClaim || checkingPendingClaim}
               className="px-6 py-2.5 bg-orange-600 text-white rounded-lg font-semibold text-sm hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Submitting...' : hasPendingClaim ? 'Pending Claim Exists' : 'Submit Equity Claim'}
+              {loading ? 'Submitting...' : hasPendingClaim ? 'Pending Application Exists' : 'Submit application'}
             </button>
           </div>
           </div>

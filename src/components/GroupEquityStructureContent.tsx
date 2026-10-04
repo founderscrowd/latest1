@@ -366,12 +366,12 @@ const GroupEquityStructureContent: React.FC<GroupEquityStructureContentProps> = 
         )}
       </div>
 
-      {/* Pending Claims */}
+      {/* Pending Applications */}
       {pendingClaims.length > 0 && (
         <div>
           <h3 className="text-xl font-semibold text-slate-900 mb-6 flex items-center gap-2">
             <Clock size={20} className="text-yellow-600" />
-            Pending Claims ({pendingClaims.length})
+            Pending Applications ({pendingClaims.length})
           </h3>
           
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
@@ -446,10 +446,10 @@ const GroupEquityStructureContent: React.FC<GroupEquityStructureContentProps> = 
             <div className="mt-4 p-3 bg-yellow-100 border border-yellow-300 rounded-lg">
               <div className="flex items-center gap-2 mb-2">
                 <Info size={14} className="text-yellow-700" />
-                <span className="text-sm font-medium text-yellow-900">About Pending Claims</span>
+                <span className="text-sm font-medium text-yellow-900">About Pending Applications</span>
               </div>
               <p className="text-sm text-yellow-800">
-                These equity claims are awaiting approval from group administrators. 
+                These equity applications are awaiting approval from group administrators. 
                 Once approved, the equity will be allocated and removed from the available pool.
               </p>
             </div>
@@ -468,8 +468,8 @@ const GroupEquityStructureContent: React.FC<GroupEquityStructureContentProps> = 
           <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="font-semibold text-blue-900">Unclaimed Equity</h4>
-                <p className="text-sm text-blue-700">Available for new co-founders</p>
+                <h4 className="font-semibold text-blue-900">Equity Available to Apply For</h4>
+                <p className="text-sm text-blue-700">Available for new co-founders to apply for</p>
               </div>
               <div className="text-right">
                 <div className="text-xl font-bold text-blue-900">
@@ -497,7 +497,7 @@ const GroupEquityStructureContent: React.FC<GroupEquityStructureContentProps> = 
           <div className="flex items-start gap-2">
             <Info size={14} className="text-blue-600 mt-0.5 flex-shrink-0" />
             <div>
-              <strong>{valueLabel}:</strong> The proposed value of 100% of the business ({formatCurrency(referenceValue)}). Used to calculate reference values for equity claims. This is not a formal or independently verified valuation.
+              <strong>{valueLabel}:</strong> The proposed value of 100% of the business ({formatCurrency(referenceValue)}). Used to calculate reference values for equity applications. This is not a formal or independently verified valuation.
             </div>
           </div>
           <div className="flex items-start gap-2">

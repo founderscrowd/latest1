@@ -254,7 +254,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
                 required 
               />
               <p className="text-xs text-slate-500 mt-1">
-                The proposed value of 100% of the business, used to calculate reference values for equity claims. This is not a formal or independently verified valuation.
+                The proposed value of 100% of the business, used to calculate reference values for equity applications. This is not a formal or independently verified valuation.
               </p>
             </div>
             
@@ -315,7 +315,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
                       <strong>What it is:</strong> The step before a company exists. An idea, a group, and a proposed equity split. No shares have been issued.
                     </div>
                     <div>
-                      <strong>What happens here:</strong> Co-founders join, ask questions, and claim interest in a percentage. No money is collected on EquityTake.
+                      <strong>What happens here:</strong> Co-founders join, ask questions, and apply for a percentage. No money is collected on EquityTake.
                     </div>
                     <div>
                       <strong>Goal:</strong> Form the team and agree who wants what. Then incorporate and handle funds through the proper legal route.
@@ -337,7 +337,7 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
                   <h4 className="font-semibold text-blue-900 mb-2">Incorporated Stage</h4>
                   <div className="space-y-2 text-sm text-blue-800">
                     <div>
-                      Choose this if the business is already registered. People can still claim interest here. No funds are collected on EquityTake.
+                      Choose this if the business is already registered. People can still apply for equity here. No funds are collected on EquityTake.
                     </div>
                   </div>
                 </div>

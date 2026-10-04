@@ -225,7 +225,7 @@ const GroupProfilePage: React.FC<GroupProfilePageProps> = ({ groupId, onBack, si
     const warningMessage = hasEquity 
       ? `⚠️ WARNING: You currently have ${equityAmount}% approved equity in this group.
 
-If you leave this group, you will LOSE ALL your equity claims (${equityAmount}%) and they will be returned to the group's available equity pool.
+If you leave this group, you will LOSE ALL your equity applications (${equityAmount}%) and they will be returned to the group's available equity pool.
 
 This action cannot be undone.
 
@@ -1196,7 +1196,7 @@ Are you absolutely sure you want to leave this group and forfeit your equity?`
 
       </div>
 
-      {/* Fixed Bottom Claim Equity Button - Only visible on Group Profile Page */}
+      {/* Fixed Bottom Apply for Equity Button - Only visible on Group Profile Page */}
       {canClaimEquity && !isChatFullScreen && activeTab !== 'forum' && (
         <div className="fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200 shadow-lg">
           <div className="max-w-6xl mx-auto px-4 py-3">
