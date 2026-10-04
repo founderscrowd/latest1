@@ -322,6 +322,7 @@ const routes = {
       'Gather founders around a project — then match as co-founders and talk through proposed equity splits inside the group. Creating a group is not creating a company. It is the first step in finding people who want to build the same idea as you. Name the idea, describe the problem, say which co-founders you need, and propose a starting equity split for the group to discuss. Once your group exists, people can find it, join it, and start talking with you in group chat.',
       `<p style="font-size:0.9rem;color:#94a3b8;font-weight:500;margin:16px 0 0 0;">Not profile dating. Not a hobby meetup.</p>${relatedReadingHtml([
         { href: '/blog/create-a-startup-group-around-your-idea', text: 'Step-by-step: create a startup group around your idea →' },
+        { href: '/blog/how-to-start-owning-a-business-from-scratch', text: 'How to start owning a business from scratch →' },
       ])}`
     ),
   },
@@ -675,8 +676,8 @@ function buildBlogPostPage(post) {
   const rawBody = post.content_body || '';
   const withLinks = convertMarkdownLinks(rawBody);
   const bodyText = stripHtmlPreserveLinks(withLinks);
-  // Show full content for crawlers, truncated to 5000 chars
-  const fullBody = truncate(bodyText, 5000);
+  // Show full content for crawlers, truncated to 12000 chars
+  const fullBody = truncate(bodyText, 12000);
 
   const body = `<main style="font-family:system-ui,-apple-system,sans-serif;color:#1e293b;max-width:800px;margin:0 auto;padding:20px;">
   <h1 style="font-size:2rem;font-weight:700;margin:0 0 8px;">${title}</h1>
