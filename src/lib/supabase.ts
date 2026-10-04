@@ -102,7 +102,8 @@ const createUserProfile = async (user: any, username: string) => {
     email: user.email,
     username: username,
     created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
+    updated_at: new Date().toISOString(),
+    accepted_terms_at: new Date().toISOString()
   };
 
   try {

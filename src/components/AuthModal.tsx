@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { X, Mail, Lock, User, MailCheck, RotateCw, ArrowLeft } from 'lucide-react';
+import { X, Mail, Lock, User, MailCheck, RotateCw, ArrowLeft, Check } from 'lucide-react';
 import { signIn, signUp, checkUsernameAvailability, resendVerificationEmail } from '../lib/supabase';
 import { trackCompleteRegistration, trackLogin } from '../lib/metaPixel';
 
@@ -28,6 +28,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuccess, i
   const [resendCooldown, setResendCooldown] = useState(0);
   const [resendStatus, setResendStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
   const [resendMessage, setResendMessage] = useState('');
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const cooldownTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Update isSignUp when initialIsSignUp prop changes
@@ -202,6 +203,12 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuccess, i
         setLoading(false);
         return;
       }
+
+      if (!acceptedTerms) {
+        setError('Please accept the Terms of Service to continue.');
+        setLoading(false);
+        return;
+      }
     }
 
     try {
@@ -335,6 +342,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuccess, i
     setResendCooldown(0);
     setResendStatus('idle');
     setResendMessage('');
+    setAcceptedTerms(false);
     if (cooldownTimerRef.current) {
       clearInterval(cooldownTimerRef.current);
       cooldownTimerRef.current = null;
@@ -544,16 +552,47 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuccess, i
             </div>
           )}
 
+          {isSignUp && (
+            <label className="flex items-start gap-2.5 cursor-pointer select-none">
+              <button
+                type="button"
+                role="checkbox"
+                aria-checked={acceptedTerms}
+                onClick={() => setAcceptedTerms(!acceptedTerms)}
+                className={`mt-0.5 w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
+                  acceptedTerms
+                    ? 'bg-orange-600 border-orange-600'
+                    : 'border-slate-300 hover:border-slate-400'
+                }`}
+              >
+                {acceptedTerms && <Check size={13} className="text-white" />}
+              </button>
+              <span className="text-xs text-slate-600 leading-relaxed">
+                I agree to the{' '}
+                <Link
+                  to="/terms"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="text-blue-600 hover:text-blue-700 font-medium underline"
+                >
+                  Terms of Service
+                </Link>
+              </span>
+            </label>
+          )}
+
           <button
             type="submit"
             disabled={
               loading ||
               (isSignUp && (
                 displayNameAvailable !== true ||
-                checkingDisplayName || 
+                checkingDisplayName ||
                 !!displayNameError ||
                 !displayName ||
-                displayName.trim().length < 3
+                displayName.trim().length < 3 ||
+                !acceptedTerms
               ))
             }
             className="w-full bg-orange-600 text-white py-2.5 rounded-lg font-semibold text-sm hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
