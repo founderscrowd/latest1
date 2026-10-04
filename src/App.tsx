@@ -1872,6 +1872,10 @@ const App: React.FC = () => {
                   <h3 className="text-lg font-bold text-slate-900 mb-2">People starting a self-governing community</h3>
                   <p className="text-sm text-slate-600 leading-relaxed">You want to create a community that governs itself, for profit or non profit visions.</p>
                 </div>
+                <div className="bg-white rounded-xl p-6 border border-slate-200">
+                  <h3 className="text-lg font-bold text-slate-900 mb-2">People looking for property partners</h3>
+                  <p className="text-sm text-slate-600 leading-relaxed">You want partners for a property investment or a development, and a group built around that project.</p>
+                </div>
               </div>
             </div>
           </section>
