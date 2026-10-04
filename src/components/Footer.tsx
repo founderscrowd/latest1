@@ -36,10 +36,10 @@ const Footer: React.FC<FooterProps> = ({
           <div className="flex items-center gap-1 text-sm text-slate-400">
             <span>✉️</span>
             <a
-              href="mailto:equitytake@gmail.com"
+              href="mailto:admin@groupsandcrowds.com"
               className="hover:text-white transition-colors"
             >
-              equitytake@gmail.com
+              admin@groupsandcrowds.com
             </a>
           </div>
         </div>

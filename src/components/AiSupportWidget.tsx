@@ -137,7 +137,7 @@ const AiSupportWidget: React.FC = () => {
     } catch (error) {
       setMessages(prev => [...prev, {
         role: 'assistant',
-        content: 'I had trouble connecting. Please check your internet connection and try again, or email equitytake@gmail.com for help.',
+        content: 'I had trouble connecting. Please check your internet connection and try again, or email admin@groupsandcrowds.com for help.',
       }]);
     } finally {
       setLoading(false);
@@ -161,7 +161,7 @@ const AiSupportWidget: React.FC = () => {
 
   const welcomeMessage = "Hi! I'm the EquityTake AI assistant. I can answer questions about how the platform works, equity, groups, and more. EquityTake is completely free to use — ask me anything!";
 
-  const disabledMessage = "AI support is temporarily unavailable. Please contact equitytake@gmail.com for assistance.";
+  const disabledMessage = "AI support is temporarily unavailable. Please contact admin@groupsandcrowds.com for assistance.";
 
   const canSend = input.trim().length > 0 && !loading && !aiDisabled && cooldownRemaining === 0;
 

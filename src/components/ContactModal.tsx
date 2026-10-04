@@ -24,7 +24,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   const handleEmailClick = () => {
-    window.location.href = 'mailto:equitytake@gmail.com?subject=EquityTake Support Request';
+    window.location.href = 'mailto:admin@groupsandcrowds.com?subject=EquityTake Support Request';
   };
 
   return (
@@ -71,7 +71,7 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
                 onClick={handleEmailClick}
                 className="text-lg font-bold text-blue-600 hover:text-blue-700 transition-colors underline"
               >
-                equitytake@gmail.com
+                admin@groupsandcrowds.com
               </button>
               <p className="text-sm text-blue-800 mt-2">
                 Click to open your email client with a pre-filled subject line

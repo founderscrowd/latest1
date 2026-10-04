@@ -121,7 +121,7 @@ const StripeCancelPage: React.FC<StripeCancelPageProps> = ({ onBack, onRetry }) 
           </button>
           
           <a
-            href="mailto:equitytake@gmail.com"
+            href="mailto:admin@groupsandcrowds.com"
             className="flex items-center gap-2 px-6 py-3 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors font-semibold"
           >
             <CreditCard size={16} />

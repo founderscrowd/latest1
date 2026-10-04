@@ -496,7 +496,7 @@ const routes = {
   <h2 style="font-size:1.3rem;font-weight:700;margin:24px 0 8px;">Information we collect</h2>
   <p style="color:#475569;line-height:1.7;margin:0 0 20px;">Account data (name, email), profile data (username, avatar), group data, communication data, and automatically collected usage, device, location, and performance data.</p>
   <h2 style="font-size:1.3rem;font-weight:700;margin:24px 0 8px;">Your rights</h2>
-  <p style="color:#475569;line-height:1.7;margin:0 0 20px;">Under GDPR and CCPA, you have rights to access, correct, delete, and restrict processing of your personal data. Contact equitytake@gmail.com to exercise these rights.</p>
+  <p style="color:#475569;line-height:1.7;margin:0 0 20px;">Under GDPR and CCPA, you have rights to access, correct, delete, and restrict processing of your personal data. Contact admin@groupsandcrowds.com to exercise these rights.</p>
   <h2 style="font-size:1.3rem;font-weight:700;margin:24px 0 8px;">Security</h2>
   <p style="color:#475569;line-height:1.7;margin:0 0 40px;">We use TLS 1.3 for data in transit, AES-256 for data at rest, and Row Level Security in our database. Last updated January 15, 2025.</p>`
     ),
@@ -536,7 +536,7 @@ const routes = {
     <li><strong>Functional</strong> — optional, remember preferences and settings.</li>
     <li><strong>Marketing</strong> — requires consent, used to show relevant content.</li>
   </ul>
-  <p style="color:#475569;line-height:1.7;margin:0 0 40px;">You can manage cookies through your browser settings. Last updated January 15, 2025. Contact: equitytake@gmail.com.</p>`
+  <p style="color:#475569;line-height:1.7;margin:0 0 40px;">You can manage cookies through your browser settings. Last updated January 15, 2025. Contact: admin@groupsandcrowds.com.</p>`
     ),
   },
   '/sign-in': {

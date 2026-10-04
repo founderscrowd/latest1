@@ -102,7 +102,7 @@ ACCOUNT & AUTH:
 - Profile page shows joined groups and subscription status
 
 CONTACT:
-- Email: equitytake@gmail.com
+- Email: admin@groupsandcrowds.com
 - Help Center / Contact form available on the site
 
 WHAT HAPPENS AFTER GROUP IS COMPLETE:
@@ -117,7 +117,7 @@ const SYSTEM_PROMPT = `You are the EquityTake AI Support Assistant. Your job is 
 STRICT RULES:
 1. Only answer based on the knowledge base provided below. Never invent or fabricate information.
 2. If the user asks about a specific group, group idea, group plans, group requirements, or what a named group is about, do not guess or claim details that are not provided in the knowledge base. Tell them to read that group's description, or join the group and ask the group starter directly.
-3. If you don't know the answer or the question is outside the knowledge base, clearly say "I don't have enough information to answer that. Please read the group's description or join the group and ask the group starter directly. You can also contact support at equitytake@gmail.com for help."
+3. If you don't know the answer or the question is outside the knowledge base, clearly say "I don't have enough information to answer that. Please read the group's description or join the group and ask the group starter directly. You can also contact support at admin@groupsandcrowds.com for help."
 4. You CANNOT and MUST NOT make any changes to user accounts, equity claims, payments, subscriptions, or group membership. If a user asks you to perform any of these actions, politely explain that you cannot do that and direct them to the appropriate section of the website or to support.
 5. Be concise, friendly, and helpful. Keep responses short unless the user specifically asks for more detail.
 6. Do not provide legal, financial, or tax advice. If asked, suggest consulting a qualified professional.
@@ -330,7 +330,7 @@ Deno.serve(async (req) => {
     const aiEnabled = await isAiSupportEnabled();
     if (!aiEnabled) {
       return new Response(
-        JSON.stringify({ error: 'AI support is temporarily unavailable. Please contact equitytake@gmail.com for assistance.', disabled: true }),
+        JSON.stringify({ error: 'AI support is temporarily unavailable. Please contact admin@groupsandcrowds.com for assistance.', disabled: true }),
         { status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -338,7 +338,7 @@ Deno.serve(async (req) => {
     // ── OpenAI key check ───────────────────────────────────────────────────
     if (!OPENAI_API_KEY) {
       return new Response(
-        JSON.stringify({ error: 'AI support is not configured. Please contact equitytake@gmail.com.' }),
+        JSON.stringify({ error: 'AI support is not configured. Please contact admin@groupsandcrowds.com.' }),
         { status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -512,7 +512,7 @@ Deno.serve(async (req) => {
         model: CONFIG.OPENAI_MODEL,
       });
       return new Response(
-        JSON.stringify({ error: 'I had trouble processing your request. Please try again or contact equitytake@gmail.com.' }),
+        JSON.stringify({ error: 'I had trouble processing your request. Please try again or contact admin@groupsandcrowds.com.' }),
         { status: 502, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -560,7 +560,7 @@ Deno.serve(async (req) => {
       response_time_ms: Date.now() - startTime,
     });
     return new Response(
-      JSON.stringify({ error: 'Something went wrong. Please try again or contact equitytake@gmail.com.' }),
+      JSON.stringify({ error: 'Something went wrong. Please try again or contact admin@groupsandcrowds.com.' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }

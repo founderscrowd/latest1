@@ -584,7 +584,7 @@ const TermsOfServicePage: React.FC<TermsOfServicePageProps> = ({ onBack, siteLog
                   For questions about these Terms of Service, please contact:
                 </p>
                 <div className="text-green-800 text-sm">
-                  <p><strong>Email:</strong> equitytake@gmail.com</p>
+                  <p><strong>Email:</strong> admin@groupsandcrowds.com</p>
                   <p><strong>Subject Line:</strong> "Terms of Service Inquiry"</p>
                   <p><strong>Response Time:</strong> Within 5 business days</p>
                 </div>

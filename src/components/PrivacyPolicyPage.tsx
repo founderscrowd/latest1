@@ -313,7 +313,7 @@ const PrivacyPolicyPage: React.FC<PrivacyPolicyPageProps> = ({ onBack, siteLogoU
                   To exercise any of these rights, please contact us at:
                 </p>
                 <ul className="list-disc list-inside space-y-1 text-blue-800 text-sm ml-4">
-                  <li><strong>Email:</strong> equitytake@gmail.com</li>
+                  <li><strong>Email:</strong> admin@groupsandcrowds.com</li>
                   <li><strong>Subject Line:</strong> "Privacy Rights Request - [Your Request Type]"</li>
                   <li><strong>Include:</strong> Your account email and specific details about your request</li>
                 </ul>
@@ -479,7 +479,7 @@ const PrivacyPolicyPage: React.FC<PrivacyPolicyPageProps> = ({ onBack, siteLogoU
                 <h3 className="text-lg font-semibold text-slate-900 mb-2">Parental Rights</h3>
                 <p className="text-slate-700 text-sm">
                   If you believe your child has provided personal information to us, please contact us immediately at 
-                  equitytake@gmail.com. We will investigate and take appropriate action to protect the child's privacy.
+                  admin@groupsandcrowds.com. We will investigate and take appropriate action to protect the child's privacy.
                 </p>
               </div>
             </div>
@@ -573,7 +573,7 @@ const PrivacyPolicyPage: React.FC<PrivacyPolicyPageProps> = ({ onBack, siteLogoU
                   <div>
                     <h4 className="font-semibold text-slate-900 mb-2">General Privacy Inquiries</h4>
                     <div className="space-y-1 text-sm text-slate-700">
-                      <p><strong>Email:</strong> equitytake@gmail.com</p>
+                      <p><strong>Email:</strong> admin@groupsandcrowds.com</p>
                       <p><strong>Subject:</strong> "Privacy Policy Question"</p>
                       <p><strong>Response Time:</strong> Within 5 business days</p>
                     </div>
@@ -582,7 +582,7 @@ const PrivacyPolicyPage: React.FC<PrivacyPolicyPageProps> = ({ onBack, siteLogoU
                   <div>
                     <h4 className="font-semibold text-slate-900 mb-2">Data Protection Officer</h4>
                     <div className="space-y-1 text-sm text-slate-700">
-                      <p><strong>Email:</strong> equitytake@gmail.com</p>
+                      <p><strong>Email:</strong> admin@groupsandcrowds.com</p>
                       <p><strong>Subject:</strong> "DPO - Data Protection Inquiry"</p>
                       <p><strong>For:</strong> GDPR-related questions and complaints</p>
                     </div>

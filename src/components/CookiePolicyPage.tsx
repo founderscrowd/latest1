@@ -332,7 +332,7 @@ const CookiePolicyPage: React.FC<CookiePolicyPageProps> = ({ onBack, siteLogoUrl
                   <div>
                     <h4 className="font-semibold text-slate-900 mb-2">General Cookie Questions</h4>
                     <div className="space-y-1 text-sm text-slate-700">
-                      <p><strong>Email:</strong> equitytake@gmail.com</p>
+                      <p><strong>Email:</strong> admin@groupsandcrowds.com</p>
                       <p><strong>Subject:</strong> Cookie Policy Question</p>
                       <p><strong>Response Time:</strong> Within 3 business days</p>
                     </div>
@@ -341,7 +341,7 @@ const CookiePolicyPage: React.FC<CookiePolicyPageProps> = ({ onBack, siteLogoUrl
                   <div>
                     <h4 className="font-semibold text-slate-900 mb-2">Privacy Officer</h4>
                     <div className="space-y-1 text-sm text-slate-700">
-                      <p><strong>Email:</strong> equitytake@gmail.com</p>
+                      <p><strong>Email:</strong> admin@groupsandcrowds.com</p>
                       <p><strong>Subject:</strong> Privacy Officer - Cookie Inquiry</p>
                       <p><strong>For:</strong> GDPR and privacy-related cookie questions</p>
                     </div>
