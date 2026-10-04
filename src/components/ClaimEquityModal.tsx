@@ -345,7 +345,6 @@ const ClaimEquityModal: React.FC<ClaimEquityModalProps> = ({
             <div className="flex flex-col sm:flex-row gap-3">
               <div className="flex-1">
                 <label
-                  title="You are registering interest in equity. The group creator can accept or reject your offer. Get independent legal advice before you pay, sign anything, or treat this as equity. EquityTake is not responsible for any payment or agreement between founders or group members."
                   className={`flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-colors ${
                     investmentType === 'cash' ? 'border-blue-500 bg-blue-50' : 'border-slate-300 hover:border-slate-400'
                   }`}
@@ -362,11 +361,6 @@ const ClaimEquityModal: React.FC<ClaimEquityModalProps> = ({
                   <DollarSign size={20} className="text-green-600" />
                   <span className="font-medium text-slate-800">Cash</span>
                 </label>
-                {investmentType === 'cash' && (
-                  <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg text-xs text-blue-800 leading-relaxed">
-                    You are registering interest in equity. The group creator can accept or reject your offer. Get independent legal advice before you pay, sign anything, or treat this as equity. EquityTake is not responsible for any payment or agreement between founders or group members.
-                  </div>
-                )}
               </div>
               <label
                 className={`flex items-center gap-3 p-3 border rounded-lg cursor-pointer flex-1 transition-colors ${
