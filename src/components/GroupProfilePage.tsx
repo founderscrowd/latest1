@@ -1206,7 +1206,7 @@ Are you absolutely sure you want to leave this group and forfeit your equity?`
                   <span className="text-white text-sm">🚀</span>
                 </div>
                 <div>
-                  <div className="text-sm font-semibold text-slate-900">Ready to register your interest?</div>
+                  <div className="text-sm font-semibold text-slate-900">Ready to apply for equity?</div>
                   <div className="text-xs text-slate-600">{group.equity_available}% available in {group.name}</div>
                 </div>
               </div>
@@ -1214,7 +1214,7 @@ Are you absolutely sure you want to leave this group and forfeit your equity?`
                 onClick={() => setShowClaimEquityModal(true)}
                 className="px-6 py-2.5 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-lg hover:from-green-700 hover:to-emerald-700 transition-all font-semibold text-sm shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
               >
-                Register Interest
+                Apply for Equity
               </button>
             </div>
           </div>
