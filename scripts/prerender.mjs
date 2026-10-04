@@ -255,7 +255,7 @@ const routes = {
     <li><strong>Builders looking to join a team.</strong> You have skills and want to contribute to a startup.</li>
     <li><strong>Early-stage teams forming.</strong> You're a small group starting out and want a structured space to discuss who does what and how equity might be split — before anything is formalised.</li>
     <li><strong>People exploring startup ideas.</strong> You're curious about startup building and want to see what others are working on. Browse groups freely — no account needed to look around.</li>
-    <li><strong>People starting a self-governing community.</strong> You want to create a community that governs itself, for profit or not for profit visions.</li>
+    <li><strong>People starting a self-governing community.</strong> You want to create a community that governs itself, for profit or non profit visions.</li>
   </ul>
 
   <h2 style="font-size:1.5rem;font-weight:700;margin:0 0 12px;">Why EquityTake</h2>
