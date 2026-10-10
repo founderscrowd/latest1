@@ -6,6 +6,7 @@ import { groupAPI } from '../lib/groupApi';
 import { stripeAPI } from '../lib/stripeApi';
 import { useAuth } from '../hooks/useAuth';
 import { EXISTING_USER_CUTOFF_DATE } from '../App';
+import NotFoundPage from './NotFoundPage';
 
 interface GroupDetailsRouteProps {
   onShowAuthModal: () => void;
@@ -56,12 +57,11 @@ const GroupDetailsRoute: React.FC<GroupDetailsRouteProps> = ({
         setGroupId(group.id);
         setGroupData(group);
       } else {
-        // Group not found, redirect to home
-        navigate('/');
+        setGroupId(null);
       }
     } catch (error) {
       console.error('Error loading group:', error);
-      navigate('/');
+      setGroupId(null);
     } finally {
       setLoading(false);
     }
@@ -107,7 +107,7 @@ const GroupDetailsRoute: React.FC<GroupDetailsRouteProps> = ({
   }
 
   if (!groupId) {
-    return null;
+    return <NotFoundPage />;
   }
 
   const groupName = groupData?.name || '';

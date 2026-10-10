@@ -45,6 +45,7 @@ import FindACofounderPage from './pages/FindACofounderPage';
 import EquityForCofoundersPage from './pages/EquityForCofoundersPage';
 import StartupEquitySplitPage from './pages/StartupEquitySplitPage';
 import StartupTeamBuildingPage from './pages/StartupTeamBuildingPage';
+import NotFoundPage from './pages/NotFoundPage';
 import { useAuth } from './hooks/useAuth';
 import { usePresence } from './hooks/usePresence';
 import { signOut } from './lib/supabase';
@@ -2040,6 +2041,7 @@ const App: React.FC = () => {
             </>
           }
         />
+        <Route path="*" element={<NotFoundPage siteLogoUrl={siteLogoUrl} />} />
       </Routes>
 
       {/* Modals - Always rendered so they can appear on any page */}

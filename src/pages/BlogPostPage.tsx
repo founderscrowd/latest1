@@ -3,6 +3,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, User } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { blogAPI, SiteContent } from '../lib/blogApi';
+import NotFoundPage from './NotFoundPage';
 
 interface BlogPostPageProps {
   siteLogoUrl: string | null;
@@ -160,39 +161,7 @@ const BlogPostPage: React.FC<BlogPostPageProps> = ({ siteLogoUrl }) => {
   }
 
   if (notFound || !post) {
-    return (
-      <div className="min-h-screen bg-slate-50">
-        <Helmet>
-          <title>Post Not Found | EquityTake</title>
-          <meta name="robots" content="noindex,nofollow" />
-        </Helmet>
-        <header className="bg-white border-b border-slate-200 py-4 sticky top-0 z-50 shadow-sm">
-          <div className="max-w-4xl mx-auto px-4 flex items-center gap-4">
-            <Link
-              to="/blog/"
-              className="flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors"
-            >
-              <ArrowLeft size={20} />
-              <span className="text-sm font-medium">Back to Blog</span>
-            </Link>
-          </div>
-        </header>
-        <main className="max-w-4xl mx-auto px-4 py-12">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold text-slate-900 mb-4">Post Not Found</h1>
-            <p className="text-slate-600 mb-8">
-              The blog post you're looking for doesn't exist or has been removed.
-            </p>
-            <Link
-              to="/blog/"
-              className="inline-block px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
-            >
-              View All Posts
-            </Link>
-          </div>
-        </main>
-      </div>
-    );
+    return <NotFoundPage siteLogoUrl={siteLogoUrl} />;
   }
 
   const canonicalUrl = `https://equitytakeaway.com/blog/${post.slug}/`;
