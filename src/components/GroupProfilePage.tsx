@@ -184,29 +184,19 @@ const GroupProfilePage: React.FC<GroupProfilePageProps> = ({ groupId, onBack, si
 
   const initializeGroupChat = async () => {
     try {
-      // Try to get existing group conversation
-      let groupConversation = await chatAPI.getGroupConversation(groupId);
-      
+      const ensuredConversationId = await chatAPI.ensureGroupConversationAccess(groupId);
+      const groupConversation = await chatAPI.getConversation(ensuredConversationId);
+
       if (!groupConversation) {
-        // Create group conversation if it doesn't exist
-        const conversationId = await chatAPI.createGroupConversation(groupId, group?.name);
-        setConversationId(conversationId);
-        // Fetch the created conversation
-        groupConversation = await chatAPI.getGroupConversation(groupId);
-      } else {
-        setConversationId(groupConversation.id);
+        throw new Error('Group conversation could not be loaded');
       }
 
-      if (user && groupConversation) {
-        await chatAPI.ensureConversationParticipation(
-          groupConversation.id,
-          user.id === group.creator_id ? 'starter' : 'member'
-        );
-      }
-      
+      setConversationId(ensuredConversationId);
       setConversation(groupConversation);
     } catch (error) {
       console.error('Error initializing group chat:', error);
+      setConversationId(null);
+      setConversation(null);
     }
   };
 

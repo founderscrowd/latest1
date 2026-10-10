@@ -207,6 +207,16 @@ class ChatAPI {
     if (error) throw error;
   }
 
+  async ensureGroupConversationAccess(groupId: string): Promise<string> {
+    const { data, error } = await supabase.rpc('ensure_group_conversation_access', {
+      group_id_param: groupId
+    });
+
+    if (error) throw error;
+    if (!data) throw new Error('Group conversation is unavailable');
+    return data;
+  }
+
   async getGroupConversation(groupId: string): Promise<Conversation | null> {
     try {
       const { data, error } = await supabase

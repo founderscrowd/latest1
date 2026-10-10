@@ -153,6 +153,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
       messageContent = newMessage;
       replyToId = replyTo?.id;
       files = [...selectedFiles];
+      const messageType = files.length > 0 ? 'file' : 'text';
       
       setNewMessage('');
       setReplyTo(null);
@@ -165,7 +166,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
         const sentMessage = await chatAPI.sendMessage(
           conversationId,
           messageContent || '[File attachment]',
-          selectedFiles.length > 0 ? 'file' : 'text',
+          messageType,
           replyToId,
           files
         );
@@ -184,8 +185,12 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
       setReplyTo(replyTo);
       setSelectedFiles(files);
       
-      // Show error message to user
-      alert('Failed to send message. Please try again.');
+      const errorMessage = error instanceof Error ? error.message : '';
+      alert(
+        errorMessage.includes('not authorized') || errorMessage.includes('participant')
+          ? 'You no longer have access to this group chat. Please refresh the page.'
+          : 'Failed to send message. Please try again.'
+      );
     } finally {
       setSending(false);
     }
