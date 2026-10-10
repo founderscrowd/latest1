@@ -196,10 +196,10 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
               onChange={handleInputChange}
               className="w-full p-2 border border-slate-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/10 text-sm"
               placeholder="e.g., Building the future of AI-powered education" 
-              maxLength={50}
+              maxLength={100}
             />
             <p className="text-xs text-slate-500 mt-1">
-              Max 50 characters ({formData.tags.length}/50)
+              Max 100 characters ({formData.tags.length}/100)
             </p>
           </div>
           
