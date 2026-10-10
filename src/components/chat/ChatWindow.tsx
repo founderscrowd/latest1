@@ -185,12 +185,28 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
       setReplyTo(replyTo);
       setSelectedFiles(files);
       
-      const errorMessage = error instanceof Error ? error.message : '';
-      alert(
-        errorMessage.includes('not authorized') || errorMessage.includes('participant')
-          ? 'You no longer have access to this group chat. Please refresh the page.'
-          : 'Failed to send message. Please try again.'
-      );
+      const supabaseError = error as {
+        message?: string;
+        code?: string;
+        details?: string;
+        hint?: string;
+      };
+      const errorParts = [
+        supabaseError.message,
+        supabaseError.code ? `code: ${supabaseError.code}` : undefined,
+        supabaseError.details ? `details: ${supabaseError.details}` : undefined,
+        supabaseError.hint ? `hint: ${supabaseError.hint}` : undefined
+      ].filter(Boolean);
+      const exactError = errorParts.join('\n') || String(error);
+
+      console.error('Full Supabase chat send error:', {
+        message: supabaseError.message,
+        code: supabaseError.code,
+        details: supabaseError.details,
+        hint: supabaseError.hint,
+        error
+      });
+      alert(`Failed to send message.\n\n${exactError}`);
     } finally {
       setSending(false);
     }
@@ -222,10 +238,10 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
     setSelectedFiles(prev => prev.filter((_, i) => i !== index));
   };
 
-  const formatTime = (dateString: string) => {
-    return new Date(dateString).toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit'
+  const formatDateTime = (dateString: string) => {
+    return new Date(dateString).toLocaleString('en-US', {
+      dateStyle: 'medium',
+      timeStyle: 'short'
     });
   };
 
@@ -290,6 +306,14 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
             className={`flex ${message.sender_id === user?.id ? 'justify-end' : 'justify-start'}`}
           >
             <div className={`max-w-xs lg:max-w-md ${message.sender_id === user?.id ? 'order-2' : 'order-1'}`}>
+              {conversation?.type === 'group' && (
+                <div className={`text-xs font-medium mb-1 ${
+                  message.sender_id === user?.id ? 'text-right text-slate-500' : 'text-left text-slate-600'
+                }`}>
+                  {message.sender_profile?.username || (message.sender_id === user?.id ? 'You' : 'Unknown User')}
+                </div>
+              )}
+
               {/* Reply indicator */}
               {message.reply_to_id && (
                 <div className="text-xs text-slate-500 mb-1 pl-3 border-l-2 border-slate-300">
@@ -407,7 +431,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                 <div className={`text-xs mt-1 ${
                   message.sender_id === user?.id ? 'text-blue-100' : 'text-slate-500'
                 }`}>
-                  {formatTime(message.created_at)}
+                  {formatDateTime(message.created_at)}
                   {message.edited_at && ' (edited)'}
                 </div>
               </div>
@@ -436,12 +460,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
                 </div>
               )}
 
-              {/* Sender info for group chats */}
-              {conversation?.type === 'group' && message.sender_id !== user?.id && (
-                <div className="text-xs text-slate-500 mt-1">
-                  {message.sender_profile?.username || 'Unknown User'}
-                </div>
-              )}
+
             </div>
           </div>
         ))}
