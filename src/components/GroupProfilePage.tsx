@@ -196,6 +196,13 @@ const GroupProfilePage: React.FC<GroupProfilePageProps> = ({ groupId, onBack, si
       } else {
         setConversationId(groupConversation.id);
       }
+
+      if (user && groupConversation) {
+        await chatAPI.ensureConversationParticipation(
+          groupConversation.id,
+          user.id === group.creator_id ? 'starter' : 'member'
+        );
+      }
       
       setConversation(groupConversation);
     } catch (error) {

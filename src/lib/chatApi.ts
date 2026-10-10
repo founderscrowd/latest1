@@ -172,25 +172,8 @@ class ChatAPI {
 
       if (error) throw error;
 
-      // Ensure the creator is properly added as an active participant
       try {
-        const { data: user } = await supabase.auth.getUser();
-        if (user.user) {
-          await supabase
-            .from('conversation_participants')
-            .upsert({
-              conversation_id: data,
-              user_id: user.user.id,
-              role: 'starter',
-              joined_at: new Date().toISOString(),
-              last_read_at: new Date().toISOString(),
-              left_at: null,
-              is_muted: false,
-              notification_settings: { mentions: true, all_messages: true }
-            }, {
-              onConflict: 'conversation_id,user_id'
-            });
-        }
+        await this.ensureConversationParticipation(data, 'starter');
       } catch (participantError) {
         console.warn('Could not ensure creator participation:', participantError);
       }
@@ -200,6 +183,28 @@ class ChatAPI {
       console.error('Error creating group conversation:', error);
       throw error;
     }
+  }
+
+  async ensureConversationParticipation(conversationId: string, role: ConversationParticipant['role'] = 'member'): Promise<void> {
+    const { data: user } = await supabase.auth.getUser();
+    if (!user.user) throw new Error('User not authenticated');
+
+    const { error } = await supabase
+      .from('conversation_participants')
+      .upsert({
+        conversation_id: conversationId,
+        user_id: user.user.id,
+        role,
+        joined_at: new Date().toISOString(),
+        last_read_at: new Date().toISOString(),
+        left_at: null,
+        is_muted: false,
+        notification_settings: { mentions: true, all_messages: true }
+      }, {
+        onConflict: 'conversation_id,user_id'
+      });
+
+    if (error) throw error;
   }
 
   async getGroupConversation(groupId: string): Promise<Conversation | null> {
