@@ -3,11 +3,15 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, User } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { blogAPI, SiteContent } from '../lib/blogApi';
-import { renderMarkdown } from '../lib/markdown';
-import NotFoundPage from './NotFoundPage';
 
 interface BlogPostPageProps {
   siteLogoUrl: string | null;
+}
+
+function convertMarkdownLinks(html: string): string {
+  return html.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, text, url) => {
+    return `<a href="${url}">${text}</a>`;
+  });
 }
 
 const BlogPostPage: React.FC<BlogPostPageProps> = ({ siteLogoUrl }) => {
@@ -64,7 +68,39 @@ const BlogPostPage: React.FC<BlogPostPageProps> = ({ siteLogoUrl }) => {
   }
 
   if (notFound || !post) {
-    return <NotFoundPage siteLogoUrl={siteLogoUrl} />;
+    return (
+      <div className="min-h-screen bg-slate-50">
+        <Helmet>
+          <title>Post Not Found | EquityTake</title>
+          <meta name="robots" content="noindex,nofollow" />
+        </Helmet>
+        <header className="bg-white border-b border-slate-200 py-4 sticky top-0 z-50 shadow-sm">
+          <div className="max-w-4xl mx-auto px-4 flex items-center gap-4">
+            <Link
+              to="/blog"
+              className="flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors"
+            >
+              <ArrowLeft size={20} />
+              <span className="text-sm font-medium">Back to Blog</span>
+            </Link>
+          </div>
+        </header>
+        <main className="max-w-4xl mx-auto px-4 py-12">
+          <div className="text-center">
+            <h1 className="text-4xl font-bold text-slate-900 mb-4">Post Not Found</h1>
+            <p className="text-slate-600 mb-8">
+              The blog post you're looking for doesn't exist or has been removed.
+            </p>
+            <Link
+              to="/blog"
+              className="inline-block px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
+            >
+              View All Posts
+            </Link>
+          </div>
+        </main>
+      </div>
+    );
   }
 
   const canonicalUrl = `https://equitytakeaway.com/blog/${post.slug}`;
@@ -164,7 +200,11 @@ const BlogPostPage: React.FC<BlogPostPageProps> = ({ siteLogoUrl }) => {
 
           <div className="prose prose-slate max-w-none">
             <div
-              dangerouslySetInnerHTML={{ __html: renderMarkdown(post.content_body) }}
+              dangerouslySetInnerHTML={{
+                __html: post.content_body.includes('<')
+                  ? convertMarkdownLinks(post.content_body)
+                  : convertMarkdownLinks(post.content_body).replace(/\n/g, '<br />')
+              }}
               className="text-slate-700 leading-relaxed [&_a]:text-blue-600 [&_a]:underline [&_a:hover]:text-blue-800 [&_h1]:text-3xl [&_h1]:font-bold [&_h1]:mt-6 [&_h1]:mb-4 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:mt-5 [&_h2]:mb-3 [&_p]:mb-4 [&_ul]:list-disc [&_ul]:ml-6 [&_ul]:mb-4 [&_ol]:list-decimal [&_ol]:ml-6 [&_ol]:mb-4 [&_li]:mb-2"
             />
           </div>
