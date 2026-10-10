@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Users, MapPin, Calendar, DollarSign, Building, Tag, Globe, Lock, Crown, Scale, Landmark, Coins, Sprout } from 'lucide-react';
+import { ArrowLeft, Users, MapPin, Calendar, DollarSign, Building, Tag, Globe, Lock, Crown, Scale, Landmark, Coins, Sprout, MessageSquare } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { groupAPI, formatLegalStructure, formatOrganisationType } from '../lib/groupApi';
 import { supabase } from '../lib/supabase';
 import { EXISTING_USER_CUTOFF_DATE } from '../App';
 import ConfirmationModal from './ConfirmationModal';
+import PrivateChatModal from './PrivateChatModal';
 
 interface GroupDetailsPageProps {
   groupId: string;
@@ -78,6 +79,7 @@ const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({
   const [showLeaveConfirm, setShowLeaveConfirm] = useState(false);
   const [leaveConfirmMessage, setLeaveConfirmMessage] = useState('');
   const [leaving, setLeaving] = useState(false);
+  const [privateChatTarget, setPrivateChatTarget] = useState<{ userId: string; username: string } | null>(null);
 
   useEffect(() => {
     fetchGroupData();
@@ -533,6 +535,15 @@ Are you sure you want to leave this group and lose all access to your engagement
                           )}
                         </div>
                       </div>
+                      {member.user_id !== user?.id && (
+                        <button
+                          onClick={() => setPrivateChatTarget({ userId: member.user_id, username: member.profile?.username || 'Unknown User' })}
+                          className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          title={`Message ${member.profile?.username || 'this member'}`}
+                        >
+                          <MessageSquare size={14} />
+                        </button>
+                      )}
                     </div>
                   ))
                 ) : (
@@ -624,6 +635,15 @@ Are you sure you want to leave this group and lose all access to your engagement
         isDestructive={true}
         loading={leaving}
       />
+
+      {/* Private Chat Modal */}
+      {privateChatTarget && (
+        <PrivateChatModal
+          targetUserId={privateChatTarget.userId}
+          targetUsername={privateChatTarget.username}
+          onClose={() => setPrivateChatTarget(null)}
+        />
+      )}
     </div>
   );
 };

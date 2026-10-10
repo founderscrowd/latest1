@@ -44,6 +44,7 @@ import DescriptionPopover from './DescriptionPopover';
 import MembersHoverPreview from './MembersHoverPreview';
 import FullScreenDescriptionModal from './FullScreenDescriptionModal';
 import ConfirmationModal from './ConfirmationModal';
+import PrivateChatModal from './PrivateChatModal';
 
 interface Group {
   id: string;
@@ -141,6 +142,9 @@ const GroupProfilePage: React.FC<GroupProfilePageProps> = ({ groupId, onBack, si
   // Share functionality state
   const [showShareTooltip, setShowShareTooltip] = useState(false);
   const [shareTooltipText, setShareTooltipText] = useState('Copy link');
+
+  // Private chat state
+  const [privateChatTarget, setPrivateChatTarget] = useState<{ userId: string; username: string } | null>(null);
 
   // Ref for equity manager section
   const equityManagerRef = useRef<HTMLDivElement>(null);
@@ -380,6 +384,10 @@ Are you absolutely sure you want to leave this group and forfeit your equity?`
         block: 'start' 
       });
     }, 100);
+  };
+
+  const handleMessageMember = (userId: string, username: string) => {
+    setPrivateChatTarget({ userId, username });
   };
 
   if (loading) {
@@ -1055,6 +1063,15 @@ Are you absolutely sure you want to leave this group and forfeit your equity?`
                           </span>
                         </div>
                       </div>
+                      {member.user_id !== user?.id && (
+                        <button
+                          onClick={() => handleMessageMember(member.user_id, member.profile?.username || 'Unknown User')}
+                          className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                          title={`Message ${member.profile?.username || 'this member'}`}
+                        >
+                          <MessageSquare size={14} />
+                        </button>
+                      )}
                     </div>
                   ))}
                   {members.length > 5 && (
@@ -1097,6 +1114,16 @@ Are you absolutely sure you want to leave this group and forfeit your equity?`
                       Joined {new Date(member.joined_at).toLocaleDateString()}
                     </div>
                   </div>
+                  {member.user_id !== user?.id && (
+                    <button
+                      onClick={() => handleMessageMember(member.user_id, member.profile?.username || 'Unknown User')}
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors font-medium"
+                      title={`Message ${member.profile?.username || 'this member'}`}
+                    >
+                      <MessageSquare size={14} />
+                      Message
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
@@ -1274,6 +1301,8 @@ Are you absolutely sure you want to leave this group and forfeit your equity?`
           targetRect={membersTargetRect}
           members={members}
           onClose={() => setShowMembersPreview(false)}
+          onSeeAll={() => setActiveTab('members')}
+          onMessageMember={handleMessageMember}
         />
       )}
 
@@ -1298,6 +1327,15 @@ Are you absolutely sure you want to leave this group and forfeit your equity?`
         isDestructive={true}
         loading={leaving}
       />
+
+      {/* Private Chat Modal */}
+      {privateChatTarget && (
+        <PrivateChatModal
+          targetUserId={privateChatTarget.userId}
+          targetUsername={privateChatTarget.username}
+          onClose={() => setPrivateChatTarget(null)}
+        />
+      )}
     </div>
   );
 };

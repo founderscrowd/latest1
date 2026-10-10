@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Users, Crown, ArrowRight } from 'lucide-react';
+import { Users, Crown, ArrowRight, MessageSquare } from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
 
 interface GroupMember {
   id: string;
@@ -22,6 +23,7 @@ interface MembersHoverPreviewProps {
   targetRect: DOMRect | null;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
+  onMessageMember?: (userId: string, username: string) => void;
 }
 
 const MembersHoverPreview: React.FC<MembersHoverPreviewProps> = ({
@@ -31,8 +33,10 @@ const MembersHoverPreview: React.FC<MembersHoverPreviewProps> = ({
   onSeeAll,
   targetRect,
   onMouseEnter,
-  onMouseLeave
+  onMouseLeave,
+  onMessageMember
 }) => {
+  const { user } = useAuth();
   const [position, setPosition] = useState({ top: 0, left: 0 });
 
   const PREVIEW_LIMIT = 5;
@@ -145,6 +149,15 @@ const MembersHoverPreview: React.FC<MembersHoverPreviewProps> = ({
                       </span>
                     </div>
                   </div>
+                  {onMessageMember && member.user_id !== user?.id && (
+                    <button
+                      onClick={() => onMessageMember(member.user_id, member.profile?.username || 'Unknown User')}
+                      className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                      title={`Message ${member.profile?.username || 'this member'}`}
+                    >
+                      <MessageSquare size={14} />
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
