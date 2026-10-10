@@ -29,7 +29,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ siteLogoUrl }) => {
     }
   };
 
-  const canonicalUrl = `${window.location.origin}/about`;
+  const canonicalUrl = `${window.location.origin}/about/`;
   const description = 'Learn more about EquityTake - connecting co-founders to build startups together through collaborative groups. Join our community of entrepreneurs and innovators.';
 
   return (

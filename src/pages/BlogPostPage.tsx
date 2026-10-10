@@ -8,10 +8,102 @@ interface BlogPostPageProps {
   siteLogoUrl: string | null;
 }
 
-function convertMarkdownLinks(html: string): string {
-  return html.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, text, url) => {
-    return `<a href="${url}">${text}</a>`;
+function renderMarkdown(md: string): string {
+  if (!md) return '';
+  let text = String(md);
+
+  const htmlTokens: string[] = [];
+  text = text.replace(/<[^>]+>/g, (m) => {
+    htmlTokens.push(m);
+    return `\x00HTML${htmlTokens.length - 1}\x00`;
   });
+
+  text = text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
+  text = text.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, linkText, url) => {
+    return `<a href="${url}">${linkText}</a>`;
+  });
+
+  text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  text = text.replace(/__([^_]+)__/g, '<strong>$1</strong>');
+  text = text.replace(/(^|[^*])\*([^*\n]+)\*(?![*])/g, '$1<em>$2</em>');
+  text = text.replace(/(^|[^_])_([^_\n]+)_(?!_)/g, '$1<em>$2</em>');
+
+  text = text.replace(/\x00HTML(\d+)\x00/g, (_, i) => htmlTokens[Number(i)]);
+
+  const lines = text.split('\n');
+  const result: string[] = [];
+  let inList = false;
+  let listType: 'ul' | 'ol' | null = null;
+  let inParagraph: string[] = [];
+
+  const flushParagraph = () => {
+    if (inParagraph.length > 0) {
+      result.push(`<p>${inParagraph.join(' ')}</p>`);
+      inParagraph = [];
+    }
+  };
+  const closeList = () => {
+    if (inList && listType) {
+      result.push(`</${listType}>`);
+      inList = false;
+      listType = null;
+    }
+  };
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+
+    const hMatch = trimmed.match(/^(#{1,6})\s+(.+)$/);
+    if (hMatch) {
+      flushParagraph();
+      closeList();
+      const level = hMatch[1].length;
+      result.push(`<h${level}>${hMatch[2]}</h${level}>`);
+      continue;
+    }
+
+    if (/^[-*+]\s+/.test(trimmed)) {
+      flushParagraph();
+      if (!inList || listType !== 'ul') {
+        closeList();
+        inList = true;
+        listType = 'ul';
+        result.push('<ul>');
+      }
+      result.push(`<li>${trimmed.replace(/^[-*+]\s+/, '')}</li>`);
+      continue;
+    }
+
+    if (/^\d+\.\s+/.test(trimmed)) {
+      flushParagraph();
+      if (!inList || listType !== 'ol') {
+        closeList();
+        inList = true;
+        listType = 'ol';
+        result.push('<ol>');
+      }
+      result.push(`<li>${trimmed.replace(/^\d+\.\s+/, '')}</li>`);
+      continue;
+    }
+
+    if (trimmed === '') {
+      flushParagraph();
+      closeList();
+      continue;
+    }
+
+    closeList();
+    inParagraph.push(trimmed);
+  }
+
+  flushParagraph();
+  closeList();
+
+  return result.join('\n');
 }
 
 const BlogPostPage: React.FC<BlogPostPageProps> = ({ siteLogoUrl }) => {
@@ -25,7 +117,7 @@ const BlogPostPage: React.FC<BlogPostPageProps> = ({ siteLogoUrl }) => {
     if (slug) {
       if (slug.startsWith('-')) {
         const cleanSlug = slug.replace(/^-+/, '');
-        navigate(`/blog/${cleanSlug}`, { replace: true });
+        navigate(`/blog/${cleanSlug}/`, { replace: true });
         return;
       }
       loadPost(slug);
@@ -77,7 +169,7 @@ const BlogPostPage: React.FC<BlogPostPageProps> = ({ siteLogoUrl }) => {
         <header className="bg-white border-b border-slate-200 py-4 sticky top-0 z-50 shadow-sm">
           <div className="max-w-4xl mx-auto px-4 flex items-center gap-4">
             <Link
-              to="/blog"
+              to="/blog/"
               className="flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors"
             >
               <ArrowLeft size={20} />
@@ -92,7 +184,7 @@ const BlogPostPage: React.FC<BlogPostPageProps> = ({ siteLogoUrl }) => {
               The blog post you're looking for doesn't exist or has been removed.
             </p>
             <Link
-              to="/blog"
+              to="/blog/"
               className="inline-block px-6 py-3 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors"
             >
               View All Posts
@@ -103,7 +195,7 @@ const BlogPostPage: React.FC<BlogPostPageProps> = ({ siteLogoUrl }) => {
     );
   }
 
-  const canonicalUrl = `https://equitytakeaway.com/blog/${post.slug}`;
+  const canonicalUrl = `https://equitytakeaway.com/blog/${post.slug}/`;
   const metaDescription = post.meta_description || post.excerpt || `${post.title} — read on EquityTake.`;
 
   return (
@@ -155,7 +247,7 @@ const BlogPostPage: React.FC<BlogPostPageProps> = ({ siteLogoUrl }) => {
       <header className="bg-white border-b border-slate-200 py-4 sticky top-0 z-50 shadow-sm">
         <div className="max-w-4xl mx-auto px-4 flex items-center gap-4">
           <Link
-            to="/blog"
+            to="/blog/"
             className="flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors"
           >
             <ArrowLeft size={20} />
@@ -200,12 +292,8 @@ const BlogPostPage: React.FC<BlogPostPageProps> = ({ siteLogoUrl }) => {
 
           <div className="prose prose-slate max-w-none">
             <div
-              dangerouslySetInnerHTML={{
-                __html: post.content_body.includes('<')
-                  ? convertMarkdownLinks(post.content_body)
-                  : convertMarkdownLinks(post.content_body).replace(/\n/g, '<br />')
-              }}
-              className="text-slate-700 leading-relaxed [&_a]:text-blue-600 [&_a]:underline [&_a:hover]:text-blue-800 [&_h1]:text-3xl [&_h1]:font-bold [&_h1]:mt-6 [&_h1]:mb-4 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:mt-5 [&_h2]:mb-3 [&_p]:mb-4 [&_ul]:list-disc [&_ul]:ml-6 [&_ul]:mb-4 [&_ol]:list-decimal [&_ol]:ml-6 [&_ol]:mb-4 [&_li]:mb-2"
+              dangerouslySetInnerHTML={{ __html: renderMarkdown(post.content_body) }}
+              className="text-slate-700 leading-relaxed [&_a]:text-blue-600 [&_a]:underline [&_a:hover]:text-blue-800 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:mt-5 [&_h2]:mb-3 [&_h3]:text-xl [&_h3]:font-bold [&_h3]:mt-4 [&_h3]:mb-2 [&_p]:mb-4 [&_ul]:list-disc [&_ul]:ml-6 [&_ul]:mb-4 [&_ol]:list-decimal [&_ol]:ml-6 [&_ol]:mb-4 [&_li]:mb-2 [&_strong]:font-semibold"
             />
           </div>
         </article>

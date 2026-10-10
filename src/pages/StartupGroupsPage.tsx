@@ -29,10 +29,10 @@ const StartupGroupsPage: React.FC<StartupGroupsPageProps> = ({ onBack, siteLogoU
       <div className="border-t border-slate-200 pt-5 mt-2">
         <p className="text-sm text-slate-500 mb-2 font-medium">Related reading</p>
         <div className="flex flex-col gap-1.5">
-          <Link to="/blog/startup-groups-that-actually-help-you-build" className="text-sm text-orange-600 hover:text-orange-700 hover:underline font-medium">
+          <Link to="/blog/startup-groups-that-actually-help-you-build/" className="text-sm text-orange-600 hover:text-orange-700 hover:underline font-medium">
             What useful startup groups look like →
           </Link>
-          <Link to="/blog/how-to-join-a-startup-group-without-wasting-months" className="text-sm text-orange-600 hover:text-orange-700 hover:underline font-medium">
+          <Link to="/blog/how-to-join-a-startup-group-without-wasting-months/" className="text-sm text-orange-600 hover:text-orange-700 hover:underline font-medium">
             Join playbook so you don't waste months →
           </Link>
         </div>

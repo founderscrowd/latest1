@@ -95,7 +95,7 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ onClose, showAs
         navigate(`/groups/${data.group_id}/manage`);
       }
     } else if (notification.type === 'user_registered' && isAdmin) {
-      navigate('/settings');
+      navigate('/settings/');
     } else if (
       notification.type === 'group_join_request' ||
       notification.type === 'group_joined' ||

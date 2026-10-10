@@ -65,7 +65,7 @@ function buildHtml({
   robots = 'index, follow',
 }) {
   const fullTitle = title;
-  const url = `https://equitytakeaway.com${path}`;
+  const url = `https://equitytakeaway.com${path.endsWith('/') ? path : path + '/'}`;
 
   return `<!doctype html>
 <html lang="en">
@@ -212,14 +212,14 @@ function marketingShell(h1, subtitle, extraBody = '') {
   const body = `
   <p style="font-size:1.1rem;line-height:1.6;color:#475569;margin:0 0 20px;">${esc(subtitle)}</p>
   <p style="margin:0 0 24px;">
-    <a href="/create-startup-group" style="display:inline-block;padding:12px 24px;background:#ea580c;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;margin-right:12px;">Create a startup group</a>
-    <a href="/groups" style="display:inline-block;padding:12px 24px;border:1px solid #cbd5e1;color:#1e293b;text-decoration:none;border-radius:8px;font-weight:600;">Browse groups</a>
+    <a href="/create-startup-group/" style="display:inline-block;padding:12px 24px;background:#ea580c;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;margin-right:12px;">Create a startup group</a>
+    <a href="/groups/" style="display:inline-block;padding:12px 24px;border:1px solid #cbd5e1;color:#1e293b;text-decoration:none;border-radius:8px;font-weight:600;">Browse groups</a>
   </p>
   <p style="font-size:0.9rem;color:#94a3b8;font-weight:500;margin:0 0 40px;">Free to use. Sign up to join or create a group. EquityTake is not a stock exchange and does not issue shares.</p>
   ${extraBody}
   <p style="font-size:0.85rem;color:#94a3b8;margin:24px 0;">Numbers and percentages on a group are proposals for discussion. EquityTake does not issue shares, collect investment, or incorporate companies. If anyone asks for funds, shares, or formal incorporation, get independent legal advice first.</p>`;
   const links = `<p style="margin:24px 0;">
-    ${link('/startup-groups', 'Startup groups')} | ${link('/create-startup-group', 'Create a startup group')} | ${link('/cofounder-matching', 'Co-founder matching')} | ${link('/groups', 'Browse groups')} | ${link('/equity-for-cofounders', 'Equity for co-founders')} | ${link('/startup-equity-split', 'Startup equity split')} | ${link('/startup-team-building', 'Startup team building')} | ${link('/how-it-works', 'How it works')}
+    ${link('/startup-groups/', 'Startup groups')} | ${link('/create-startup-group/', 'Create a startup group')} | ${link('/cofounder-matching/', 'Co-founder matching')} | ${link('/groups/', 'Browse groups')} | ${link('/equity-for-cofounders/', 'Equity for co-founders')} | ${link('/startup-equity-split/', 'Startup equity split')} | ${link('/startup-team-building/', 'Startup team building')} | ${link('/how-it-works/', 'How it works')}
   </p>`;
   return pageShell(h1, body, links);
 }
@@ -235,8 +235,8 @@ const routes = {
     Start or join a group built on one idea — then match with co-founders and talk through proposed equity splits.
   </p>
   <p style="margin:0 0 24px;">
-    <a href="/groups" style="display:inline-block;padding:12px 24px;background:#ea580c;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;margin-right:12px;">Browse groups</a>
-    <a href="/create-startup-group" style="display:inline-block;padding:12px 24px;border:1px solid #cbd5e1;color:#1e293b;text-decoration:none;border-radius:8px;font-weight:600;">Create a group</a>
+    <a href="/groups/" style="display:inline-block;padding:12px 24px;background:#ea580c;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;margin-right:12px;">Browse groups</a>
+    <a href="/create-startup-group/" style="display:inline-block;padding:12px 24px;border:1px solid #cbd5e1;color:#1e293b;text-decoration:none;border-radius:8px;font-weight:600;">Create a group</a>
   </p>
   <p style="font-size:0.9rem;color:#94a3b8;font-weight:500;margin:0 0 40px;">Not profile dating. Not a hobby meetup.</p>
 
@@ -285,14 +285,14 @@ const routes = {
 
   <h2 style="font-size:1.5rem;font-weight:700;margin:0 0 12px;">Explore more</h2>
   <ul style="color:#475569;line-height:1.7;padding-left:20px;margin:0 0 40px;">
-    <li><a href="/how-it-works" style="color:#ea580c;">How it works</a></li>
-    <li><a href="/groups" style="color:#ea580c;">Browse all groups</a></li>
-    <li><a href="/cofounder-matching" style="color:#ea580c;">Co-founder matching</a></li>
-    <li><a href="/find-a-cofounder" style="color:#ea580c;">Find a co-founder</a></li>
-    <li><a href="/startup-groups" style="color:#ea580c;">Startup groups</a></li>
-    <li><a href="/startup-equity-split" style="color:#ea580c;">Startup equity split</a></li>
-    <li><a href="/about" style="color:#ea580c;">About EquityTake</a></li>
-    <li><a href="/blog" style="color:#ea580c;">Blog</a></li>
+    <li><a href="/how-it-works/" style="color:#ea580c;">How it works</a></li>
+    <li><a href="/groups/" style="color:#ea580c;">Browse all groups</a></li>
+    <li><a href="/cofounder-matching/" style="color:#ea580c;">Co-founder matching</a></li>
+    <li><a href="/find-a-cofounder/" style="color:#ea580c;">Find a co-founder</a></li>
+    <li><a href="/startup-groups/" style="color:#ea580c;">Startup groups</a></li>
+    <li><a href="/startup-equity-split/" style="color:#ea580c;">Startup equity split</a></li>
+    <li><a href="/about/" style="color:#ea580c;">About EquityTake</a></li>
+    <li><a href="/blog/" style="color:#ea580c;">Blog</a></li>
   </ul>
 </main>`,
   },
@@ -309,9 +309,9 @@ const routes = {
     bodyHtml: marketingShell(
       'Startup groups',
       'A group is one idea and one team conversation. You create a group, invite or match people, and talk about roles and proposed equity inside that group. Each group has its own chat, its own members, and its own proposed equity numbers. The numbers are there to start a discussion — they are not a signed cap table.',
-      `<p style="color:#475569;line-height:1.7;margin:0 0 20px;"><a href="/groups" style="color:#ea580c;">Browse all groups →</a></p>${relatedReadingHtml([
-        { href: '/blog/startup-groups-that-actually-help-you-build', text: 'What useful startup groups look like →' },
-        { href: '/blog/how-to-join-a-startup-group-without-wasting-months', text: 'Join playbook so you don\u2019t waste months →' },
+      `<p style="color:#475569;line-height:1.7;margin:0 0 20px;"><a href="/groups/" style="color:#ea580c;">Browse all groups →</a></p>${relatedReadingHtml([
+        { href: '/blog/startup-groups-that-actually-help-you-build/', text: 'What useful startup groups look like →' },
+        { href: '/blog/how-to-join-a-startup-group-without-wasting-months/', text: 'Join playbook so you don\u2019t waste months →' },
       ])}`
     ),
   },
@@ -323,8 +323,8 @@ const routes = {
       'Create a startup group around your idea',
       'Gather founders around a project — then match as co-founders and talk through proposed equity splits inside the group. Creating a group is not creating a company. It is the first step in finding people who want to build the same idea as you. Name the idea, describe the problem, say which co-founders you need, and propose a starting equity split for the group to discuss. Once your group exists, people can find it, join it, and start talking with you in group chat.',
       `<p style="font-size:0.9rem;color:#94a3b8;font-weight:500;margin:16px 0 0 0;">Not profile dating. Not a hobby meetup.</p>${relatedReadingHtml([
-        { href: '/blog/create-a-startup-group-around-your-idea', text: 'Step-by-step: create a startup group around your idea →' },
-        { href: '/blog/how-to-start-owning-a-business-from-scratch', text: 'How to start owning a business from scratch →' },
+        { href: '/blog/create-a-startup-group-around-your-idea/', text: 'Step-by-step: create a startup group around your idea →' },
+        { href: '/blog/how-to-start-owning-a-business-from-scratch/', text: 'How to start owning a business from scratch →' },
       ])}`
     ),
   },
@@ -354,7 +354,7 @@ const routes = {
       'Equity for co-founders',
       'This product is for discussing proposed co-founder equity inside a group. It is not a stock exchange and not a law firm. When you see equity percentages on a group, they are starting points for a conversation. The group talks through who is doing what, when they joined, and what they are putting in — then decides together what feels fair.',
       relatedReadingHtml([
-        { href: '/blog/how-to-split-startup-equity-fairly', text: 'Practical guide to splitting equity fairly →' },
+        { href: '/blog/how-to-split-startup-equity-fairly/', text: 'Practical guide to splitting equity fairly →' },
       ])
     ),
   },
@@ -366,7 +366,7 @@ const routes = {
       'Startup equity split',
       'A startup equity split is one of the hardest early conversations. EquityTake gives your group a place to have it — out in the open, with the people who are actually going to build the thing. Talk about: who is doing what (roles, responsibilities, time commitment), when they joined (early members often carry more risk), what they are putting in (skills, capital, network, or sweat equity), and what happens if someone leaves (vesting and cliff concepts to discuss). Everything on EquityTake is labelled as a discussion proposal, not a final cap table. No tax, securities, or legal advice. If you are formalising a split, get independent legal advice first.',
       relatedReadingHtml([
-        { href: '/blog/how-to-split-startup-equity-fairly', text: 'Practical guide to splitting equity fairly →' },
+        { href: '/blog/how-to-split-startup-equity-fairly/', text: 'Practical guide to splitting equity fairly →' },
       ])
     ),
   },
@@ -397,8 +397,8 @@ const routes = {
       `<p style="font-size:1.1rem;line-height:1.6;color:#475569;margin:0 0 20px;">From Idea to Team to Startup. Great businesses often start with an idea. An idea still needs the right people around it before it becomes something real.</p>
   <p style="font-weight:600;color:#1e293b;margin:0 0 20px;">Idea &rarr; Group &rarr; Contributions &rarr; Proposed Equity &rarr; Team &rarr; Startup</p>
   <p style="margin:0 0 24px;">
-    <a href="/create-startup-group" style="display:inline-block;padding:12px 24px;background:#ea580c;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;margin-right:12px;">Create a group</a>
-    <a href="/groups" style="display:inline-block;padding:12px 24px;border:1px solid #cbd5e1;color:#1e293b;text-decoration:none;border-radius:8px;font-weight:600;">Browse startup groups</a>
+    <a href="/create-startup-group/" style="display:inline-block;padding:12px 24px;background:#ea580c;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;margin-right:12px;">Create a group</a>
+    <a href="/groups/" style="display:inline-block;padding:12px 24px;border:1px solid #cbd5e1;color:#1e293b;text-decoration:none;border-radius:8px;font-weight:600;">Browse startup groups</a>
   </p>
 
   <h2 style="font-size:1.5rem;font-weight:700;margin:0 0 12px;">1. Start With an Idea</h2>
@@ -413,13 +413,13 @@ const routes = {
     <li>whether the business is pre-incorporation or already incorporated</li>
   </ul>
   <p style="color:#475569;line-height:1.7;margin:0 0 16px;"><strong>Proposed Company Value</strong> is the value the group creator assigns to 100% of the business. It is a shared reference for discussing proposed equity. It is not an independent or professional valuation. Example: Proposed Company Value of $100,000. A proposed 5% equity allocation has a <strong>$5,000 Reference Value</strong>.</p>
-  <p style="color:#475569;line-height:1.7;margin:0 0 40px;">Step-by-step: <a href="/blog/create-a-startup-group-around-your-idea" style="color:#ea580c;">create a startup group around your idea</a>.</p>
+  <p style="color:#475569;line-height:1.7;margin:0 0 40px;">Step-by-step: <a href="/blog/create-a-startup-group-around-your-idea/" style="color:#ea580c;">create a startup group around your idea</a>.</p>
 
   <h2 style="font-size:1.5rem;font-weight:700;margin:0 0 12px;">2. Build a Group Around the Idea</h2>
   <p style="color:#475569;line-height:1.7;margin:0 0 16px;">Once the group is published, other people can discover it and learn what you are trying to build. EquityTake brings people together <strong>around the idea</strong>, not by matching profiles. Potential co-founders can explore the opportunity, join the discussion and decide whether their experience, skills, resources or capital fit.</p>
   <p style="color:#475569;line-height:1.7;margin:0 0 40px;">
-    <a href="/blog/startup-groups-that-actually-help-you-build" style="color:#ea580c;">What useful startup groups look like</a> &middot;
-    <a href="/blog/how-to-join-a-startup-group-without-wasting-months" style="color:#ea580c;">How to join without wasting months</a>
+    <a href="/blog/startup-groups-that-actually-help-you-build/" style="color:#ea580c;">What useful startup groups look like</a> &middot;
+    <a href="/blog/how-to-join-a-startup-group-without-wasting-months/" style="color:#ea580c;">How to join without wasting months</a>
   </p>
 
   <h2 style="font-size:1.5rem;font-weight:700;margin:0 0 12px;">3. Decide What You Can Contribute</h2>
@@ -428,7 +428,7 @@ const routes = {
   <h2 style="font-size:1.5rem;font-weight:700;margin:0 0 12px;">4. Apply for Equity</h2>
   <p style="color:#475569;line-height:1.7;margin:0 0 16px;">If someone wants to join, they can submit an equity application showing: the percentage of equity requested, whether the contribution is Cash or Skills / Tasks, what the person proposes to contribute, and the corresponding <strong>Reference Value</strong>.</p>
   <p style="color:#475569;line-height:1.7;margin:0 0 16px;"><strong>Reference Value = Proposed Company Value &times; equity percentage.</strong> Example: Proposed Company Value $20,000, proposed equity 5%, Reference Value $1,000. If the contribution is Skills / Tasks, it does <strong>not</strong> mean that cash was invested.</p>
-  <p style="color:#475569;line-height:1.7;margin:0 0 40px;">More on the conversation: <a href="/blog/how-to-split-startup-equity-fairly" style="color:#ea580c;">how to split startup equity fairly</a>.</p>
+  <p style="color:#475569;line-height:1.7;margin:0 0 40px;">More on the conversation: <a href="/blog/how-to-split-startup-equity-fairly/" style="color:#ea580c;">how to split startup equity fairly</a>.</p>
 
   <h2 style="font-size:1.5rem;font-weight:700;margin:0 0 12px;">5. Review, Discuss and Agree</h2>
   <p style="color:#475569;line-height:1.7;margin:0 0 40px;">An equity application is not accepted automatically. Applications stay <strong>Pending</strong> while the group administrator and members consider them. If the application is approved, that proposed equity is allocated to the member and removed from the equity still available.</p>
@@ -461,8 +461,8 @@ const routes = {
   </dl>
 
   <p style="margin:24px 0;">
-    <a href="/create-startup-group" style="display:inline-block;padding:12px 24px;background:#ea580c;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;margin-right:12px;">Create a group</a>
-    <a href="/groups" style="display:inline-block;padding:12px 24px;border:1px solid #cbd5e1;color:#1e293b;text-decoration:none;border-radius:8px;font-weight:600;">Explore active groups</a>
+    <a href="/create-startup-group/" style="display:inline-block;padding:12px 24px;background:#ea580c;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;margin-right:12px;">Create a group</a>
+    <a href="/groups/" style="display:inline-block;padding:12px 24px;border:1px solid #cbd5e1;color:#1e293b;text-decoration:none;border-radius:8px;font-weight:600;">Explore active groups</a>
   </p>`
     ),
   },
@@ -595,19 +595,19 @@ function buildGroupsPage(groups) {
     }).join('\n');
     groupsHtml = `<div style="margin:24px 0;">${items}</div>`;
   } else {
-    groupsHtml = `<p style="color:#64748b;margin:24px 0;">No public groups available yet. Be the first to <a href="/create-startup-group" style="color:#ea580c;">create one</a>.</p>`;
+    groupsHtml = `<p style="color:#64748b;margin:24px 0;">No public groups available yet. Be the first to <a href="/create-startup-group/" style="color:#ea580c;">create one</a>.</p>`;
   }
 
   const body = `<main style="font-family:system-ui,-apple-system,sans-serif;color:#1e293b;max-width:800px;margin:0 auto;padding:20px;">
   <h1 style="font-size:2rem;font-weight:700;margin:0 0 16px;">Browse startup groups</h1>
   <p style="font-size:1.1rem;line-height:1.6;color:#475569;margin:0 0 20px;">Each group is one idea and one team conversation. Browse, join, or create your own.</p>
   <p style="margin:0 0 24px;">
-    <a href="/create-startup-group" style="display:inline-block;padding:12px 24px;background:#ea580c;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;margin-right:12px;">Create a startup group</a>
-    <a href="/cofounder-matching" style="display:inline-block;padding:12px 24px;border:1px solid #cbd5e1;color:#1e293b;text-decoration:none;border-radius:8px;font-weight:600;">Co-founder matching</a>
+    <a href="/create-startup-group/" style="display:inline-block;padding:12px 24px;background:#ea580c;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;margin-right:12px;">Create a startup group</a>
+    <a href="/cofounder-matching/" style="display:inline-block;padding:12px 24px;border:1px solid #cbd5e1;color:#1e293b;text-decoration:none;border-radius:8px;font-weight:600;">Co-founder matching</a>
   </p>
   ${groupsHtml}
   <p style="font-size:0.85rem;color:#94a3b8;margin:24px 0;">Numbers and percentages on a group are proposals for discussion. EquityTake does not issue shares, collect investment, or incorporate companies.</p>
-  <p style="font-size:0.9rem;color:#64748b;margin:16px 0 0 0;">New here? <a href="/blog/how-to-join-a-startup-group-without-wasting-months" style="color:#ea580c;">How to join a startup group without wasting months →</a></p>
+  <p style="font-size:0.9rem;color:#64748b;margin:16px 0 0 0;">New here? <a href="/blog/how-to-join-a-startup-group-without-wasting-months/" style="color:#ea580c;">How to join a startup group without wasting months →</a></p>
 </main>`;
   return body;
 }
@@ -624,7 +624,7 @@ function buildBlogListPage(posts) {
         ? new Date(p.published_at).toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })
         : '';
       return `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin-bottom:12px;">
-        <h3 style="font-size:1.2rem;font-weight:600;margin:0 0 4px;"><a href="/blog/${slug}" style="color:#1e293b;text-decoration:none;">${title}</a></h3>
+        <h3 style="font-size:1.2rem;font-weight:600;margin:0 0 4px;"><a href="/blog/${slug}/" style="color:#1e293b;text-decoration:none;">${title}</a></h3>
         ${date ? `<p style="color:#94a3b8;margin:0 0 8px;font-size:0.85rem;">${date}</p>` : ''}
         ${excerpt ? `<p style="color:#64748b;margin:0;font-size:0.95rem;">${excerpt}</p>` : ''}
       </div>`;
@@ -640,6 +640,118 @@ function buildBlogListPage(posts) {
   ${postsHtml}
 </main>`;
   return body;
+}
+
+// ---------- Markdown to HTML converter (sanitised) ----------
+function renderMarkdown(md) {
+  if (!md) return '';
+  let text = String(md);
+
+  // Extract existing HTML tags (e.g. <a href="...">) and protect them
+  const htmlTokens = [];
+  text = text.replace(/<[^>]+>/g, (m) => {
+    htmlTokens.push(m);
+    return `\x00HTML${htmlTokens.length - 1}\x00`;
+  });
+
+  // Escape HTML entities in the remaining text
+  text = text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
+  // Convert markdown links [text](url) to <a> tags
+  text = text.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, linkText, url) => {
+    return `<a href="${url}">${linkText}</a>`;
+  });
+
+  // Bold **text** or __text__
+  text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  text = text.replace(/__([^_]+)__/g, '<strong>$1</strong>');
+
+  // Italic *text* or _text_ (but not ** which was already handled)
+  text = text.replace(/(^|[^*])\*([^*\n]+)\*(?![*])/g, '$1<em>$2</em>');
+  text = text.replace(/(^|[^_])_([^_\n]+)_(?!_)/g, '$1<em>$2</em>');
+
+  // Restore protected HTML tokens
+  text = text.replace(/\x00HTML(\d+)\x00/g, (_, i) => htmlTokens[Number(i)]);
+
+  // Split into lines and process block-level elements
+  const lines = text.split('\n');
+  const result = [];
+  let inList = false;
+  let listType = null;
+  let inParagraph = [];
+
+  function flushParagraph() {
+    if (inParagraph.length > 0) {
+      result.push(`<p>${inParagraph.join(' ')}</p>`);
+      inParagraph = [];
+    }
+  }
+  function closeList() {
+    if (inList) {
+      result.push(`</${listType}>`);
+      inList = false;
+      listType = null;
+    }
+  }
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+
+    // Headings
+    const hMatch = trimmed.match(/^(#{1,6})\s+(.+)$/);
+    if (hMatch) {
+      flushParagraph();
+      closeList();
+      const level = hMatch[1].length;
+      result.push(`<h${level}>${hMatch[2]}</h${level}>`);
+      continue;
+    }
+
+    // Unordered list items
+    if (/^[-*+]\s+/.test(trimmed)) {
+      flushParagraph();
+      if (!inList || listType !== 'ul') {
+        closeList();
+        inList = true;
+        listType = 'ul';
+        result.push('<ul>');
+      }
+      result.push(`<li>${trimmed.replace(/^[-*+]\s+/, '')}</li>`);
+      continue;
+    }
+
+    // Ordered list items
+    if (/^\d+\.\s+/.test(trimmed)) {
+      flushParagraph();
+      if (!inList || listType !== 'ol') {
+        closeList();
+        inList = true;
+        listType = 'ol';
+        result.push('<ol>');
+      }
+      result.push(`<li>${trimmed.replace(/^\d+\.\s+/, '')}</li>`);
+      continue;
+    }
+
+    // Empty line — paragraph break
+    if (trimmed === '') {
+      flushParagraph();
+      closeList();
+      continue;
+    }
+
+    // Normal text line — accumulate into paragraph
+    closeList();
+    inParagraph.push(trimmed);
+  }
+
+  flushParagraph();
+  closeList();
+
+  return result.join('\n');
 }
 
 // Convert Markdown links [text](url) to HTML <a> tags, leaving existing HTML untouched
@@ -674,18 +786,16 @@ function buildBlogPostPage(post) {
   const date = post.published_at
     ? new Date(post.published_at).toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })
     : '';
-  // Convert Markdown links to real <a> tags, then strip other HTML but preserve links
+  // Render markdown to sanitised HTML (headings, bold, lists, links, paragraphs)
   const rawBody = post.content_body || '';
-  const withLinks = convertMarkdownLinks(rawBody);
-  const bodyText = stripHtmlPreserveLinks(withLinks);
-  // Show full content for crawlers, truncated to 12000 chars
-  const fullBody = truncate(bodyText, 12000);
+  const bodyHtml = renderMarkdown(rawBody);
+  const fullBody = truncate(bodyHtml, 12000);
 
   const body = `<main style="font-family:system-ui,-apple-system,sans-serif;color:#1e293b;max-width:800px;margin:0 auto;padding:20px;">
   <h1 style="font-size:2rem;font-weight:700;margin:0 0 8px;">${title}</h1>
   ${date ? `<p style="color:#94a3b8;margin:0 0 24px;font-size:0.9rem;">Published ${date}</p>` : ''}
   <div style="color:#475569;line-height:1.7;font-size:1.05rem;">${fullBody}</div>
-  <p style="margin:32px 0 16px;"><a href="/blog" style="color:#ea580c;">← Back to blog</a></p>
+  <p style="margin:32px 0 16px;"><a href="/blog/" style="color:#ea580c;">&larr; Back to blog</a></p>
 </main>`;
   return body;
 }

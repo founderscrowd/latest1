@@ -1046,15 +1046,15 @@ const App: React.FC = () => {
 
       <Routes>
         {/* Blog Routes */}
-        <Route path="/blog" element={<BlogListPage siteLogoUrl={siteLogoUrl} />} />
-        <Route path="/blog/:slug" element={<BlogPostPage siteLogoUrl={siteLogoUrl} />} />
+        <Route path="/blog/" element={<BlogListPage siteLogoUrl={siteLogoUrl} />} />
+        <Route path="/blog/:slug/" element={<BlogPostPage siteLogoUrl={siteLogoUrl} />} />
 
         {/* About Route */}
-        <Route path="/about" element={<AboutPage siteLogoUrl={siteLogoUrl} />} />
+        <Route path="/about/" element={<AboutPage siteLogoUrl={siteLogoUrl} />} />
 
         {/* Group Routes */}
         <Route
-          path="/groups"
+          path="/groups/"
           element={
             <GroupsListPage
               siteLogoUrl={siteLogoUrl}
@@ -1072,7 +1072,7 @@ const App: React.FC = () => {
           }
         />
         <Route
-          path="/groups/:slug"
+          path="/groups/:slug/"
           element={
             <GroupDetailsRoute
               userSubscription={userSubscription}
@@ -1082,7 +1082,7 @@ const App: React.FC = () => {
           }
         />
         <Route
-          path="/groups/:slug/manage"
+          path="/groups/:slug/manage/"
           element={<GroupProfileRoute siteLogoUrl={siteLogoUrl} />}
         />
 
@@ -1091,33 +1091,33 @@ const App: React.FC = () => {
 
         {/* Payment Routes */}
         <Route
-          path="/payment/success"
+          path="/payment/success/"
           element={<PaymentSuccessRoute />}
         />
         <Route
-          path="/payment/cancelled"
+          path="/payment/cancelled/"
           element={<PaymentCancelRoute onShowPricingModal={() => setShowPricingModal(true)} />}
         />
 
         {/* Sign In Route */}
         <Route
-          path="/sign-in"
+          path="/sign-in/"
           element={<SignInPage siteLogoUrl={siteLogoUrl} />}
         />
 
         {/* Password Reset Routes */}
         <Route
-          path="/forgot-password"
+          path="/forgot-password/"
           element={<ForgotPasswordPage siteLogoUrl={siteLogoUrl} />}
         />
         <Route
-          path="/reset-password"
+          path="/reset-password/"
           element={<ResetPasswordPage siteLogoUrl={siteLogoUrl} />}
         />
 
         {/* Policy Pages */}
         <Route
-          path="/privacy"
+          path="/privacy/"
           element={
             <PrivacyPolicyPage
               onBack={() => navigate('/')}
@@ -1126,7 +1126,7 @@ const App: React.FC = () => {
           }
         />
         <Route
-          path="/terms"
+          path="/terms/"
           element={
             <TermsOfServicePage
               onBack={() => navigate('/')}
@@ -1135,7 +1135,7 @@ const App: React.FC = () => {
           }
         />
         <Route
-          path="/cookies"
+          path="/cookies/"
           element={
             <CookiePolicyPage
               onBack={() => navigate('/')}
@@ -1146,7 +1146,7 @@ const App: React.FC = () => {
 
         {/* How It Works */}
         <Route
-          path="/how-it-works"
+          path="/how-it-works/"
           element={
             <HowItWorksPage
               onBack={() => navigate('/')}
@@ -1157,7 +1157,7 @@ const App: React.FC = () => {
 
         {/* Marketing Pages */}
         <Route
-          path="/startup-groups"
+          path="/startup-groups/"
           element={
             <StartupGroupsPage
               onBack={() => navigate('/')}
@@ -1174,7 +1174,7 @@ const App: React.FC = () => {
           }
         />
         <Route
-          path="/communities-and-cooperatives"
+          path="/communities-and-cooperatives/"
           element={
             <CommunitiesAndCooperativesPage
               onBack={() => navigate('/')}
@@ -1191,7 +1191,7 @@ const App: React.FC = () => {
           }
         />
         <Route
-          path="/create-startup-group"
+          path="/create-startup-group/"
           element={
             <CreateStartupGroupPage
               onBack={() => navigate('/')}
@@ -1208,7 +1208,7 @@ const App: React.FC = () => {
           }
         />
         <Route
-          path="/cofounder-matching"
+          path="/cofounder-matching/"
           element={
             <CofounderMatchingPage
               onBack={() => navigate('/')}
@@ -1225,7 +1225,7 @@ const App: React.FC = () => {
           }
         />
         <Route
-          path="/find-a-cofounder"
+          path="/find-a-cofounder/"
           element={
             <FindACofounderPage
               onBack={() => navigate('/')}
@@ -1242,7 +1242,7 @@ const App: React.FC = () => {
           }
         />
         <Route
-          path="/equity-for-cofounders"
+          path="/equity-for-cofounders/"
           element={
             <EquityForCofoundersPage
               onBack={() => navigate('/')}
@@ -1259,7 +1259,7 @@ const App: React.FC = () => {
           }
         />
         <Route
-          path="/startup-equity-split"
+          path="/startup-equity-split/"
           element={
             <StartupEquitySplitPage
               onBack={() => navigate('/')}
@@ -1276,7 +1276,7 @@ const App: React.FC = () => {
           }
         />
         <Route
-          path="/startup-team-building"
+          path="/startup-team-building/"
           element={
             <StartupTeamBuildingPage
               onBack={() => navigate('/')}
@@ -1295,7 +1295,7 @@ const App: React.FC = () => {
 
         {/* Profile (Protected) */}
         <Route
-          path="/profile"
+          path="/profile/"
           element={
             user ? (
               <ProfilePage
@@ -1315,7 +1315,7 @@ const App: React.FC = () => {
 
         {/* Site Settings (Admin Only) */}
         <Route
-          path="/settings"
+          path="/settings/"
           element={
             user && isUserSiteAdmin ? (
               <SiteSettingsPage onBack={() => navigate('/')} />
@@ -1388,9 +1388,9 @@ const App: React.FC = () => {
               {/* Desktop secondary links */}
               <div className="hidden md:flex gap-2 items-center">
                 <Link to="/" className="px-3 py-2 rounded-lg font-semibold text-xs text-slate-600 hover:text-slate-900 transition-colors">Home</Link>
-                <Link to="/how-it-works" className="px-3 py-2 rounded-lg font-semibold text-xs text-slate-600 hover:text-slate-900 transition-colors">How It Works</Link>
-                <Link to="/blog" className="px-3 py-2 rounded-lg font-semibold text-xs text-slate-600 hover:text-slate-900 transition-colors">Blog</Link>
-                <Link to="/about" className="px-3 py-2 rounded-lg font-semibold text-xs text-slate-600 hover:text-slate-900 transition-colors">About</Link>
+                <Link to="/how-it-works/" className="px-3 py-2 rounded-lg font-semibold text-xs text-slate-600 hover:text-slate-900 transition-colors">How It Works</Link>
+                <Link to="/blog/" className="px-3 py-2 rounded-lg font-semibold text-xs text-slate-600 hover:text-slate-900 transition-colors">Blog</Link>
+                <Link to="/about/" className="px-3 py-2 rounded-lg font-semibold text-xs text-slate-600 hover:text-slate-900 transition-colors">About</Link>
                 <button
                   onClick={() => setShowFeedbackModal(true)}
                   className="flex items-center gap-1 px-3 py-2 rounded-lg font-semibold text-xs text-slate-600 hover:text-slate-900 transition-colors"
@@ -1402,7 +1402,7 @@ const App: React.FC = () => {
                   <div className="flex items-center gap-2">
                     {user && isUserSiteAdmin && (
                       <button
-                        onClick={() => navigate('/settings')}
+                        onClick={() => navigate('/settings/')}
                         className="flex items-center gap-1 px-2 py-1.5 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors"
                         title="Site Settings"
                       >
@@ -1423,7 +1423,7 @@ const App: React.FC = () => {
                       )}
                     </button>
                     <button
-                      onClick={() => navigate('/profile')}
+                      onClick={() => navigate('/profile/')}
                       className="flex items-center gap-1 px-2 py-1.5 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors"
                     >
                       <UserCircle size={14} className="text-slate-600" />
@@ -1440,7 +1440,7 @@ const App: React.FC = () => {
                 ) : (
                   <>
                     <button
-                      onClick={() => navigate('/sign-in')}
+                      onClick={() => navigate('/sign-in/')}
                       className="px-3 py-2 rounded-lg font-semibold text-xs text-slate-600 border border-slate-200 hover:bg-slate-50 transition-colors"
                     >
                       Sign In
@@ -1482,7 +1482,7 @@ const App: React.FC = () => {
                 ) : (
                   <>
                     <button
-                      onClick={() => navigate('/sign-in')}
+                      onClick={() => navigate('/sign-in/')}
                       className="px-2.5 py-2 rounded-lg font-semibold text-xs text-slate-600 border border-slate-200 hover:bg-slate-50 transition-colors"
                     >
                       Sign In
@@ -1517,21 +1517,21 @@ const App: React.FC = () => {
                     Home
                   </Link>
                   <Link
-                    to="/how-it-works"
+                    to="/how-it-works/"
                     onClick={() => setMobileMenuOpen(false)}
                     className="px-3 py-2.5 rounded-lg font-semibold text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors"
                   >
                     How It Works
                   </Link>
                   <Link
-                    to="/blog"
+                    to="/blog/"
                     onClick={() => setMobileMenuOpen(false)}
                     className="px-3 py-2.5 rounded-lg font-semibold text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors"
                   >
                     Blog
                   </Link>
                   <Link
-                    to="/about"
+                    to="/about/"
                     onClick={() => setMobileMenuOpen(false)}
                     className="px-3 py-2.5 rounded-lg font-semibold text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors"
                   >
@@ -1547,7 +1547,7 @@ const App: React.FC = () => {
                   {user && (
                     <>
                       <button
-                        onClick={() => { navigate('/profile'); setMobileMenuOpen(false); }}
+                        onClick={() => { navigate('/profile/'); setMobileMenuOpen(false); }}
                         className="flex items-center gap-2 px-3 py-2.5 rounded-lg font-semibold text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors text-left"
                       >
                         <UserCircle size={16} className="text-slate-500" />
@@ -1555,7 +1555,7 @@ const App: React.FC = () => {
                       </button>
                       {user && isUserSiteAdmin && (
                         <button
-                          onClick={() => { navigate('/settings'); setMobileMenuOpen(false); }}
+                          onClick={() => { navigate('/settings/'); setMobileMenuOpen(false); }}
                           className="flex items-center gap-2 px-3 py-2.5 rounded-lg font-semibold text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors text-left"
                         >
                           <Settings size={16} className="text-slate-500" />
@@ -1595,7 +1595,7 @@ const App: React.FC = () => {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
-                  to="/groups"
+                  to="/groups/"
                   className="px-6 py-3 text-sm font-semibold bg-orange-600 text-white rounded-lg hover:bg-red-600 hover:-translate-y-0.5 transition-all"
                 >
                   Browse groups
@@ -1969,35 +1969,35 @@ const App: React.FC = () => {
               <h2 className="text-3xl font-bold text-slate-900 mb-2 text-center">Explore more</h2>
               <p className="text-slate-600 text-center mb-10">Learn more about co-founder matching, startup groups, and equity splits.</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                <Link to="/how-it-works" className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-orange-400 hover:-translate-y-0.5 transition-all">
+                <Link to="/how-it-works/" className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-orange-400 hover:-translate-y-0.5 transition-all">
                   <span className="text-sm font-semibold text-slate-800">How it works</span>
                   <ArrowRight size={18} className="text-slate-400" />
                 </Link>
-                <Link to="/groups" className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-orange-400 hover:-translate-y-0.5 transition-all">
+                <Link to="/groups/" className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-orange-400 hover:-translate-y-0.5 transition-all">
                   <span className="text-sm font-semibold text-slate-800">Browse all groups</span>
                   <ArrowRight size={18} className="text-slate-400" />
                 </Link>
-                <Link to="/cofounder-matching" className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-orange-400 hover:-translate-y-0.5 transition-all">
+                <Link to="/cofounder-matching/" className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-orange-400 hover:-translate-y-0.5 transition-all">
                   <span className="text-sm font-semibold text-slate-800">Co-founder matching</span>
                   <ArrowRight size={18} className="text-slate-400" />
                 </Link>
-                <Link to="/find-a-cofounder" className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-orange-400 hover:-translate-y-0.5 transition-all">
+                <Link to="/find-a-cofounder/" className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-orange-400 hover:-translate-y-0.5 transition-all">
                   <span className="text-sm font-semibold text-slate-800">Find a co-founder</span>
                   <ArrowRight size={18} className="text-slate-400" />
                 </Link>
-                <Link to="/startup-groups" className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-orange-400 hover:-translate-y-0.5 transition-all">
+                <Link to="/startup-groups/" className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-orange-400 hover:-translate-y-0.5 transition-all">
                   <span className="text-sm font-semibold text-slate-800">Startup groups</span>
                   <ArrowRight size={18} className="text-slate-400" />
                 </Link>
-                <Link to="/startup-equity-split" className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-orange-400 hover:-translate-y-0.5 transition-all">
+                <Link to="/startup-equity-split/" className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-orange-400 hover:-translate-y-0.5 transition-all">
                   <span className="text-sm font-semibold text-slate-800">Startup equity split</span>
                   <ArrowRight size={18} className="text-slate-400" />
                 </Link>
-                <Link to="/about" className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-orange-400 hover:-translate-y-0.5 transition-all">
+                <Link to="/about/" className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-orange-400 hover:-translate-y-0.5 transition-all">
                   <span className="text-sm font-semibold text-slate-800">About EquityTake</span>
                   <ArrowRight size={18} className="text-slate-400" />
                 </Link>
-                <Link to="/blog" className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-orange-400 hover:-translate-y-0.5 transition-all">
+                <Link to="/blog/" className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-orange-400 hover:-translate-y-0.5 transition-all">
                   <span className="text-sm font-semibold text-slate-800">Blog</span>
                   <ArrowRight size={18} className="text-slate-400" />
                 </Link>
@@ -2031,11 +2031,11 @@ const App: React.FC = () => {
             setIsCreateModalOpen={setIsCreateModalOpen}
             setShowProfile={setShowProfile}
             setIsAuthModalOpen={setIsAuthModalOpen}
-            onShowPrivacyPolicy={() => navigate('/privacy')}
-            onShowTermsOfService={() => navigate('/terms')}
-            onShowCookiePolicy={() => navigate('/cookies')}
-            onShowBlogAndAbout={() => navigate('/blog')}
-            onShowHowItWorks={() => navigate('/how-it-works')}
+            onShowPrivacyPolicy={() => navigate('/privacy/')}
+            onShowTermsOfService={() => navigate('/terms/')}
+            onShowCookiePolicy={() => navigate('/cookies/')}
+            onShowBlogAndAbout={() => navigate('/blog/')}
+            onShowHowItWorks={() => navigate('/how-it-works/')}
           />
             </>
           }
@@ -2064,7 +2064,7 @@ const App: React.FC = () => {
         onClose={() => setShowPricingModal(false)}
         onShowTerms={() => {
           setShowPricingModal(false);
-          navigate('/terms');
+          navigate('/terms/');
         }}
         hasHadSubscription={userSubscription?.subscription_status && userSubscription.subscription_status !== 'active'}
       />

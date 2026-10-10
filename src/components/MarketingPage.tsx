@@ -18,14 +18,14 @@ interface MarketingPageProps {
 }
 
 const footerLinks = [
-  { to: '/startup-groups', label: 'Startup groups' },
-  { to: '/create-startup-group', label: 'Create a startup group' },
-  { to: '/cofounder-matching', label: 'Co-founder matching' },
+  { to: '/startup-groups/', label: 'Startup groups' },
+  { to: '/create-startup-group/', label: 'Create a startup group' },
+  { to: '/cofounder-matching/', label: 'Co-founder matching' },
   { to: '/', label: 'Browse groups' },
-  { to: '/equity-for-cofounders', label: 'Equity for co-founders' },
-  { to: '/startup-equity-split', label: 'Startup equity split' },
-  { to: '/startup-team-building', label: 'Startup team building' },
-  { to: '/how-it-works', label: 'How it works' },
+  { to: '/equity-for-cofounders/', label: 'Equity for co-founders' },
+  { to: '/startup-equity-split/', label: 'Startup equity split' },
+  { to: '/startup-team-building/', label: 'Startup team building' },
+  { to: '/how-it-works/', label: 'How it works' },
 ];
 
 const MarketingPage: React.FC<MarketingPageProps> = ({
@@ -41,7 +41,7 @@ const MarketingPage: React.FC<MarketingPageProps> = ({
   secondaryCtaTo,
   secondaryCtaLabel,
 }) => {
-  const canonicalUrl = `${window.location.origin}${window.location.pathname}`;
+  const canonicalUrl = `${window.location.origin}${window.location.pathname.endsWith('/') ? window.location.pathname : window.location.pathname + '/'}`;
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -113,7 +113,7 @@ const MarketingPage: React.FC<MarketingPageProps> = ({
 
         <div className="mt-6 text-center">
           <Link
-            to="/how-it-works"
+            to="/how-it-works/"
             className="text-sm text-slate-500 hover:text-slate-800 underline underline-offset-4 transition-colors"
           >
             See how it works

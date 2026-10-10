@@ -14,7 +14,7 @@ const CookiePolicyPage: React.FC<CookiePolicyPageProps> = ({ onBack, siteLogoUrl
         <title>Cookie Policy | EquityTake</title>
         <meta name="description" content="EquityTake's Cookie Policy - Learn about how we use cookies and similar technologies to enhance your experience on our platform." />
         <meta name="robots" content="index,follow" />
-        <link rel="canonical" href={`${window.location.origin}/cookies`} />
+        <link rel="canonical" href={`${window.location.origin}/cookies/`} />
       </Helmet>
 
       {/* Header */}

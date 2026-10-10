@@ -54,22 +54,22 @@ const Footer: React.FC<FooterProps> = ({
               </Link>
             </li>
             <li>
-              <Link to="/startup-groups" className="text-slate-300 hover:text-white transition-colors">
+              <Link to="/startup-groups/" className="text-slate-300 hover:text-white transition-colors">
                 Startup groups
               </Link>
             </li>
             <li>
-              <Link to="/communities-and-cooperatives" className="text-slate-300 hover:text-white transition-colors">
+              <Link to="/communities-and-cooperatives/" className="text-slate-300 hover:text-white transition-colors">
                 Communities &amp; cooperatives
               </Link>
             </li>
             <li>
-              <Link to="/create-startup-group" className="text-slate-300 hover:text-white transition-colors">
+              <Link to="/create-startup-group/" className="text-slate-300 hover:text-white transition-colors">
                 Create a startup group
               </Link>
             </li>
             <li>
-              <Link to="/cofounder-matching" className="text-slate-300 hover:text-white transition-colors">
+              <Link to="/cofounder-matching/" className="text-slate-300 hover:text-white transition-colors">
                 Co-founder matching
               </Link>
             </li>
@@ -87,7 +87,7 @@ const Footer: React.FC<FooterProps> = ({
                   How it works
                 </button>
               ) : (
-                <Link to="/how-it-works" className="text-slate-300 hover:text-white transition-colors">
+                <Link to="/how-it-works/" className="text-slate-300 hover:text-white transition-colors">
                   How it works
                 </Link>
               )}
@@ -100,27 +100,27 @@ const Footer: React.FC<FooterProps> = ({
           <h4 className="font-semibold text-white mb-4">Resources</h4>
           <ul className="space-y-2 text-sm">
             <li>
-              <Link to="/equity-for-cofounders" className="text-slate-300 hover:text-white transition-colors">
+              <Link to="/equity-for-cofounders/" className="text-slate-300 hover:text-white transition-colors">
                 Equity for co-founders
               </Link>
             </li>
             <li>
-              <Link to="/startup-equity-split" className="text-slate-300 hover:text-white transition-colors">
+              <Link to="/startup-equity-split/" className="text-slate-300 hover:text-white transition-colors">
                 Startup equity split
               </Link>
             </li>
             <li>
-              <Link to="/startup-team-building" className="text-slate-300 hover:text-white transition-colors">
+              <Link to="/startup-team-building/" className="text-slate-300 hover:text-white transition-colors">
                 Startup team building
               </Link>
             </li>
             <li>
-              <Link to="/blog" className="text-slate-300 hover:text-white transition-colors">
+              <Link to="/blog/" className="text-slate-300 hover:text-white transition-colors">
                 Blog
               </Link>
             </li>
             <li>
-              <Link to="/about" className="text-slate-300 hover:text-white transition-colors">
+              <Link to="/about/" className="text-slate-300 hover:text-white transition-colors">
                 About
               </Link>
             </li>
@@ -140,7 +140,7 @@ const Footer: React.FC<FooterProps> = ({
                   Privacy Policy
                 </button>
               ) : (
-                <Link to="/privacy" className="text-slate-300 hover:text-white transition-colors">
+                <Link to="/privacy/" className="text-slate-300 hover:text-white transition-colors">
                   Privacy Policy
                 </Link>
               )}
@@ -154,7 +154,7 @@ const Footer: React.FC<FooterProps> = ({
                   Terms of Service
                 </button>
               ) : (
-                <Link to="/terms" className="text-slate-300 hover:text-white transition-colors">
+                <Link to="/terms/" className="text-slate-300 hover:text-white transition-colors">
                   Terms of Service
                 </Link>
               )}
@@ -168,7 +168,7 @@ const Footer: React.FC<FooterProps> = ({
                   Cookie Policy
                 </button>
               ) : (
-                <Link to="/cookies" className="text-slate-300 hover:text-white transition-colors">
+                <Link to="/cookies/" className="text-slate-300 hover:text-white transition-colors">
                   Cookie Policy
                 </Link>
               )}

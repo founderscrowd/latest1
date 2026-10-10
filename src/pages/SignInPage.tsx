@@ -122,7 +122,7 @@ const SignInPage: React.FC<SignInPageProps> = ({ siteLogoUrl }) => {
 
             <div className="text-right -mt-2">
               <Link
-                to="/forgot-password"
+                to="/forgot-password/"
                 className="text-xs text-blue-600 hover:text-blue-700 font-medium"
               >
                 Forgot password?

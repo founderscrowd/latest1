@@ -14,7 +14,7 @@ const PrivacyPolicyPage: React.FC<PrivacyPolicyPageProps> = ({ onBack, siteLogoU
         <title>Privacy Policy | EquityTake</title>
         <meta name="description" content="EquityTake's Privacy Policy - Learn how we protect and handle your personal information, data collection practices, and your rights." />
         <meta name="robots" content="index,follow" />
-        <link rel="canonical" href={`${window.location.origin}/privacy`} />
+        <link rel="canonical" href={`${window.location.origin}/privacy/`} />
       </Helmet>
 
       {/* Header */}

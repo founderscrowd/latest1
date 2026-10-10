@@ -123,7 +123,7 @@ const ResetPasswordPage: React.FC<ResetPasswordPageProps> = ({ siteLogoUrl }) =>
             </p>
             <div className="space-y-3">
               <Link
-                to="/forgot-password"
+                to="/forgot-password/"
                 className="block w-full px-4 py-2.5 bg-orange-600 text-white rounded-lg font-semibold text-sm hover:bg-red-600 transition-colors text-center"
               >
                 Request New Link

@@ -45,7 +45,7 @@ const GroupProfileRoute: React.FC<GroupProfileRouteProps> = ({ siteLogoUrl }) =>
   };
 
   const handleShowProfile = () => {
-    navigate('/profile');
+    navigate('/profile/');
   };
 
   if (loading) {

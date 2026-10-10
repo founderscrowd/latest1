@@ -136,7 +136,7 @@ const GroupsListPage: React.FC<GroupsListPageProps> = ({
       <Helmet>
         <title>Browse Startup Groups - EquityTake</title>
         <meta name="description" content="Browse and join innovative startup groups. Find co-founders and register interest in exciting ventures." />
-        <link rel="canonical" href={`${window.location.origin}/groups`} />
+        <link rel="canonical" href={`${window.location.origin}/groups/`} />
       </Helmet>
 
       {/* Header */}
@@ -187,7 +187,7 @@ const GroupsListPage: React.FC<GroupsListPageProps> = ({
             </p>
             <p className="mt-3 text-sm text-slate-500">
               New here?{' '}
-              <RouterLink to="/blog/how-to-join-a-startup-group-without-wasting-months" className="text-orange-600 hover:text-orange-700 hover:underline font-medium">
+              <RouterLink to="/blog/how-to-join-a-startup-group-without-wasting-months/" className="text-orange-600 hover:text-orange-700 hover:underline font-medium">
                 How to join a startup group without wasting months →
               </RouterLink>
             </p>
@@ -399,13 +399,13 @@ const GroupsListPage: React.FC<GroupsListPageProps> = ({
         user={user}
         userSubscription={userSubscription}
         setIsCreateModalOpen={onCreateGroup}
-        setShowProfile={() => navigate('/profile')}
+        setShowProfile={() => navigate('/profile/')}
         setIsAuthModalOpen={onShowAuthModal}
-        onShowPrivacyPolicy={() => navigate('/privacy')}
-        onShowTermsOfService={() => navigate('/terms')}
-        onShowCookiePolicy={() => navigate('/cookies')}
-        onShowBlogAndAbout={() => navigate('/blog')}
-        onShowHowItWorks={() => navigate('/how-it-works')}
+        onShowPrivacyPolicy={() => navigate('/privacy/')}
+        onShowTermsOfService={() => navigate('/terms/')}
+        onShowCookiePolicy={() => navigate('/cookies/')}
+        onShowBlogAndAbout={() => navigate('/blog/')}
+        onShowHowItWorks={() => navigate('/how-it-works/')}
       />
     </div>
   );

@@ -10,21 +10,21 @@ const BASE_URL = "https://equitytakeaway.com";
 
 const STATIC_PAGES: { path: string; changefreq: string; priority: string }[] = [
   { path: "/", changefreq: "daily", priority: "1.0" },
-  { path: "/groups", changefreq: "daily", priority: "0.9" },
-  { path: "/startup-groups", changefreq: "monthly", priority: "0.8" },
-  { path: "/create-startup-group", changefreq: "monthly", priority: "0.8" },
-  { path: "/cofounder-matching", changefreq: "monthly", priority: "0.8" },
-  { path: "/find-a-cofounder", changefreq: "monthly", priority: "0.8" },
-  { path: "/equity-for-cofounders", changefreq: "monthly", priority: "0.8" },
-  { path: "/startup-equity-split", changefreq: "monthly", priority: "0.8" },
-  { path: "/startup-team-building", changefreq: "monthly", priority: "0.8" },
-  { path: "/communities-and-cooperatives", changefreq: "monthly", priority: "0.8" },
-  { path: "/how-it-works", changefreq: "monthly", priority: "0.8" },
-  { path: "/blog", changefreq: "weekly", priority: "0.8" },
-  { path: "/about", changefreq: "monthly", priority: "0.7" },
-  { path: "/privacy", changefreq: "monthly", priority: "0.3" },
-  { path: "/terms", changefreq: "monthly", priority: "0.3" },
-  { path: "/cookies", changefreq: "monthly", priority: "0.3" },
+  { path: "/groups/", changefreq: "daily", priority: "0.9" },
+  { path: "/startup-groups/", changefreq: "monthly", priority: "0.8" },
+  { path: "/create-startup-group/", changefreq: "monthly", priority: "0.8" },
+  { path: "/cofounder-matching/", changefreq: "monthly", priority: "0.8" },
+  { path: "/find-a-cofounder/", changefreq: "monthly", priority: "0.8" },
+  { path: "/equity-for-cofounders/", changefreq: "monthly", priority: "0.8" },
+  { path: "/startup-equity-split/", changefreq: "monthly", priority: "0.8" },
+  { path: "/startup-team-building/", changefreq: "monthly", priority: "0.8" },
+  { path: "/communities-and-cooperatives/", changefreq: "monthly", priority: "0.8" },
+  { path: "/how-it-works/", changefreq: "monthly", priority: "0.8" },
+  { path: "/blog/", changefreq: "weekly", priority: "0.8" },
+  { path: "/about/", changefreq: "monthly", priority: "0.7" },
+  { path: "/privacy/", changefreq: "monthly", priority: "0.3" },
+  { path: "/terms/", changefreq: "monthly", priority: "0.3" },
+  { path: "/cookies/", changefreq: "monthly", priority: "0.3" },
 ];
 
 function escapeXml(value: string): string {
@@ -79,7 +79,7 @@ Deno.serve(async (req: Request) => {
         if (!slug) continue;
         const lastmod = (post.updated_at || post.published_at || today)
           .split("T")[0];
-        entries.push(urlEntry(`${BASE_URL}/blog/${slug}`, lastmod, "monthly", "0.7"));
+        entries.push(urlEntry(`${BASE_URL}/blog/${slug}/`, lastmod, "monthly", "0.7"));
         blogCount++;
       }
     }

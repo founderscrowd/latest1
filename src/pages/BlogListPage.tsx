@@ -35,7 +35,7 @@ const BlogListPage: React.FC<BlogListPageProps> = ({ siteLogoUrl }) => {
     return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   };
 
-  const canonicalUrl = `${window.location.origin}/blog`;
+  const canonicalUrl = `${window.location.origin}/blog/`;
   const description = 'Insights, updates, and stories from the EquityTake team. Learn about building startups, finding co-founders, and growing your business.';
 
   return (
@@ -102,7 +102,7 @@ const BlogListPage: React.FC<BlogListPageProps> = ({ siteLogoUrl }) => {
             {blogPosts.map((post) => (
               <Link
                 key={post.id}
-                to={`/blog/${post.slug}`}
+                to={`/blog/${post.slug}/`}
                 className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow group"
               >
                 <div className="flex gap-6">

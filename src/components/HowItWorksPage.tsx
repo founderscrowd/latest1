@@ -9,7 +9,7 @@ interface HowItWorksPageProps {
 }
 
 const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onBack, siteLogoUrl }) => {
-  const canonicalUrl = `${window.location.origin}/how-it-works`;
+  const canonicalUrl = `${window.location.origin}/how-it-works/`;
   const title = 'How EquityTake Works | Idea to Team to Startup';
   const description =
     'See how EquityTake turns an idea into a founding team: create a group, discuss contributions, and propose equity using Proposed Company Value and Reference Value. Free to use.';
@@ -38,13 +38,13 @@ const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onBack, siteLogoUrl }) 
   ];
 
   const bottomLinks = [
-    { href: '/startup-groups', label: 'Startup Groups' },
-    { href: '/cofounder-matching', label: 'Co-founder Matching' },
-    { href: '/create-startup-group', label: 'Create a Startup Group' },
-    { href: '/find-a-cofounder', label: 'Find a Co-founder' },
-    { href: '/equity-for-cofounders', label: 'Equity for Co-founders' },
-    { href: '/startup-equity-split', label: 'Startup Equity Split' },
-    { href: '/startup-team-building', label: 'Startup Team Building' },
+    { href: '/startup-groups/', label: 'Startup Groups' },
+    { href: '/cofounder-matching/', label: 'Co-founder Matching' },
+    { href: '/create-startup-group/', label: 'Create a Startup Group' },
+    { href: '/find-a-cofounder/', label: 'Find a Co-founder' },
+    { href: '/equity-for-cofounders/', label: 'Equity for Co-founders' },
+    { href: '/startup-equity-split/', label: 'Startup Equity Split' },
+    { href: '/startup-team-building/', label: 'Startup Team Building' },
   ];
 
   return (
@@ -109,13 +109,13 @@ const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onBack, siteLogoUrl }) 
           </p>
           <div className="mt-6 flex flex-col sm:flex-row gap-4 items-center justify-center">
             <Link
-              to="/create-startup-group"
+              to="/create-startup-group/"
               className="px-6 py-2.5 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700 transition-colors"
             >
               Create a group
             </Link>
             <Link
-              to="/groups"
+              to="/groups/"
               className="px-6 py-2.5 bg-white text-slate-700 border border-slate-300 rounded-lg font-semibold hover:bg-slate-50 transition-colors"
             >
               Browse startup groups
@@ -169,7 +169,7 @@ const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onBack, siteLogoUrl }) 
 
             <p className="mt-4 text-sm text-slate-600">
               Step-by-step:{' '}
-              <Link to="/blog/create-a-startup-group-around-your-idea" className="text-blue-600 hover:text-blue-700 hover:underline font-medium">
+              <Link to="/blog/create-a-startup-group-around-your-idea/" className="text-blue-600 hover:text-blue-700 hover:underline font-medium">
                 create a startup group around your idea
               </Link>
               .
@@ -200,11 +200,11 @@ const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onBack, siteLogoUrl }) 
               </p>
             </div>
             <p className="mt-4 text-sm text-slate-600">
-              <Link to="/blog/startup-groups-that-actually-help-you-build" className="text-blue-600 hover:text-blue-700 hover:underline font-medium">
+              <Link to="/blog/startup-groups-that-actually-help-you-build/" className="text-blue-600 hover:text-blue-700 hover:underline font-medium">
                 What useful startup groups look like
               </Link>
               {' \u00b7 '}
-              <Link to="/blog/how-to-join-a-startup-group-without-wasting-months" className="text-blue-600 hover:text-blue-700 hover:underline font-medium">
+              <Link to="/blog/how-to-join-a-startup-group-without-wasting-months/" className="text-blue-600 hover:text-blue-700 hover:underline font-medium">
                 How to join without wasting months
               </Link>
             </p>
@@ -270,7 +270,7 @@ const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onBack, siteLogoUrl }) 
 
             <p className="mt-4 text-sm text-slate-600">
               More on the conversation:{' '}
-              <Link to="/blog/how-to-split-startup-equity-fairly" className="text-blue-600 hover:text-blue-700 hover:underline font-medium">
+              <Link to="/blog/how-to-split-startup-equity-fairly/" className="text-blue-600 hover:text-blue-700 hover:underline font-medium">
                 how to split startup equity fairly
               </Link>
               .
@@ -409,13 +409,13 @@ const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onBack, siteLogoUrl }) 
               </p>
               <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
                 <Link
-                  to="/create-startup-group"
+                  to="/create-startup-group/"
                   className="px-8 py-3 bg-white text-orange-600 rounded-lg font-bold hover:bg-slate-100 transition-colors"
                 >
                   Create a group
                 </Link>
                 <Link
-                  to="/groups"
+                  to="/groups/"
                   className="px-8 py-3 bg-white/10 text-white border border-white/30 rounded-lg font-bold hover:bg-white/20 transition-colors"
                 >
                   Explore active groups

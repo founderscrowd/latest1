@@ -14,7 +14,7 @@ const TermsOfServicePage: React.FC<TermsOfServicePageProps> = ({ onBack, siteLog
         <title>Terms of Service | EquityTake</title>
         <meta name="description" content="Rules for using EquityTake — a free discussion site. No money, no shares, no documents." />
         <meta name="robots" content="index,follow" />
-        <link rel="canonical" href={`${window.location.origin}/terms`} />
+        <link rel="canonical" href={`${window.location.origin}/terms/`} />
       </Helmet>
 
       {/* Header */}
