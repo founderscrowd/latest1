@@ -1,6 +1,29 @@
-/*/ /:splat 301!
+# Explicit 301: trailing slash → no slash (static pages)
+/how-it-works/ /how-it-works 301!
+/groups/ /groups 301!
+/blog/ /blog 301!
+/about/ /about 301!
+/privacy/ /privacy 301!
+/terms/ /terms 301!
+/cookies/ /cookies 301!
+/startup-groups/ /startup-groups 301!
+/create-startup-group/ /create-startup-group 301!
+/cofounder-matching/ /cofounder-matching 301!
+/find-a-cofounder/ /find-a-cofounder 301!
+/equity-for-cofounders/ /equity-for-cofounders 301!
+/startup-equity-split/ /startup-equity-split 301!
+/startup-team-building/ /startup-team-building 301!
+/communities-and-cooperatives/ /communities-and-cooperatives 301!
+/sign-in/ /sign-in 301!
+/forgot-password/ /forgot-password 301!
+/reset-password/ /reset-password 301!
 
-/sign-in /index.html 200
+# Parameterized trailing-slash 301s
+/blog/:slug/ /blog/:slug 301!
+/groups/:slug/ /groups/:slug 301!
+/groups/:slug/manage/ /groups/:slug/manage 301!
+
+# SPA routes (no prerendered flat file — serve React shell)
 /forgot-password /index.html 200
 /reset-password /index.html 200
 /profile /index.html 200
@@ -9,4 +32,3 @@
 /payment/success /index.html 200
 /payment/cancelled /index.html 200
 /groups/:slug/manage /index.html 200
-/groups/:slug /index.html 200
