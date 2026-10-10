@@ -4,6 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 import { siteSettingsAPI } from '../lib/siteSettingsApi';
 import BlogContentManager from './BlogContentManager';
 import FeedbackManager from './FeedbackManager';
+import AiKnowledgeManager from './AiKnowledgeManager';
 
 interface SiteSettingsPageProps {
   onBack: () => void;
@@ -963,6 +964,11 @@ const SiteSettingsPage: React.FC<SiteSettingsPageProps> = ({ onBack }) => {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* AI Knowledge Management Section */}
+      <div className="max-w-4xl mx-auto px-4 py-6">
+        <AiKnowledgeManager />
       </div>
 
       {/* Suggestions & Feedback Management Section */}

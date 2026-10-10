@@ -27,6 +27,9 @@ const CONFIG = {
   OPENAI_TEMPERATURE: 0.3,             // low temperature for consistent answers
   MAX_HISTORY_MESSAGES: 20,            // max conversation history sent to OpenAI
 
+  // Knowledge retrieval
+  MAX_KNOWLEDGE_ENTRIES: 5,            // max knowledge entries to include per request
+
   // Kill switch: checked via site_settings table (key = 'ai_support_enabled')
 };
 
@@ -128,6 +131,21 @@ KNOWLEDGE BASE:
 ${KNOWLEDGE_BASE}`;
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Additional instruction for knowledge-base priority (appended, not replacing)
+// ─────────────────────────────────────────────────────────────────────────────
+const KNOWLEDGE_PRIORITY_INSTRUCTION = `
+
+EQUITYTAKE KNOWLEDGE BASE PRIORITY INSTRUCTIONS:
+When answering questions specifically about EquityTake functionality, navigation, policies, equity processes or account features, prioritize information supplied by the EquityTake knowledge base entries below. Do not invent buttons, menu locations, features, policies or procedures that are not supported by the supplied EquityTake context. If the necessary information is not available, say that you do not have enough information rather than guessing.
+Priority order for answers:
+1. EquityTake knowledge-base entries provided below (highest priority)
+2. The platform knowledge base in your instructions above
+3. Current conversation context
+4. General model knowledge (lowest priority)
+If knowledge-base information conflicts with a generic assumption about how websites or startup platforms normally work, the EquityTake knowledge-base information wins.
+However, security, legal and safety instructions must always remain in force.`;
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Helper: hash IP for privacy-preserving rate limiting
 // ─────────────────────────────────────────────────────────────────────────────
 async function hashIP(ip: string): Promise<string> {
@@ -151,6 +169,8 @@ async function logRequest(params: {
   response_time_ms?: number | null;
   model?: string | null;
   tokens_used?: number | null;
+  knowledge_entry_ids?: string | null;
+  knowledge_found?: boolean | null;
 }) {
   try {
     await supabase.from('ai_support_request_logs').insert({
@@ -163,6 +183,8 @@ async function logRequest(params: {
       response_time_ms: params.response_time_ms ?? null,
       model: params.model ?? null,
       tokens_used: params.tokens_used ?? null,
+      knowledge_entry_ids: params.knowledge_entry_ids ?? null,
+      knowledge_found: params.knowledge_found ?? null,
     });
   } catch (e) {
     console.error('Failed to log AI request:', e);
@@ -299,6 +321,105 @@ async function isAiSupportEnabled(): Promise<boolean> {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Helper: retrieve relevant knowledge entries for a user question
+// Uses Supabase full-text search on title, question, answer, and keywords.
+// Structured so semantic/vector search can be added later if the knowledge
+// base grows large.
+// ─────────────────────────────────────────────────────────────────────────────
+interface KnowledgeEntry {
+  id: string;
+  title: string;
+  question: string;
+  answer: string;
+  category: string;
+  keywords: string | null;
+}
+
+async function retrieveKnowledge(userMessage: string): Promise<KnowledgeEntry[]> {
+  try {
+    // Use full-text search on the GIN index for relevant matching
+    const { data, error } = await supabase
+      .from('ai_knowledge')
+      .select('id, title, question, answer, category, keywords')
+      .eq('is_active', true)
+      .textSearch('title', userMessage, { type: 'websearch', config: 'english' })
+      .limit(CONFIG.MAX_KNOWLEDGE_ENTRIES);
+
+    if (!error && data && data.length > 0) {
+      return data as KnowledgeEntry[];
+    }
+
+    // Fallback: try ILIKE search on question and keywords if FTS returns nothing
+    const { data: ilikeData, error: ilikeError } = await supabase
+      .from('ai_knowledge')
+      .select('id, title, question, answer, category, keywords')
+      .eq('is_active', true)
+      .or(`question.ilike.%${userMessage.slice(0, 100)}%,keywords.ilike.%${userMessage.slice(0, 100)}%,title.ilike.%${userMessage.slice(0, 100)}%`)
+      .limit(CONFIG.MAX_KNOWLEDGE_ENTRIES);
+
+    if (!ilikeError && ilikeData && ilikeData.length > 0) {
+      return ilikeData as KnowledgeEntry[];
+    }
+
+    return [];
+  } catch (e) {
+    console.error('Knowledge retrieval error:', e);
+    return [];
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Helper: format knowledge entries as context for the system prompt
+// ─────────────────────────────────────────────────────────────────────────────
+function formatKnowledgeContext(entries: KnowledgeEntry[]): string {
+  if (entries.length === 0) return '';
+
+  const formatted = entries.map((entry, i) => {
+    return `Entry ${i + 1}:
+  Title: ${entry.title}
+  Question: ${entry.question}
+  Answer: ${entry.answer}
+  Category: ${entry.category}
+  Keywords: ${entry.keywords || 'N/A'}`;
+  }).join('\n\n');
+
+  return `\n\nEQUITYTAKE KNOWLEDGE BASE ENTRIES (retrieved for this question):
+${formatted}
+\nUse the above entries as the highest-priority source when answering the user's question. If these entries do not cover the user's question, follow your normal fallback behaviour.`;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Helper: log a knowledge gap when no entries were found
+// ─────────────────────────────────────────────────────────────────────────────
+async function logKnowledgeGap(userMessage: string, knowledgeFound: boolean): Promise<void> {
+  try {
+    await supabase.from('ai_knowledge_gaps').insert({
+      user_question: userMessage.slice(0, 2000),
+      knowledge_found: knowledgeFound,
+    });
+  } catch (e) {
+    console.error('Failed to log knowledge gap:', e);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Helper: check if user is a site admin (for admin_test mode)
+// ─────────────────────────────────────────────────────────────────────────────
+async function isUserSiteAdmin(userId: string): Promise<boolean> {
+  try {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('is_site_admin')
+      .eq('id', userId)
+      .maybeSingle();
+    if (error) return false;
+    return data?.is_site_admin === true;
+  } catch {
+    return false;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Main handler
 // ─────────────────────────────────────────────────────────────────────────────
 Deno.serve(async (req) => {
@@ -371,7 +492,7 @@ Deno.serve(async (req) => {
       );
     }
 
-    const { message, conversation_id, session_id } = body;
+    const { message, conversation_id, session_id, admin_test } = body;
 
     if (!message || typeof message !== 'string') {
       return new Response(
@@ -398,45 +519,66 @@ Deno.serve(async (req) => {
     const sessionId = (session_id as string) || crypto.randomUUID();
     let conversationId = (conversation_id as string) || null;
 
-    // ── Rate limiting ──────────────────────────────────────────────────────
-    const rateCheck = await checkRateLimit(userId, sessionId, ipHash);
-    if (!rateCheck.allowed) {
-      await logRequest({
-        user_id: userId,
-        session_id: sessionId,
-        ip_hash: ipHash,
-        message_length: message.length,
-        status: 'rate_limited',
-        error_message: rateCheck.reason ?? null,
-        response_time_ms: Date.now() - startTime,
-      });
-      return new Response(
-        JSON.stringify({ error: rateCheck.reason }),
-        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    // ── Admin test mode: bypass rate limiting, return knowledge entries ────
+    const isAdminTest = admin_test === true;
+    let isAdmin = false;
+    if (isAdminTest) {
+      if (!userId) {
+        return new Response(
+          JSON.stringify({ error: 'Admin authentication required for test mode.' }),
+          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      isAdmin = await isUserSiteAdmin(userId);
+      if (!isAdmin) {
+        return new Response(
+          JSON.stringify({ error: 'Only site administrators can use test mode.' }),
+          { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
     }
 
-    // ── Duplicate message detection ────────────────────────────────────────
-    const isDup = await checkDuplicateInSession(conversationId, sessionId, message);
-    if (isDup) {
-      await logRequest({
-        user_id: userId,
-        session_id: sessionId,
-        ip_hash: ipHash,
-        message_length: message.length,
-        status: 'duplicate',
-        response_time_ms: Date.now() - startTime,
-      });
-      return new Response(
-        JSON.stringify({ error: 'You just sent that message. Please try a different question.' }),
-        { status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    // ── Rate limiting (skip for admin test) ────────────────────────────────
+    if (!isAdminTest) {
+      const rateCheck = await checkRateLimit(userId, sessionId, ipHash);
+      if (!rateCheck.allowed) {
+        await logRequest({
+          user_id: userId,
+          session_id: sessionId,
+          ip_hash: ipHash,
+          message_length: message.length,
+          status: 'rate_limited',
+          error_message: rateCheck.reason ?? null,
+          response_time_ms: Date.now() - startTime,
+        });
+        return new Response(
+          JSON.stringify({ error: rateCheck.reason }),
+          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      // ── Duplicate message detection ────────────────────────────────────────
+      const isDup = await checkDuplicateInSession(conversationId, sessionId, message);
+      if (isDup) {
+        await logRequest({
+          user_id: userId,
+          session_id: sessionId,
+          ip_hash: ipHash,
+          message_length: message.length,
+          status: 'duplicate',
+          response_time_ms: Date.now() - startTime,
+        });
+        return new Response(
+          JSON.stringify({ error: 'You just sent that message. Please try a different question.' }),
+          { status: 409, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
     }
 
-    // ── Conversation management (authenticated users only) ─────────────────
+    // ── Conversation management (authenticated users only, skip for admin test)
     let messagesForAI: Array<{ role: string; content: string }> = [];
 
-    if (userId) {
+    if (userId && !isAdminTest) {
       if (conversationId) {
         const { data: conv } = await supabase
           .from('ai_support_conversations')
@@ -478,9 +620,25 @@ Deno.serve(async (req) => {
       }
     }
 
+    // ── Retrieve relevant knowledge entries ─────────────────────────────────
+    const knowledgeEntries = await retrieveKnowledge(message);
+    const knowledgeFound = knowledgeEntries.length > 0;
+    const knowledgeIds = knowledgeEntries.length > 0
+      ? knowledgeEntries.map(e => e.id).join(',')
+      : null;
+
+    // Log knowledge gap when no entries found (skip for admin test)
+    if (!isAdminTest && !knowledgeFound) {
+      await logKnowledgeGap(message, false);
+    }
+
+    // ── Build augmented system prompt ───────────────────────────────────────
+    const knowledgeContext = formatKnowledgeContext(knowledgeEntries);
+    const augmentedSystemPrompt = SYSTEM_PROMPT + KNOWLEDGE_PRIORITY_INSTRUCTION + knowledgeContext;
+
     // ── Call OpenAI ────────────────────────────────────────────────────────
     const openaiMessages: Array<{ role: string; content: string }> = [
-      { role: 'system', content: SYSTEM_PROMPT },
+      { role: 'system', content: augmentedSystemPrompt },
       ...messagesForAI,
       { role: 'user', content: message },
     ];
@@ -511,6 +669,8 @@ Deno.serve(async (req) => {
         error_message: `HTTP ${openaiResponse.status}`,
         response_time_ms: Date.now() - startTime,
         model: CONFIG.OPENAI_MODEL,
+        knowledge_entry_ids: knowledgeIds,
+        knowledge_found: knowledgeFound,
       });
       return new Response(
         JSON.stringify({ error: 'I had trouble processing your request. Please try again or contact admin@groupsandcrowds.com.' }),
@@ -522,8 +682,8 @@ Deno.serve(async (req) => {
     const aiReply = openaiData.choices?.[0]?.message?.content ?? 'I was unable to generate a response. Please try again.';
     const tokensUsed = openaiData.usage?.total_tokens ?? null;
 
-    // Save assistant reply for authenticated users
-    if (userId && conversationId) {
+    // Save assistant reply for authenticated users (skip for admin test)
+    if (userId && conversationId && !isAdminTest) {
       await supabase
         .from('ai_support_messages')
         .insert({ conversation_id: conversationId, role: 'assistant', content: aiReply });
@@ -539,14 +699,29 @@ Deno.serve(async (req) => {
       response_time_ms: Date.now() - startTime,
       model: CONFIG.OPENAI_MODEL,
       tokens_used: tokensUsed,
+      knowledge_entry_ids: knowledgeIds,
+      knowledge_found: knowledgeFound,
     });
 
+    // ── Return response (include knowledge entries for admin test mode) ────
+    const responseData: Record<string, unknown> = {
+      reply: aiReply,
+      conversation_id: conversationId,
+      session_id: sessionId,
+    };
+
+    if (isAdminTest) {
+      responseData.knowledge_entries = knowledgeEntries.map(e => ({
+        id: e.id,
+        title: e.title,
+        question: e.question,
+        answer: e.answer,
+        category: e.category,
+      }));
+    }
+
     return new Response(
-      JSON.stringify({
-        reply: aiReply,
-        conversation_id: conversationId,
-        session_id: sessionId,
-      }),
+      JSON.stringify(responseData),
       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   } catch (error: any) {
