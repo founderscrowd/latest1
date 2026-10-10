@@ -286,53 +286,35 @@ class ChatAPI {
       const { data: user } = await supabase.auth.getUser();
       if (!user.user) throw new Error('User not authenticated');
 
-      // Validate conversation exists and user has access
-      const { data: conversation } = await supabase
-        .from('conversations')
-        .select('id')
-        .eq('id', conversationId)
-        .single();
-      
-      if (!conversation) {
-        throw new Error('Conversation not found or access denied');
+      const { data: messageId, error: messageError } = await supabase.rpc('send_chat_message', {
+        p_conversation_id: conversationId,
+        p_content: content,
+        p_message_type: messageType,
+        p_reply_to_id: replyToId ?? null
+      });
+
+      if (messageError) {
+        console.error('Message send error:', messageError);
+        throw messageError;
       }
 
-      // Insert message
-      const { data: message, error: messageError } = await supabase
+      const { data: message, error: messageFetchError } = await supabase
         .from('messages')
-        .insert({
-          conversation_id: conversationId,
-          sender_id: user.user.id,
-          content,
-          message_type: messageType,
-          reply_to_id: replyToId
-        })
         .select(`
           *,
           sender_profile:profiles!messages_sender_id_fkey(username, avatar_url)
         `)
-        .single();
+        .eq('id', messageId)
+        .maybeSingle();
 
-      if (messageError) {
-        console.error('Message insert error:', messageError);
-        throw messageError;
-      }
-      
+      if (messageFetchError) throw messageFetchError;
+      if (!message) throw new Error('Message could not be loaded after sending');
+
       console.log('Message sent successfully:', message);
 
-      // Handle attachments if any
       if (attachments && attachments.length > 0) {
         await this.uploadAttachments(message.id, conversationId, attachments);
       }
-
-      // Update conversation last_message_at
-      await supabase
-        .from('conversations')
-        .update({ 
-          last_message_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', conversationId);
 
       return message;
     } catch (error) {
