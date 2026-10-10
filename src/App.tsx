@@ -27,6 +27,7 @@ import BlogAndAboutPage from './components/BlogAndAboutPage';
 import HowItWorksPage from './components/HowItWorksPage';
 import BlogListPage from './pages/BlogListPage';
 import BlogPostPage from './pages/BlogPostPage';
+import NotFoundPage from './pages/NotFoundPage';
 import AboutPage from './pages/AboutPage';
 import GroupDetailsRoute from './pages/GroupDetailsRoute';
 import GroupProfileRoute from './pages/GroupProfileRoute';
@@ -1324,6 +1325,9 @@ const App: React.FC = () => {
             )
           }
         />
+
+        {/* Not-found route */}
+        <Route path="*" element={<NotFoundPage siteLogoUrl={siteLogoUrl} />} />
 
         {/* Home Page Route */}
         <Route

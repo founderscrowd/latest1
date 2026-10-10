@@ -40,6 +40,74 @@
   status = 200
   force = true
 
+# Redirect slash URLs to the canonical no-slash URLs.
+[[redirects]]
+  from = "/*/"
+  to = "/:splat"
+  status = 301
+  force = true
+
+# Client-side routes that are not prerendered.
+[[redirects]]
+  from = "/sign-in"
+  to = "/index.html"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/forgot-password"
+  to = "/index.html"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/reset-password"
+  to = "/index.html"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/profile"
+  to = "/index.html"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/settings"
+  to = "/index.html"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/redirect"
+  to = "/index.html"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/payment/success"
+  to = "/index.html"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/payment/cancelled"
+  to = "/index.html"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/groups/:slug/manage"
+  to = "/index.html"
+  status = 200
+  force = false
+
+[[redirects]]
+  from = "/groups/:slug"
+  to = "/index.html"
+  status = 200
+  force = false
+
 # Social crawler previews for group pages
 # Facebook, Twitter, LinkedIn, and other crawlers don't run JavaScript,
 # so we proxy their requests to a Supabase Edge Function that returns
@@ -61,8 +129,3 @@
     Googlebot = ["Googlebot"]
     Bingbot = ["Bingbot"]
 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-  force = false

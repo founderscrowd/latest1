@@ -642,11 +642,71 @@ function buildBlogListPage(posts) {
   return body;
 }
 
-// Convert Markdown links [text](url) to HTML <a> tags, leaving existing HTML untouched
-function convertMarkdownLinks(text) {
-  return text.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, text, url) => {
-    return `<a href="${url}">${text}</a>`;
-  });
+function renderMarkdown(markdown) {
+  const escapeHtml = (value) => String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+  const safeHref = (href) => /^(https?:\/\/|\/|#)/i.test(href.trim()) && !/^javascript:/i.test(href.trim()) ? href.trim() : '#';
+  const renderInline = (value) => {
+    const tokens = [];
+    const protect = (html) => {
+      tokens.push(html);
+      return `\u0000TOKEN${tokens.length - 1}\u0000`;
+    };
+    let rendered = escapeHtml(value)
+      .replace(/`([^`]+)`/g, (_, code) => protect(`<code>${code}</code>`))
+      .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, text, href) => protect(`<a href="${escapeHtml(safeHref(href))}">${text}</a>`))
+      .replace(/\*\*([^*]+)\*\*|__([^_]+)__/g, (_, bold, alternateBold) => `<strong>${bold || alternateBold}</strong>`)
+      .replace(/\*([^*]+)\*|_([^_]+)_/g, (_, italic, alternateItalic) => `<em>${italic || alternateItalic}</em>`);
+    return rendered.replace(/\u0000TOKEN(\d+)\u0000/g, (_, index) => tokens[Number(index)]);
+  };
+  const lines = String(markdown || '').replace(/\r\n?/g, '\n').split('\n');
+  const output = [];
+  let paragraph = [];
+  let listType = null;
+  let listItems = [];
+  const flushParagraph = () => {
+    if (paragraph.length) {
+      output.push(`<p>${paragraph.map(renderInline).join('<br />')}</p>`);
+      paragraph = [];
+    }
+  };
+  const flushList = () => {
+    if (listType && listItems.length) output.push(`<${listType}>${listItems.map((item) => `<li>${renderInline(item)}</li>`).join('')}</${listType}>`);
+    listType = null;
+    listItems = [];
+  };
+  for (const line of lines) {
+    const heading = line.match(/^\s{0,3}(#{1,6})\s+(.+?)\s*#*\s*$/);
+    const unordered = line.match(/^\s*[-*+]\s+(.+)$/);
+    const ordered = line.match(/^\s*\d+[.)]\s+(.+)$/);
+    if (heading) {
+      flushParagraph();
+      flushList();
+      const level = Math.max(2, Math.min(6, heading[1].length));
+      output.push(`<h${level}>${renderInline(heading[2])}</h${level}>`);
+    } else if (unordered || ordered) {
+      flushParagraph();
+      const nextType = unordered ? 'ul' : 'ol';
+      if (listType !== nextType) {
+        flushList();
+        listType = nextType;
+      }
+      listItems.push((unordered || ordered)[1]);
+    } else if (!line.trim()) {
+      flushParagraph();
+      flushList();
+    } else {
+      if (listType) flushList();
+      paragraph.push(line.trim());
+    }
+  }
+  flushParagraph();
+  flushList();
+  return output.join('');
 }
 
 // Strip all HTML tags except <a> (preserves existing and converted links)
@@ -674,17 +734,15 @@ function buildBlogPostPage(post) {
   const date = post.published_at
     ? new Date(post.published_at).toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })
     : '';
-  // Convert Markdown links to real <a> tags, then strip other HTML but preserve links
-  const rawBody = post.content_body || '';
-  const withLinks = convertMarkdownLinks(rawBody);
-  const bodyText = stripHtmlPreserveLinks(withLinks);
-  // Show full content for crawlers, truncated to 12000 chars
-  const fullBody = truncate(bodyText, 12000);
+  const fullBody = renderMarkdown(post.content_body || '');
 
   const body = `<main style="font-family:system-ui,-apple-system,sans-serif;color:#1e293b;max-width:800px;margin:0 auto;padding:20px;">
   <h1 style="font-size:2rem;font-weight:700;margin:0 0 8px;">${title}</h1>
   ${date ? `<p style="color:#94a3b8;margin:0 0 24px;font-size:0.9rem;">Published ${date}</p>` : ''}
-  <div style="color:#475569;line-height:1.7;font-size:1.05rem;">${fullBody}</div>
+  <div style="color:#475569;line-height:1.7;font-size:1.05rem;">
+    <style>h2{font-size:1.5rem;line-height:1.3;margin:28px 0 12px;color:#1e293b}h3{font-size:1.25rem;line-height:1.3;margin:24px 0 10px;color:#1e293b}p{margin:0 0 16px}ul,ol{padding-left:24px;margin:0 0 16px}li{margin:0 0 8px}a{color:#ea580c}code{background:#f1f5f9;padding:2px 4px;border-radius:4px}</style>
+    ${fullBody}
+  </div>
   <p style="margin:32px 0 16px;"><a href="/blog" style="color:#ea580c;">← Back to blog</a></p>
 </main>`;
   return body;
@@ -696,12 +754,10 @@ function writeRoute(distDir, routePath, html) {
   if (routePath === '/') {
     filePath = join(distDir, 'index.html');
   } else {
-    // Remove leading slash
     const cleanPath = routePath.replace(/^\//, '');
-    const dir = join(distDir, cleanPath);
-    mkdirSync(dir, { recursive: true });
-    filePath = join(dir, 'index.html');
+    filePath = join(distDir, `${cleanPath}.html`);
   }
+  mkdirSync(dirname(filePath), { recursive: true });
   writeFileSync(filePath, html, 'utf8');
   console.log(`  ✓ Prerendered: ${routePath} → ${filePath.replace(distDir, '.')}`);
 }
@@ -790,6 +846,22 @@ async function main() {
     writeRoute(distDir, routePath, html);
     generated++;
   }
+
+  const notFoundHtml = buildHtmlWithAssets({
+    path: '/404',
+    title: 'Page Not Found | EquityTake',
+    description: 'The page you requested does not exist.',
+    h1: 'Page not found',
+    robots: 'noindex',
+    canonical: 'https://equitytakeaway.com/404',
+    bodyHtml: `<main style="font-family:system-ui,-apple-system,sans-serif;color:#1e293b;max-width:800px;margin:0 auto;padding:80px 20px;text-align:center;">
+      <h1 style="font-size:2rem;font-weight:700;margin:0 0 16px;">Page not found</h1>
+      <p style="color:#475569;margin:0 0 24px;">The page you requested does not exist.</p>
+      <p><a href="/" style="color:#ea580c;margin-right:16px;">Back to homepage</a><a href="/blog" style="color:#ea580c;">Visit the blog</a></p>
+    </main>`,
+  });
+  writeFileSync(join(distDir, '404.html'), notFoundHtml, 'utf8');
+  console.log(`  ✓ Generated: ./404.html`);
 
   console.log(`\n✅ Prerender complete: ${generated} pages generated, ${skipped} skipped.`);
 }
