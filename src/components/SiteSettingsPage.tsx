@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, Upload, Image, Trash2, Save, Camera, AlertTriangle, CheckCircle, Settings, BellRing, MessageSquare, X, Bot } from 'lucide-react';
+import { ArrowLeft, Upload, Image, Trash2, Save, Camera, AlertTriangle, CheckCircle, Settings, BellRing, MessageSquare, X, Bot, BookOpen, Lightbulb, FileText, Info } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { siteSettingsAPI } from '../lib/siteSettingsApi';
 import BlogContentManager from './BlogContentManager';
@@ -30,6 +30,7 @@ const SiteSettingsPage: React.FC<SiteSettingsPageProps> = ({ onBack }) => {
   const [savingImportantMessage, setSavingImportantMessage] = useState(false);
   const [aiSupportEnabled, setAiSupportEnabled] = useState(true);
   const [savingAiSupport, setSavingAiSupport] = useState(false);
+  const [activeSection, setActiveSection] = useState('section-logo');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -67,6 +68,22 @@ const SiteSettingsPage: React.FC<SiteSettingsPageProps> = ({ onBack }) => {
       window.removeEventListener('announcementUpdated', handleAnnouncementUpdate as EventListener);
       window.removeEventListener('importantMessageUpdated', handleImportantMessageUpdate as EventListener);
     };
+  }, []);
+
+  useEffect(() => {
+    const sections = ['section-logo', 'section-announcement', 'section-important-message', 'section-ai-support', 'section-ai-knowledge', 'section-feedback', 'section-blog-posts', 'section-about-page'];
+    const handleScroll = () => {
+      const scrollPos = window.scrollY + 120;
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const el = document.getElementById(sections[i]);
+        if (el && el.offsetTop <= scrollPos) {
+          setActiveSection(sections[i]);
+          break;
+        }
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const checkAdminStatus = async () => {
@@ -289,6 +306,14 @@ const SiteSettingsPage: React.FC<SiteSettingsPageProps> = ({ onBack }) => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
+  const scrollToSection = (sectionId: string) => {
+    const el = document.getElementById(sectionId);
+    if (el) {
+      const top = el.getBoundingClientRect().top + window.scrollY - 80;
+      window.scrollTo({ top, behavior: 'smooth' });
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
@@ -345,7 +370,42 @@ const SiteSettingsPage: React.FC<SiteSettingsPageProps> = ({ onBack }) => {
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 py-6">
+      {/* Section Navigation Bar */}
+      <div className="sticky top-0 z-40 bg-white border-b border-slate-200 shadow-sm">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="flex items-center gap-1 overflow-x-auto py-2">
+            {[
+              { id: 'section-logo', label: 'Logo', icon: Image },
+              { id: 'section-announcement', label: 'Announcement', icon: BellRing },
+              { id: 'section-important-message', label: 'Important Message', icon: MessageSquare },
+              { id: 'section-ai-support', label: 'AI Support', icon: Bot },
+              { id: 'section-ai-knowledge', label: 'AI Knowledge', icon: BookOpen },
+              { id: 'section-feedback', label: 'Feedback', icon: Lightbulb },
+              { id: 'section-blog-posts', label: 'Blog Posts', icon: FileText },
+              { id: 'section-about-page', label: 'About Page', icon: Info },
+            ].map((item) => {
+              const Icon = item.icon;
+              const isActive = activeSection === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => scrollToSection(item.id)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${
+                    isActive
+                      ? 'bg-blue-50 text-blue-700'
+                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                  }`}
+                >
+                  <Icon size={14} />
+                  {item.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      <div id="section-logo" className="max-w-4xl mx-auto px-4 py-6 scroll-mt-20">
         {/* Message Display */}
         {message && (
           <div className={`mb-6 p-4 rounded-lg border ${
@@ -685,7 +745,7 @@ const SiteSettingsPage: React.FC<SiteSettingsPageProps> = ({ onBack }) => {
       </div>
 
       {/* Site Announcement Section */}
-      <div className="max-w-4xl mx-auto px-4 py-6">
+      <div id="section-announcement" className="max-w-4xl mx-auto px-4 py-6 scroll-mt-20">
         <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-600 rounded-lg flex items-center justify-center">
@@ -797,7 +857,7 @@ const SiteSettingsPage: React.FC<SiteSettingsPageProps> = ({ onBack }) => {
       </div>
 
       {/* Important Message Banner Section */}
-      <div className="max-w-4xl mx-auto px-4 py-6">
+      <div id="section-important-message" className="max-w-4xl mx-auto px-4 py-6 scroll-mt-20">
         <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-200">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-8 h-8 bg-gradient-to-br from-slate-500 to-slate-700 rounded-lg flex items-center justify-center">
@@ -910,7 +970,7 @@ const SiteSettingsPage: React.FC<SiteSettingsPageProps> = ({ onBack }) => {
       </div>
 
       {/* AI Support Toggle Section */}
-      <div className="max-w-4xl mx-auto px-4 py-6">
+      <div id="section-ai-support" className="max-w-4xl mx-auto px-4 py-6 scroll-mt-20">
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
           <div className="flex items-center gap-3 p-6 border-b border-slate-200">
             <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg flex items-center justify-center">
@@ -967,17 +1027,17 @@ const SiteSettingsPage: React.FC<SiteSettingsPageProps> = ({ onBack }) => {
       </div>
 
       {/* AI Knowledge Management Section */}
-      <div className="max-w-4xl mx-auto px-4 py-6">
+      <div id="section-ai-knowledge" className="max-w-4xl mx-auto px-4 py-6 scroll-mt-20">
         <AiKnowledgeManager />
       </div>
 
       {/* Suggestions & Feedback Management Section */}
-      <div className="max-w-4xl mx-auto px-4 py-6">
+      <div id="section-feedback" className="max-w-4xl mx-auto px-4 py-6 scroll-mt-20">
         <FeedbackManager />
       </div>
 
       {/* Blog & About Content Management Section */}
-      <div className="max-w-4xl mx-auto px-4 py-6">
+      <div id="section-blog-posts" className="max-w-4xl mx-auto px-4 py-6 scroll-mt-20">
         <BlogContentManager
           contentType="blog_post"
           title="Blog Posts"
@@ -985,7 +1045,7 @@ const SiteSettingsPage: React.FC<SiteSettingsPageProps> = ({ onBack }) => {
         />
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 py-6">
+      <div id="section-about-page" className="max-w-4xl mx-auto px-4 py-6 scroll-mt-20">
         <BlogContentManager
           contentType="about_section"
           title="About Page Sections"
