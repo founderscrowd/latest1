@@ -18,6 +18,7 @@ const PrivateChatModal: React.FC<PrivateChatModalProps> = ({
   const [conversation, setConversation] = useState<Conversation | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [retryKey, setRetryKey] = useState(0);
 
   useEffect(() => {
     const initPrivateChat = async () => {
@@ -38,7 +39,7 @@ const PrivateChatModal: React.FC<PrivateChatModalProps> = ({
     };
 
     initPrivateChat();
-  }, [targetUserId]);
+  }, [targetUserId, retryKey]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
@@ -76,12 +77,20 @@ const PrivateChatModal: React.FC<PrivateChatModalProps> = ({
           ) : error ? (
             <div className="flex flex-col items-center justify-center h-full gap-3">
               <p className="text-slate-600 text-sm">{error}</p>
-              <button
-                onClick={onClose}
-                className="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition-colors text-sm"
-              >
-                Close
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setRetryKey((key) => key + 1)}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                >
+                  Try again
+                </button>
+                <button
+                  onClick={onClose}
+                  className="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 transition-colors text-sm"
+                >
+                  Close
+                </button>
+              </div>
             </div>
           ) : conversationId ? (
             <ChatWindow
