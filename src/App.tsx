@@ -53,6 +53,12 @@ import { groupAPI, formatLegalStructure } from './lib/groupApi';
 import { siteSettingsAPI } from './lib/siteSettingsApi';
 import { stripeAPI } from './lib/stripeApi';
 import { trackTikTokPageView } from './lib/tiktokPixel';
+import { trackPageView as trackMetaPageView } from './lib/metaPixel';
+import { trackPageView as trackGAPageView, loadGoogleAnalytics } from './lib/googleAnalytics';
+import { loadTikTokPixel } from './lib/tiktokPixel';
+import { loadMetaPixel } from './lib/metaPixel';
+import { getConsent } from './lib/cookieConsent';
+import CookieConsentBanner from './components/CookieConsentBanner';
 
 // Build identifier for cache busting
 console.log('🚀🚀🚀 APP.TSX LOADED - BUILD v2025-10-03-ADMIN-FIX 🚀🚀🚀');
@@ -137,6 +143,7 @@ const App: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showNotificationsPanel, setShowNotificationsPanel] = useState(false);
   const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
+  const [cookieBannerOpen, setCookieBannerOpen] = useState(false);
   
   // Debug logging for modal states
   useEffect(() => {
@@ -174,13 +181,23 @@ const App: React.FC = () => {
     console.log('✅✅✅ TEST useEffect FIRED - user:', user?.id, 'loading:', loading);
   }, [user, loading]);
 
-  // Google Analytics 4: fire page_view on every route change (SPA navigation)
+  // Initialize tracking scripts on mount if consent already exists
   useEffect(() => {
-    const w = window as unknown as { gtag?: (...args: unknown[]) => void };
-    if (typeof w.gtag === 'function') {
-      w.gtag('event', 'page_view', { page_path: location.pathname + location.search });
+    const consent = getConsent();
+    if (consent.marketing) {
+      loadTikTokPixel();
+      loadMetaPixel();
     }
-    // TikTok Pixel: fire PageView on every route change (SPA navigation)
+    if (consent.analytics) {
+      loadGoogleAnalytics();
+    }
+  }, []);
+
+  // Fire page_view on every route change (SPA navigation) — consent-gated
+  useEffect(() => {
+    const path = location.pathname + location.search;
+    trackGAPageView(path);
+    trackMetaPageView();
     trackTikTokPageView();
   }, [location.pathname, location.search]);
 
@@ -2038,6 +2055,7 @@ const App: React.FC = () => {
             onShowPrivacyPolicy={() => navigate('/privacy/')}
             onShowTermsOfService={() => navigate('/terms/')}
             onShowCookiePolicy={() => navigate('/cookies/')}
+            onOpenCookiePreferences={() => setCookieBannerOpen(true)}
             onShowBlogAndAbout={() => navigate('/blog/')}
             onShowHowItWorks={() => navigate('/how-it-works/')}
           />
@@ -2104,6 +2122,11 @@ const App: React.FC = () => {
       )}
 
       <NotificationToasts />
+
+      <CookieConsentBanner
+        forceOpen={cookieBannerOpen}
+        onClosed={() => setCookieBannerOpen(false)}
+      />
     </div>
   );
 };

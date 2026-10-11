@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowLeft, Cookie, Shield, Eye, Settings, Info, CheckCircle, XCircle } from 'lucide-react';
+import { ArrowLeft, Cookie, Shield, Eye, Settings, Info, CheckCircle } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 
 interface CookiePolicyPageProps {
@@ -46,20 +46,22 @@ const CookiePolicyPage: React.FC<CookiePolicyPageProps> = ({ onBack, siteLogoUrl
           {/* Last Updated */}
           <div className="mb-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
             <p className="text-sm text-blue-800">
-              <strong>Last Updated:</strong> January 15, 2025
+              <strong>Last Updated:</strong> October 11, 2026
             </p>
           </div>
 
           {/* Introduction */}
           <div className="mb-8">
             <p className="text-slate-700 leading-relaxed mb-4">
-              This Cookie Policy explains how EquityTake uses cookies and similar tracking 
-              technologies when you visit our website and use our platform. This policy should be read alongside 
+              This Cookie Policy explains how EquityTake uses cookies and similar tracking
+              technologies when you visit our website and use our platform. This policy should be read alongside
               our Privacy Policy for a complete understanding of how we handle your personal information.
             </p>
             <p className="text-slate-700 leading-relaxed">
-              By continuing to use our website, you consent to our use of cookies as described in this policy, 
-              unless you have disabled them through your browser settings or our cookie preference center.
+              When you visit EquityTake for the first time, a cookie consent banner appears at the bottom of the
+              screen. You can choose to accept all cookies, reject optional cookies, or customise your preferences
+              by enabling or disabling Analytics and Marketing cookies individually. Essential cookies are always
+              active and cannot be disabled.
             </p>
           </div>
 
@@ -97,7 +99,7 @@ const CookiePolicyPage: React.FC<CookiePolicyPageProps> = ({ onBack, siteLogoUrl
               <Settings size={20} className="text-blue-600" />
               <h2 className="text-xl font-bold text-slate-900">2. Types of Cookies We Use</h2>
             </div>
-            
+
             <div className="space-y-6">
               {/* Essential Cookies */}
               <div className="border border-green-200 bg-green-50 rounded-lg p-6">
@@ -106,10 +108,10 @@ const CookiePolicyPage: React.FC<CookiePolicyPageProps> = ({ onBack, siteLogoUrl
                   <h3 className="text-lg font-semibold text-green-900">Essential Cookies (Always Active)</h3>
                 </div>
                 <p className="text-green-800 mb-4">
-                  These cookies are necessary for the website to function properly and cannot be disabled. 
+                  These cookies are necessary for the website to function properly and cannot be disabled.
                   They are usually set in response to actions you take, such as logging in or filling out forms.
                 </p>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <h4 className="font-medium text-green-900 mb-2">Authentication & Security</h4>
@@ -117,7 +119,6 @@ const CookiePolicyPage: React.FC<CookiePolicyPageProps> = ({ onBack, siteLogoUrl
                       <li>• User login sessions</li>
                       <li>• Security tokens and CSRF protection</li>
                       <li>• Account verification status</li>
-                      <li>• Two-factor authentication state</li>
                     </ul>
                   </div>
                   <div>
@@ -125,7 +126,6 @@ const CookiePolicyPage: React.FC<CookiePolicyPageProps> = ({ onBack, siteLogoUrl
                     <ul className="text-sm text-green-800 space-y-1">
                       <li>• Form submission data</li>
                       <li>• Navigation and page state</li>
-                      <li>• Error handling and debugging</li>
                       <li>• Load balancing and performance</li>
                     </ul>
                   </div>
@@ -136,13 +136,14 @@ const CookiePolicyPage: React.FC<CookiePolicyPageProps> = ({ onBack, siteLogoUrl
               <div className="border border-blue-200 bg-blue-50 rounded-lg p-6">
                 <div className="flex items-center gap-2 mb-3">
                   <Eye size={20} className="text-blue-600" />
-                  <h3 className="text-lg font-semibold text-blue-900">Analytics Cookies (Optional)</h3>
+                  <h3 className="text-lg font-semibold text-blue-900">Analytics Cookies (Optional — Google Analytics)</h3>
                 </div>
                 <p className="text-blue-800 mb-4">
-                  These cookies help us understand how visitors interact with our website by collecting 
-                  and reporting information anonymously. This helps us improve our platform and user experience.
+                  These cookies help us understand how visitors interact with our website by collecting
+                  and reporting information anonymously. We use Google Analytics 4 (GA4) for this purpose.
+                  These cookies are disabled by default and only load after you explicitly opt in.
                 </p>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <h4 className="font-medium text-blue-900 mb-2">Usage Analytics</h4>
@@ -165,67 +166,33 @@ const CookiePolicyPage: React.FC<CookiePolicyPageProps> = ({ onBack, siteLogoUrl
                 </div>
               </div>
 
-              {/* Functional Cookies */}
-              <div className="border border-purple-200 bg-purple-50 rounded-lg p-6">
-                <div className="flex items-center gap-2 mb-3">
-                  <Settings size={20} className="text-purple-600" />
-                  <h3 className="text-lg font-semibold text-purple-900">Functional Cookies (Optional)</h3>
-                </div>
-                <p className="text-purple-800 mb-4">
-                  These cookies enable enhanced functionality and personalization. They may be set by us 
-                  or by third-party providers whose services we use on our pages.
-                </p>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <h4 className="font-medium text-purple-900 mb-2">Personalization</h4>
-                    <ul className="text-sm text-purple-800 space-y-1">
-                      <li>• Language and region preferences</li>
-                      <li>• Theme and display settings</li>
-                      <li>• Customized dashboard layouts</li>
-                      <li>• Saved search filters</li>
-                    </ul>
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-purple-900 mb-2">Enhanced Features</h4>
-                    <ul className="text-sm text-purple-800 space-y-1">
-                      <li>• Chat and messaging preferences</li>
-                      <li>• Notification settings</li>
-                      <li>• Form auto-completion</li>
-                      <li>• Recently viewed content</li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-
               {/* Marketing Cookies */}
               <div className="border border-orange-200 bg-orange-50 rounded-lg p-6">
                 <div className="flex items-center gap-2 mb-3">
                   <Shield size={20} className="text-orange-600" />
-                  <h3 className="text-lg font-semibold text-orange-900">Marketing Cookies (Requires Consent)</h3>
+                  <h3 className="text-lg font-semibold text-orange-900">Marketing Cookies (Optional — Meta Pixel & TikTok Pixel)</h3>
                 </div>
                 <p className="text-orange-800 mb-4">
-                  These cookies are used to deliver personalized advertisements and marketing content. 
-                  They track your browsing habits to show you relevant startup opportunities and features.
+                  These cookies are used to measure advertising performance and track conversion events.
+                  We use the Meta (Facebook) Pixel and the TikTok Pixel for this purpose.
+                  These cookies are disabled by default and only load after you explicitly opt in.
                 </p>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <h4 className="font-medium text-orange-900 mb-2">Personalized Content</h4>
+                    <h4 className="font-medium text-orange-900 mb-2">Meta (Facebook) Pixel</h4>
                     <ul className="text-sm text-orange-800 space-y-1">
-                      <li>• Relevant group recommendations</li>
-                      <li>• Targeted feature suggestions</li>
-                      <li>• Personalized email campaigns</li>
-                      <li>• Industry-specific content</li>
+                      <li>• Page view tracking</li>
+                      <li>• Registration and login conversion events</li>
+                      <li>• Checkout and purchase conversion events</li>
                     </ul>
                   </div>
                   <div>
-                    <h4 className="font-medium text-orange-900 mb-2">Advertising</h4>
+                    <h4 className="font-medium text-orange-900 mb-2">TikTok Pixel</h4>
                     <ul className="text-sm text-orange-800 space-y-1">
-                      <li>• Retargeting campaigns</li>
-                      <li>• Social media advertising</li>
-                      <li>• Partner network promotions</li>
-                      <li>• Conversion tracking</li>
+                      <li>• Page view tracking (native ttq.page())</li>
+                      <li>• Content view, group join, and group creation events</li>
+                      <li>• Registration conversion events</li>
                     </ul>
                   </div>
                 </div>
@@ -239,68 +206,32 @@ const CookiePolicyPage: React.FC<CookiePolicyPageProps> = ({ onBack, siteLogoUrl
               <Settings size={20} className="text-slate-600" />
               <h2 className="text-xl font-bold text-slate-900">3. Managing Your Cookie Preferences</h2>
             </div>
-            
+
             <div className="space-y-4">
               <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                <h3 className="text-lg font-semibold text-green-900 mb-3">Cookie Preference Center</h3>
+                <h3 className="text-lg font-semibold text-green-900 mb-3">Cookie Consent Banner</h3>
                 <p className="text-green-800 text-sm mb-3">
-                  You can manage your cookie preferences at any time through our cookie banner or preference center:
+                  When you first visit EquityTake, a cookie consent banner appears with three options:
                 </p>
                 <ul className="list-disc list-inside space-y-1 text-green-800 text-sm ml-4">
-                  <li>Accept all cookies for the full experience</li>
-                  <li>Reject optional cookies (analytics, marketing)</li>
-                  <li>Customize preferences by cookie category</li>
-                  <li>Change your mind anytime by clearing browser data</li>
+                  <li><strong>Accept all</strong> — enables Analytics and Marketing cookies</li>
+                  <li><strong>Reject optional</strong> — disables Analytics and Marketing cookies; only Essential cookies are used</li>
+                  <li><strong>Customise</strong> — lets you enable or disable Analytics and Marketing cookies separately</li>
                 </ul>
+                <p className="text-green-800 text-sm mt-3">
+                  You can change your preferences at any time by clicking <strong>Cookie Preferences</strong> in the website footer.
+                  Withdrawing consent stops further optional tracking and clears existing tracking cookies from your browser.
+                </p>
               </div>
 
-              <div>
-                <h3 className="text-lg font-semibold text-slate-900 mb-3">Browser-Level Cookie Management</h3>
-                <p className="text-slate-700 mb-3">
-                  You can also control cookies directly through your browser settings:
-                </p>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="border border-slate-200 rounded-lg p-4">
-                    <h4 className="font-medium text-slate-900 mb-2">Chrome</h4>
-                    <ol className="text-sm text-slate-700 space-y-1 list-decimal list-inside">
-                      <li>Click the three dots menu → Settings</li>
-                      <li>Go to Privacy and Security → Cookies</li>
-                      <li>Choose your preferred cookie settings</li>
-                      <li>Manage exceptions for specific sites</li>
-                    </ol>
-                  </div>
-
-                  <div className="border border-slate-200 rounded-lg p-4">
-                    <h4 className="font-medium text-slate-900 mb-2">Firefox</h4>
-                    <ol className="text-sm text-slate-700 space-y-1 list-decimal list-inside">
-                      <li>Click the menu button → Settings</li>
-                      <li>Go to Privacy & Security</li>
-                      <li>Under Cookies and Site Data</li>
-                      <li>Choose your cookie preferences</li>
-                    </ol>
-                  </div>
-
-                  <div className="border border-slate-200 rounded-lg p-4">
-                    <h4 className="font-medium text-slate-900 mb-2">Safari</h4>
-                    <ol className="text-sm text-slate-700 space-y-1 list-decimal list-inside">
-                      <li>Safari menu → Preferences</li>
-                      <li>Click the Privacy tab</li>
-                      <li>Choose cookie blocking options</li>
-                      <li>Manage website data</li>
-                    </ol>
-                  </div>
-
-                  <div className="border border-slate-200 rounded-lg p-4">
-                    <h4 className="font-medium text-slate-900 mb-2">Edge</h4>
-                    <ol className="text-sm text-slate-700 space-y-1 list-decimal list-inside">
-                      <li>Click the three dots → Settings</li>
-                      <li>Go to Cookies and site permissions</li>
-                      <li>Click on Cookies and site data</li>
-                      <li>Configure your preferences</li>
-                    </ol>
-                  </div>
-                </div>
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h3 className="text-lg font-semibold text-blue-900 mb-3">How Consent Works</h3>
+                <ul className="list-disc list-inside space-y-1 text-blue-800 text-sm ml-4">
+                  <li>Analytics and Marketing tracking scripts do not load until you opt in</li>
+                  <li>If you do not make a choice, no optional cookies are set</li>
+                  <li>Your preferences are saved in your browser so you are not asked again unless the policy changes</li>
+                  <li>Withdrawing consent stops all further tracking and removes existing tracking cookies</li>
+                </ul>
               </div>
 
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
@@ -309,9 +240,8 @@ const CookiePolicyPage: React.FC<CookiePolicyPageProps> = ({ onBack, siteLogoUrl
                   <h4 className="font-semibold text-yellow-900">Important Note</h4>
                 </div>
                 <p className="text-yellow-800 text-sm">
-                  Disabling certain cookies may affect the functionality of our website. Essential cookies 
-                  cannot be disabled as they are necessary for basic site operation, user authentication, 
-                  and security features.
+                  Essential cookies cannot be disabled as they are necessary for basic site operation, user authentication,
+                  and security features. You can also control cookies directly through your browser settings.
                 </p>
               </div>
             </div>

@@ -12,6 +12,7 @@ interface FooterProps {
   onShowPrivacyPolicy?: () => void;
   onShowTermsOfService?: () => void;
   onShowCookiePolicy?: () => void;
+  onOpenCookiePreferences?: () => void;
   onShowBlogAndAbout?: () => void;
   onShowHowItWorks?: () => void;
 }
@@ -20,6 +21,7 @@ const Footer: React.FC<FooterProps> = ({
   onShowPrivacyPolicy,
   onShowTermsOfService,
   onShowCookiePolicy,
+  onOpenCookiePreferences,
   onShowHowItWorks,
 }) => (
   <footer className="bg-slate-900 text-white">
@@ -172,6 +174,16 @@ const Footer: React.FC<FooterProps> = ({
                   Cookie Policy
                 </Link>
               )}
+            </li>
+            <li>
+              {onOpenCookiePreferences ? (
+                <button
+                  onClick={onOpenCookiePreferences}
+                  className="text-slate-300 hover:text-white transition-colors text-left"
+                >
+                  Cookie Preferences
+                </button>
+              ) : null}
             </li>
           </ul>
         </div>

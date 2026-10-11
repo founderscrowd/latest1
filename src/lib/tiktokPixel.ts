@@ -1,50 +1,72 @@
+import { hasMarketingConsent, CONSENT_EVENT, clearTrackingCookies } from './cookieConsent';
+
 declare global {
   interface Window {
     ttq?: {
       track: (...args: unknown[]) => void;
       page: (...args: unknown[]) => void;
       load: (...args: unknown[]) => void;
+      disableCookie?: (...args: unknown[]) => void;
     };
+    TiktokAnalyticsObject?: string;
   }
 }
 
 const PIXEL_ID = 'DB5TKL3C77UBL2TM2PQG';
 
-const CONSENT_KEY = 'cookieConsent';
+let loaded = false;
 
-function marketingConsentGranted(): boolean {
-  if (typeof window === 'undefined') return false;
-  const stored = window.localStorage?.getItem(CONSENT_KEY);
-  if (!stored) return true;
-  try {
-    const parsed = JSON.parse(stored) as { marketing?: boolean };
-    return parsed.marketing !== false;
-  } catch {
-    return true;
-  }
-}
+export function loadTikTokPixel(): void {
+  if (typeof window === 'undefined' || loaded) return;
+  if (!hasMarketingConsent()) return;
 
-export function updateTikTokConsent(consent: boolean): void {
-  if (typeof window === 'undefined') return;
-  try {
-    const existing = window.localStorage.getItem(CONSENT_KEY);
-    const parsed = existing ? JSON.parse(existing) : {};
-    window.localStorage.setItem(
-      CONSENT_KEY,
-      JSON.stringify({ ...parsed, marketing: consent }),
-    );
-  } catch {
-    /* storage unavailable — leave as-is */
+  const w = window as unknown as Record<string, unknown>;
+  const t = 'ttq';
+  w.TiktokAnalyticsObject = t;
+
+  const ttq: unknown[] = (w[t] as unknown[]) || [];
+  w[t] = ttq;
+
+  const methods = ['page', 'track', 'identify', 'instances', 'debug', 'on', 'off', 'once', 'ready', 'alias', 'group', 'enableCookie', 'disableCookie'];
+  (ttq as Record<string, unknown>).setAndDefer = function (obj: unknown, method: string) {
+    (obj as Record<string, (...args: unknown[]) => void>)[method] = function (...args: unknown[]) {
+      (obj as unknown[]).push([method].concat(Array.prototype.slice.call(args, 0)));
+    };
+  };
+  for (let i = 0; i < methods.length; i++) {
+    (ttq as Record<string, unknown>).setAndDefer(ttq, methods[i]);
   }
-  if (typeof window.ttq !== 'undefined') {
-    window.ttq.track('Consent', { consent: consent ? 'granted' : 'denied' });
-  }
+  (ttq as Record<string, unknown>).instance = function (id: string) {
+    const e = (ttq as Record<string, unknown[]>)._i?.[id] || [];
+    for (let n = 0; n < methods.length; n++) {
+      (ttq as Record<string, unknown>).setAndDefer(e, methods[n]);
+    }
+    return e;
+  };
+  (ttq as Record<string, unknown>).load = function (e: string, n?: unknown) {
+    const i = 'https://analytics.tiktok.com/i18n/pixel/events.js';
+    (ttq as Record<string, unknown[]>)._i = (ttq as Record<string, unknown[]>)._i || {};
+    (ttq as Record<string, unknown[]>)._i[e] = [];
+    (ttq as Record<string, unknown[]>)._i[e]._u = i;
+    (ttq as Record<string, unknown>)['_t'] = (ttq as Record<string, unknown>)['_t'] || {};
+    (ttq as Record<string, unknown>)['_t'][e] = +new Date();
+    (ttq as Record<string, unknown>)['_o'] = (ttq as Record<string, unknown>)['_o'] || {};
+    (ttq as Record<string, unknown>)['_o'][e] = n || {};
+    const o = document.createElement('script');
+    o.type = 'text/javascript';
+    o.async = true;
+    o.src = i + '?sdkid=' + e + '&lib=' + t;
+    const a = document.getElementsByTagName('script')[0];
+    a.parentNode?.insertBefore(o, a);
+  };
+  (ttq as Record<string, (...args: unknown[]) => void>).load(PIXEL_ID);
+  loaded = true;
 }
 
 function ttqTrack(event: string, data?: Record<string, unknown>): void {
   if (typeof window === 'undefined') return;
-  if (typeof window.ttq === 'undefined') return;
-  if (!marketingConsentGranted()) return;
+  if (!loaded || typeof window.ttq === 'undefined') return;
+  if (!hasMarketingConsent()) return;
   if (data) {
     window.ttq.track(event, data);
   } else {
@@ -53,7 +75,10 @@ function ttqTrack(event: string, data?: Record<string, unknown>): void {
 }
 
 export function trackTikTokPageView(): void {
-  ttqTrack('PageView');
+  if (typeof window === 'undefined') return;
+  if (!loaded || typeof window.ttq === 'undefined') return;
+  if (!hasMarketingConsent()) return;
+  window.ttq.page();
 }
 
 export function trackTikTokViewContent(
@@ -92,6 +117,28 @@ export function trackTikTokCreateGroup(
     content_type: 'group',
     content_name: groupName,
   });
+}
+
+function onConsentChanged(e: Event): void {
+  const detail = (e as CustomEvent).detail;
+  const marketingGranted = detail?.marketing === true;
+  if (marketingGranted) {
+    if (!loaded) {
+      loadTikTokPixel();
+      if (typeof window.ttq !== 'undefined' && hasMarketingConsent()) {
+        window.ttq.page();
+      }
+    }
+  } else {
+    if (typeof window.ttq !== 'undefined' && typeof window.ttq.disableCookie === 'function') {
+      window.ttq.disableCookie();
+    }
+    clearTrackingCookies();
+  }
+}
+
+if (typeof window !== 'undefined') {
+  window.addEventListener(CONSENT_EVENT, onConsentChanged);
 }
 
 export { PIXEL_ID };

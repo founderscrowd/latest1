@@ -70,15 +70,6 @@ function buildHtml({
   return `<!doctype html>
 <html lang="en">
   <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MJF82NJCD6"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-MJF82NJCD6');
-    </script>
-
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/favicon.svg" />
@@ -105,47 +96,12 @@ function buildHtml({
     <meta name="twitter:description" content="${esc(description)}" />
     <meta name="twitter:image" content="https://equitytakeaway.com/social-share-default.jpg" />
 
-    <!-- Meta Pixel Code -->
-    <script>
-      !function(f,b,e,v,n,t,s)
-      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-      n.queue=[];t=b.createElement(e);t.async=!0;
-      t.src=v;s=b.getElementsByTagName(e)[0];
-      s.parentNode.insertBefore(t,s)}(window, document,'script',
-      'https://connect.facebook.net/en_US/fbevents.js');
-      fbq('init', '1614166306981071');
-      fbq('track', 'PageView');
-    </script>
-    <!-- End Meta Pixel Code -->
 
-    <!-- TikTok Pixel Code -->
-    <script>
-      !function (w, d, t) {
-        w.TiktokAnalyticsObject = t;
-        var ttq = w[t] = w[t] || [];
-        ttq.methods = ["page", "track", "identify", "instances", "debug", "on", "off", "once", "ready", "alias", "group", "enableCookie", "disableCookie"];
-        ttq.setAndDefer = function (t, e) { t[e] = function () { t.push([e].concat(Array.prototype.slice.call(arguments, 0))) } };
-        for (var i = 0; i < ttq.methods.length; i++) ttq.setAndDefer(ttq, ttq.methods[i]);
-        ttq.instance = function (t) { for (var e = ttq._i[t] || [], n = 0; n < ttq.methods.length; n++) ttq.setAndDefer(e, ttq.methods[n]); return e };
-        ttq.load = function (e, n) { var i = "https://analytics.tiktok.com/i18n/pixel/events.js"; ttq._i = ttq._i || {}; ttq._i[e] = []; ttq._i[e]._u = i; ttq._t = ttq._t || {}; ttq._t[e] = +new Date; ttq._o = ttq._o || {}; ttq._o[e] = n || {}; var o = d.createElement("script"); o.type = "text/javascript"; o.async = !0; o.src = i + "?sdkid=" + e + "&lib=" + t; var a = d.getElementsByTagName("script")[0]; a.parentNode.insertBefore(o, a) };
-        ttq.load('DB5TKL3C77UBL2TM2PQG');
-        ttq.page();
-      }(window, document, 'ttq');
-    </script>
-    <!-- End TikTok Pixel Code -->
 
     <script type="module" crossorigin src="/assets/index-6dIil5pz.js"></script>
     <link rel="stylesheet" href="/assets/index-B5vig-LC.css" />
   </head>
   <body>
-    <!-- Meta Pixel Code (noscript fallback) -->
-    <noscript>
-      <img height="1" width="1" style="display:none"
-        src="https://www.facebook.com/tr?id=1614166306981071&ev=PageView&noscript=1" alt="" />
-    </noscript>
-    <!-- End Meta Pixel Code (noscript) -->
     <div id="root">${bodyHtml}</div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
@@ -544,15 +500,16 @@ const routes = {
       'Cookie Policy',
       `<p style="font-size:1.1rem;color:#475569;margin:0 0 20px;">How we use cookies and similar technologies</p>
   <p style="color:#475569;line-height:1.7;margin:0 0 20px;">This Cookie Policy explains how EquityTake uses cookies and similar tracking technologies when you visit our website and use our platform. This policy should be read alongside our Privacy Policy for a complete understanding of how we handle your personal information.</p>
-  <p style="color:#475569;line-height:1.7;margin:0 0 20px;">By continuing to use our website, you consent to our use of cookies as described in this policy, unless you have disabled them through your browser settings or our cookie preference center.</p>
+  <p style="color:#475569;line-height:1.7;margin:0 0 20px;">When you visit EquityTake for the first time, a cookie consent banner appears. You can choose to accept all cookies, reject optional cookies, or customise your preferences by enabling or disabling Analytics and Marketing cookies individually. Essential cookies are always active and cannot be disabled.</p>
   <h2 style="font-size:1.3rem;font-weight:700;margin:24px 0 8px;">Types of cookies</h2>
   <ul style="color:#475569;line-height:1.7;padding-left:20px;margin:0 0 20px;">
-    <li><strong>Essential</strong> — always active, required for the site to function.</li>
-    <li><strong>Analytics</strong> — optional, help us understand how visitors use the site.</li>
-    <li><strong>Functional</strong> — optional, remember preferences and settings.</li>
-    <li><strong>Marketing</strong> — requires consent, used to show relevant content.</li>
+    <li><strong>Essential</strong> — always active. Required for authentication, security, and core site functionality. These cannot be disabled.</li>
+    <li><strong>Analytics</strong> — optional. Google Analytics (GA4) helps us understand how visitors interact with the site. Disabled by default until you opt in.</li>
+    <li><strong>Marketing</strong> — optional. Meta (Facebook) Pixel and TikTok Pixel measure advertising performance and conversion events. Disabled by default until you opt in.</li>
   </ul>
-  <p style="color:#475569;line-height:1.7;margin:0 0 40px;">You can manage cookies through your browser settings. Last updated January 15, 2025. Contact: admin@groupsandcrowds.com.</p>`
+  <h2 style="font-size:1.3rem;font-weight:700;margin:24px 0 8px;">Managing your preferences</h2>
+  <p style="color:#475569;line-height:1.7;margin:0 0 20px;">You can change your cookie preferences at any time by clicking "Cookie Preferences" in the website footer. Withdrawing consent stops further optional tracking and clears existing tracking cookies from your browser.</p>
+  <p style="color:#475569;line-height:1.7;margin:0 0 40px;">Last updated October 11, 2026. Contact: admin@groupsandcrowds.com.</p>`
     ),
   },
   '/sign-in': {
