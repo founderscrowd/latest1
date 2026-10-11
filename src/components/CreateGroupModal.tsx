@@ -7,6 +7,7 @@ import {
   isValidStructureForProfitStatus,
 } from '../lib/groupApi';
 import { useAuth } from '../hooks/useAuth';
+import { trackTikTokCreateGroup } from '../lib/tiktokPixel';
 
 interface CreateGroupModalProps {
   isOpen: boolean;
@@ -64,6 +65,9 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
       };
 
       await groupAPI.createGroup(groupData, user.id);
+
+      // TikTok Pixel: fire CreateGroup on successful group creation
+      trackTikTokCreateGroup('', groupData.name);
 
       if (typeof window.gtag === 'function') {
         window.gtag('event', 'group_created');

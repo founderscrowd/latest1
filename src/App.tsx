@@ -52,6 +52,7 @@ import { signOut } from './lib/supabase';
 import { groupAPI, formatLegalStructure } from './lib/groupApi';
 import { siteSettingsAPI } from './lib/siteSettingsApi';
 import { stripeAPI } from './lib/stripeApi';
+import { trackTikTokPageView } from './lib/tiktokPixel';
 
 // Build identifier for cache busting
 console.log('🚀🚀🚀 APP.TSX LOADED - BUILD v2025-10-03-ADMIN-FIX 🚀🚀🚀');
@@ -179,6 +180,8 @@ const App: React.FC = () => {
     if (typeof w.gtag === 'function') {
       w.gtag('event', 'page_view', { page_path: location.pathname + location.search });
     }
+    // TikTok Pixel: fire PageView on every route change (SPA navigation)
+    trackTikTokPageView();
   }, [location.pathname, location.search]);
 
   console.log('>>> APP RENDER - loading:', loading, 'user:', user?.id, 'isUserSiteAdmin:', isUserSiteAdmin);

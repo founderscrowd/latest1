@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { X, Mail, Lock, User, MailCheck, RotateCw, ArrowLeft, Check } from 'lucide-react';
 import { signIn, signUp, checkUsernameAvailability, resendVerificationEmail } from '../lib/supabase';
 import { trackCompleteRegistration, trackLogin } from '../lib/metaPixel';
+import { trackTikTokCompleteRegistration } from '../lib/tiktokPixel';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -239,6 +240,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuccess, i
 
         if (isSignUp) {
           trackCompleteRegistration();
+          trackTikTokCompleteRegistration();
           if (typeof window.gtag === 'function') {
             window.gtag('event', 'auth_complete');
           }

@@ -4,6 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 import { groupAPI, formatLegalStructure, formatOrganisationType } from '../lib/groupApi';
 import { supabase } from '../lib/supabase';
 import { EXISTING_USER_CUTOFF_DATE } from '../App';
+import { trackTikTokViewContent, trackTikTokJoinGroup } from '../lib/tiktokPixel';
 import ConfirmationModal from './ConfirmationModal';
 import PrivateChatModal from './PrivateChatModal';
 
@@ -92,6 +93,10 @@ const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({
       // Fetch group details
       const groupData = await groupAPI.getGroup(groupId);
       setGroup(groupData);
+      // TikTok Pixel: fire ViewContent when a group page loads
+      if (groupData?.id) {
+        trackTikTokViewContent(groupData.id, 'group', groupData.name);
+      }
 
       // Fetch members
       const membersData = await groupAPI.getGroupMembers(groupId);
@@ -129,6 +134,8 @@ const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({
       // Show appropriate success message
       if (membership?.status === 'approved') {
         setJoinMessage('Welcome to the group! You are now a member.');
+        // TikTok Pixel: fire JoinGroup on successful join
+        trackTikTokJoinGroup(groupId, group?.name);
         // Notify parent component that group data has changed
         onGroupDataUpdated?.(groupId);
       } else if (membership?.status === 'pending') {
