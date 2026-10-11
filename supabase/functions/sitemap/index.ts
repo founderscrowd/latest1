@@ -7,6 +7,9 @@ const corsHeaders = {
 };
 
 const BASE_URL = "https://equitytakeaway.com";
+const FIXED_BLOG_LASTMODS: Record<string, string> = {
+  "how-to-set-a-proposed-company-value-for-an-idea-stage-startup": "2026-10-11",
+};
 
 const STATIC_PAGES: { path: string; changefreq: string; priority: string }[] = [
   { path: "/", changefreq: "daily", priority: "1.0" },
@@ -63,6 +66,7 @@ Deno.serve(async (req: Request) => {
     entries.push(urlEntry(`${BASE_URL}${page.path}`, today, page.changefreq, page.priority));
   }
 
+  const includedBlogSlugs = new Set<string>();
   let blogCount = 0;
   if (supabaseUrl && supabaseKey) {
     const supabase = createClient(supabaseUrl, supabaseKey);
@@ -77,11 +81,18 @@ Deno.serve(async (req: Request) => {
       for (const post of posts) {
         const slug = (post.slug || "").replace(/^-+/, "");
         if (!slug) continue;
-        const lastmod = (post.updated_at || post.published_at || today)
+        const lastmod = FIXED_BLOG_LASTMODS[slug] || (post.updated_at || post.published_at || today)
           .split("T")[0];
         entries.push(urlEntry(`${BASE_URL}/blog/${slug}/`, lastmod, "monthly", "0.7"));
+        includedBlogSlugs.add(slug);
         blogCount++;
       }
+    }
+  }
+
+  for (const [slug, lastmod] of Object.entries(FIXED_BLOG_LASTMODS)) {
+    if (!includedBlogSlugs.has(slug)) {
+      entries.push(urlEntry(`${BASE_URL}/blog/${slug}/`, lastmod, "monthly", "0.7"));
     }
   }
 
