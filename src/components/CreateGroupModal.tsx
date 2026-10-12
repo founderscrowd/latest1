@@ -8,6 +8,8 @@ import {
 } from '../lib/groupApi';
 import { useAuth } from '../hooks/useAuth';
 import { trackTikTokCreateGroup } from '../lib/tiktokPixel';
+import { trackEvent as trackGAEvent } from '../lib/googleAnalytics';
+import { trackCustomEvent as trackMetaCustomEvent } from '../lib/metaPixel';
 
 interface CreateGroupModalProps {
   isOpen: boolean;
@@ -64,17 +66,12 @@ const CreateGroupModal: React.FC<CreateGroupModalProps> = ({ isOpen, onClose, on
         organisation_type: formData.organisation_type
       };
 
-      await groupAPI.createGroup(groupData, user.id);
+      const createdGroup = await groupAPI.createGroup(groupData, user.id);
 
       // TikTok Pixel: fire CreateGroup on successful group creation
-      trackTikTokCreateGroup('', groupData.name);
-
-      if (typeof window.gtag === 'function') {
-        window.gtag('event', 'group_created');
-      }
-      if (typeof window.fbq === 'function') {
-        window.fbq('trackCustom', 'GroupCreated');
-      }
+      trackTikTokCreateGroup(createdGroup.id, groupData.name);
+      trackGAEvent('create_group', { group_id: createdGroup.id });
+      trackMetaCustomEvent('GroupCreated', { group_id: createdGroup.id });
 
       // Reset form
       setFormData({

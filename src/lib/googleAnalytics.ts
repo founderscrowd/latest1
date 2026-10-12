@@ -33,9 +33,16 @@ export function loadGoogleAnalytics(): void {
 }
 
 export function trackPageView(path: string): void {
+  trackEvent('page_view', { page_path: path });
+}
+
+export function trackEvent(
+  eventName: string,
+  parameters: Record<string, unknown> = {},
+): void {
   if (!loaded || !hasAnalyticsConsent()) return;
   if (typeof window.gtag !== 'function') return;
-  window.gtag('event', 'page_view', { page_path: path });
+  window.gtag('event', eventName, parameters);
 }
 
 function onConsentChanged(e: Event): void {

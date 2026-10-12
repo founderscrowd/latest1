@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import { Mail, Lock, ArrowLeft } from 'lucide-react';
 import { signIn } from '../lib/supabase';
 import { trackLogin } from '../lib/metaPixel';
+import { trackEvent as trackGAEvent, trackPageView as trackGAPageView } from '../lib/googleAnalytics';
 
 interface SignInPageProps {
   siteLogoUrl?: string | null;
@@ -17,9 +18,7 @@ const SignInPage: React.FC<SignInPageProps> = ({ siteLogoUrl }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (typeof window.gtag === 'function') {
-      window.gtag('event', 'page_view', { page_path: '/sign-in' });
-    }
+    trackGAPageView('/sign-in');
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -33,9 +32,7 @@ const SignInPage: React.FC<SignInPageProps> = ({ siteLogoUrl }) => {
         setError(result.error.message);
       } else {
         trackLogin();
-        if (typeof window.gtag === 'function') {
-          window.gtag('event', 'login');
-        }
+        trackGAEvent('login');
         navigate('/', { replace: true });
       }
     } catch (err) {

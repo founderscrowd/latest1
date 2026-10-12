@@ -4,6 +4,7 @@ import { X, Mail, Lock, User, MailCheck, RotateCw, ArrowLeft, Check } from 'luci
 import { signIn, signUp, checkUsernameAvailability, resendVerificationEmail } from '../lib/supabase';
 import { trackCompleteRegistration, trackLogin } from '../lib/metaPixel';
 import { trackTikTokCompleteRegistration } from '../lib/tiktokPixel';
+import { trackEvent as trackGAEvent } from '../lib/googleAnalytics';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -230,6 +231,10 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuccess, i
           setError(result.error.message);
         }
       } else {
+        if (isSignUp) {
+          trackGAEvent('sign_up', { method: 'email' });
+        }
+
         if (result.needsEmailConfirmation) {
           setSignedUpEmail(email);
           setShowVerificationScreen(true);
@@ -241,14 +246,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuccess, i
         if (isSignUp) {
           trackCompleteRegistration();
           trackTikTokCompleteRegistration();
-          if (typeof window.gtag === 'function') {
-            window.gtag('event', 'auth_complete');
-          }
         } else {
           trackLogin();
-          if (typeof window.gtag === 'function') {
-            window.gtag('event', 'login');
-          }
+          trackGAEvent('login');
         }
 
         onAuthSuccess();

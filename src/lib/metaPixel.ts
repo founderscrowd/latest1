@@ -72,6 +72,13 @@ export function trackPurchase(value: number, currency: string = 'USD'): void {
   fbq('track', 'Purchase', { value, currency });
 }
 
+export function trackCustomEvent(
+  eventName: string,
+  data: Record<string, unknown> = {},
+): void {
+  fbq('trackCustom', eventName, data);
+}
+
 function onConsentChanged(e: Event): void {
   const detail = (e as CustomEvent).detail;
   const marketingGranted = detail?.marketing === true;
