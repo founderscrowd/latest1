@@ -231,6 +231,40 @@ export const signOut = async () => {
   return { error }
 }
 
+export const signInWithGoogle = async () => {
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: window.location.origin,
+    },
+  });
+
+  if (error) throw error;
+};
+
+export const ensureUserProfile = async (user: any) => {
+  if (!user) return;
+  try {
+    const { data: existingProfile } = await supabase
+      .from('profiles')
+      .select('id, username')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    if (!existingProfile) {
+      const meta = user.user_metadata || {};
+      const username =
+        meta.username ||
+        meta.full_name ||
+        meta.name ||
+        (user.email ? user.email.split('@')[0] : '');
+      await createUserProfile(user, username);
+    }
+  } catch {
+    // Non-fatal: the DB trigger should have created the profile.
+  }
+};
+
 export const getCurrentUser = async () => {
   const { data: { user } } = await supabase.auth.getUser()
   return user

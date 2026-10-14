@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { X, Mail, Lock, User, MailCheck, RotateCw, ArrowLeft, Check } from 'lucide-react';
-import { signIn, signUp, checkUsernameAvailability, resendVerificationEmail } from '../lib/supabase';
+import { signIn, signUp, signInWithGoogle, checkUsernameAvailability, resendVerificationEmail } from '../lib/supabase';
 import { trackCompleteRegistration, trackLogin } from '../lib/metaPixel';
 import { trackTikTokCompleteRegistration } from '../lib/tiktokPixel';
 import { trackEvent as trackGAEvent } from '../lib/googleAnalytics';
@@ -31,6 +31,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuccess, i
   const [resendStatus, setResendStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
   const [resendMessage, setResendMessage] = useState('');
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const cooldownTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Update isSignUp when initialIsSignUp prop changes
@@ -356,6 +357,18 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuccess, i
     onClose();
   };
 
+  const handleGoogleSignIn = async () => {
+    setGoogleLoading(true);
+    setError('');
+    try {
+      await signInWithGoogle();
+      // Browser redirects to Google — no further code runs here.
+    } catch (err: any) {
+      setError(err?.message || 'Could not start Google sign-in. Please try again.');
+      setGoogleLoading(false);
+    }
+  };
+
   if (!isOpen) return null;
 
   if (showVerificationScreen) {
@@ -447,13 +460,37 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuccess, i
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg text-sm">
-              {error}
-            </div>
-          )}
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg text-sm mb-4">
+            {error}
+          </div>
+        )}
 
+        <button
+          type="button"
+          onClick={handleGoogleSignIn}
+          disabled={googleLoading || loading}
+          className="w-full flex items-center justify-center gap-2.5 py-2.5 border border-slate-300 rounded-lg font-semibold text-sm text-slate-700 hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed mb-4"
+        >
+          <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+            <path fill="#4285F4" d="M16.51 8.18c0-.57-.05-1.12-.14-1.65H9v3.12h4.21c-.18.97-.74 1.79-1.58 2.34v1.95h2.55c1.49-1.37 2.33-3.4 2.33-5.76z"/>
+            <path fill="#34A853" d="M9 17c2.13 0 3.92-.71 5.22-1.92l-2.55-1.95c-.71.48-1.62.76-2.67.76-2.05 0-3.79-1.39-4.41-3.26H1.96v2.03A8 8 0 0 0 9 17z"/>
+            <path fill="#FBBC05" d="M4.59 10.63A4.8 4.8 0 0 1 4.32 9c0-.57.1-1.11.27-1.63V5.34H1.96A8 8 0 0 0 1 9c0 1.29.31 2.51.96 3.66l3.63-2.03z"/>
+            <path fill="#EA4335" d="M9 4.58c1.16 0 2.2.4 3.02 1.18l2.27-2.27C13.92 2.23 12.13 1.5 9 1.5A8 8 0 0 0 1.96 5.34l3.63 2.03C5.21 5.97 6.95 4.58 9 4.58z"/>
+          </svg>
+          {googleLoading ? 'Redirecting...' : 'Continue with Google'}
+        </button>
+
+        <div className="relative mb-4">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-slate-200"></div>
+          </div>
+          <div className="relative flex justify-center text-xs">
+            <span className="bg-white px-2 text-slate-400">or</span>
+          </div>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div className="relative">
             <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" size={16} />
             <input

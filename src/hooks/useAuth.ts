@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { User } from '@supabase/supabase-js';
-import { supabase } from '../lib/supabase';
+import { supabase, ensureUserProfile } from '../lib/supabase';
+import { trackLogin } from '../lib/metaPixel';
+import { trackEvent as trackGAEvent } from '../lib/googleAnalytics';
 
 // Network error detection helper
 const isNetworkError = (error: any): boolean => {
@@ -192,20 +194,38 @@ Please try refreshing the page. If the problem continues, please contact support
     
     try {
       const { data } = supabase.auth.onAuthStateChange(
-        async (event, session) => {
-          console.log('🔄 Auth state change:', event, session ? 'User present' : 'No user');
-          // Only clear errors on successful auth events
-          if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-            setError(null);
-          }
-          
-          // Clear session data for sign-out events or when user is null
-          if (event === 'SIGNED_OUT' || event === 'USER_DELETED' || !session?.user) {
-            setUser(null);
-          } else {
-            setUser(session.user);
-          }
-          setLoading(false);
+        (event, session) => {
+          (async () => {
+            console.log('🔄 Auth state change:', event, session ? 'User present' : 'No user');
+            // Only clear errors on successful auth events
+            if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+              setError(null);
+            }
+
+            // Clear session data for sign-out events or when user is null
+            if (event === 'SIGNED_OUT' || event === 'USER_DELETED' || !session?.user) {
+              setUser(null);
+            } else {
+              setUser(session.user);
+
+              if (event === 'SIGNED_IN') {
+                const provider = session.user.app_metadata?.provider;
+                const isNewUser = !session.user.user_metadata?.has_logged_in;
+
+                if (provider && provider !== 'email') {
+                  await ensureUserProfile(session.user);
+                  trackGAEvent('login', { method: provider });
+                  trackLogin();
+                } else if (isNewUser) {
+                  trackGAEvent('sign_up', { method: provider || 'email' });
+                } else {
+                  trackGAEvent('login', { method: provider || 'email' });
+                  trackLogin();
+                }
+              }
+            }
+            setLoading(false);
+          })();
         }
       );
       subscription = data.subscription;
