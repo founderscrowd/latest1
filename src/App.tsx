@@ -871,6 +871,14 @@ const App: React.FC = () => {
     setIsCreateModalOpen(true);
   };
 
+  const handlePublicCreateGroup = () => {
+    if (!user) {
+      navigate('/create-startup-group/');
+    } else {
+      setIsCreateModalOpen(true);
+    }
+  };
+
   const handleViewGroup = (groupId: string) => {
     setSelectedGroupId(groupId);
   };
@@ -1083,13 +1091,7 @@ const App: React.FC = () => {
               userSubscription={userSubscription}
               onShowAuthModal={() => setIsAuthModalOpen(true)}
               onShowPricingModal={() => setShowPricingModal(true)}
-              onCreateGroup={() => {
-                if (!user) {
-                  setIsAuthModalOpen(true);
-                } else {
-                  setIsCreateModalOpen(true);
-                }
-              }}
+              onCreateGroup={handlePublicCreateGroup}
             />
           }
         />
@@ -1184,14 +1186,7 @@ const App: React.FC = () => {
             <StartupGroupsPage
               onBack={() => navigate('/')}
               siteLogoUrl={siteLogoUrl}
-              onCreateGroup={() => {
-                if (!user) {
-                  setInitialAuthModeSignUp(true);
-                  setIsAuthModalOpen(true);
-                } else {
-                  setIsCreateModalOpen(true);
-                }
-              }}
+              onCreateGroup={handlePublicCreateGroup}
             />
           }
         />
@@ -1201,14 +1196,7 @@ const App: React.FC = () => {
             <CommunitiesAndCooperativesPage
               onBack={() => navigate('/')}
               siteLogoUrl={siteLogoUrl}
-              onCreateGroup={() => {
-                if (!user) {
-                  setInitialAuthModeSignUp(true);
-                  setIsAuthModalOpen(true);
-                } else {
-                  setIsCreateModalOpen(true);
-                }
-              }}
+              onCreateGroup={handlePublicCreateGroup}
             />
           }
         />
@@ -1231,14 +1219,7 @@ const App: React.FC = () => {
             <CofounderMatchingPage
               onBack={() => navigate('/')}
               siteLogoUrl={siteLogoUrl}
-              onCreateGroup={() => {
-                if (!user) {
-                  setInitialAuthModeSignUp(true);
-                  setIsAuthModalOpen(true);
-                } else {
-                  setIsCreateModalOpen(true);
-                }
-              }}
+              onCreateGroup={handlePublicCreateGroup}
             />
           }
         />
@@ -1248,14 +1229,7 @@ const App: React.FC = () => {
             <FindACofounderPage
               onBack={() => navigate('/')}
               siteLogoUrl={siteLogoUrl}
-              onCreateGroup={() => {
-                if (!user) {
-                  setInitialAuthModeSignUp(true);
-                  setIsAuthModalOpen(true);
-                } else {
-                  setIsCreateModalOpen(true);
-                }
-              }}
+              onCreateGroup={handlePublicCreateGroup}
             />
           }
         />
@@ -1265,14 +1239,7 @@ const App: React.FC = () => {
             <EquityForCofoundersPage
               onBack={() => navigate('/')}
               siteLogoUrl={siteLogoUrl}
-              onCreateGroup={() => {
-                if (!user) {
-                  setInitialAuthModeSignUp(true);
-                  setIsAuthModalOpen(true);
-                } else {
-                  setIsCreateModalOpen(true);
-                }
-              }}
+              onCreateGroup={handlePublicCreateGroup}
             />
           }
         />
@@ -1282,14 +1249,7 @@ const App: React.FC = () => {
             <StartupEquitySplitPage
               onBack={() => navigate('/')}
               siteLogoUrl={siteLogoUrl}
-              onCreateGroup={() => {
-                if (!user) {
-                  setInitialAuthModeSignUp(true);
-                  setIsAuthModalOpen(true);
-                } else {
-                  setIsCreateModalOpen(true);
-                }
-              }}
+              onCreateGroup={handlePublicCreateGroup}
             />
           }
         />
@@ -1299,14 +1259,7 @@ const App: React.FC = () => {
             <StartupTeamBuildingPage
               onBack={() => navigate('/')}
               siteLogoUrl={siteLogoUrl}
-              onCreateGroup={() => {
-                if (!user) {
-                  setInitialAuthModeSignUp(true);
-                  setIsAuthModalOpen(true);
-                } else {
-                  setIsCreateModalOpen(true);
-                }
-              }}
+              onCreateGroup={handlePublicCreateGroup}
             />
           }
         />
@@ -1619,14 +1572,7 @@ const App: React.FC = () => {
                   Browse groups
                 </Link>
                 <button
-                  onClick={() => {
-                    if (!user) {
-                      setInitialAuthModeSignUp(true);
-                      setIsAuthModalOpen(true);
-                    } else {
-                      setIsCreateModalOpen(true);
-                    }
-                  }}
+                  onClick={handlePublicCreateGroup}
                   className="px-6 py-3 text-sm font-semibold border border-white/30 text-white rounded-lg hover:bg-white/10 hover:-translate-y-0.5 transition-all"
                 >
                   Create a group
@@ -2025,14 +1971,7 @@ const App: React.FC = () => {
 
           {/* Floating Action Button */}
           <button 
-            onClick={() => {
-              if (!user) {
-                setInitialAuthModeSignUp(true);
-                setIsAuthModalOpen(true);
-              } else {
-                setIsCreateModalOpen(true);
-              }
-            }}
+            onClick={handlePublicCreateGroup}
             className="fixed bottom-6 right-6 w-12 h-12 text-white rounded-full shadow-lg hover:scale-110 transition-all z-50 flex items-center justify-center"
             style={{ backgroundColor: '#FF69B4' }}
             onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#E91E63'}
