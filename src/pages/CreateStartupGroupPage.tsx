@@ -32,9 +32,11 @@ const CreateStartupGroupPage: React.FC<CreateStartupGroupPageProps> = ({ onBack,
   const [success, setSuccess] = useState(false);
   const [draftSaved, setDraftSaved] = useState(false);
   const [publishingResult, setPublishingResult] = useState<{ groupId: string; slug: string } | null>(null);
+  const [publishAttempted, setPublishAttempted] = useState(false);
 
   const draftInitialized = useRef(false);
   const beginTracked = useRef(false);
+  const publishingRef = useRef(false);
 
   // Load draft on mount
   useEffect(() => {
@@ -114,6 +116,7 @@ const CreateStartupGroupPage: React.FC<CreateStartupGroupPageProps> = ({ onBack,
       clearDraft();
       clearAnalyticsFired(currentDraftId);
       setPublishingPending(false);
+      publishingRef.current = false;
       setSuccess(true);
       setPublishingResult({ groupId: createdGroup.id, slug: createdGroup.slug });
 
@@ -123,15 +126,18 @@ const CreateStartupGroupPage: React.FC<CreateStartupGroupPageProps> = ({ onBack,
     } catch (err: any) {
       setError(err.message || 'Failed to publish your group. Please try again.');
       setPublishingPending(false);
+      publishingRef.current = false;
     } finally {
       setLoading(false);
     }
   }, [navigate]);
 
   // Check for pending publish when user becomes available
+  // Uses a ref guard to prevent duplicate calls across re-renders / re-mounts
   useEffect(() => {
-    if (user && isPublishingPending() && draftId && !loading && !success) {
-      setPublishingPending(false);
+    if (user && isPublishingPending() && draftId && !loading && !success && !publishingRef.current) {
+      publishingRef.current = true;
+      setPublishAttempted(true);
       publishFromDraft(draftId, formData);
     }
   }, [user, draftId, loading, success, publishFromDraft]);
@@ -245,12 +251,12 @@ const CreateStartupGroupPage: React.FC<CreateStartupGroupPageProps> = ({ onBack,
             <AlertCircle size={18} className="text-red-600 mt-0.5 flex-shrink-0" />
             <div>
               <p className="text-sm text-red-700 font-medium">{error}</p>
-              {error.includes('try again') && (
+              {publishAttempted && user && (
                 <button
                   onClick={handlePublish}
-                  className="mt-2 text-sm text-red-700 underline font-semibold"
+                  className="mt-2 px-4 py-1.5 rounded-lg text-sm text-white font-semibold bg-red-600 hover:bg-red-700 transition-colors"
                 >
-                  Retry
+                  Retry Publishing
                 </button>
               )}
             </div>

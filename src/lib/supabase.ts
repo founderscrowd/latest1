@@ -232,10 +232,22 @@ export const signOut = async () => {
 }
 
 export const signInWithGoogle = async () => {
+  // If a group publish is pending, redirect back to the create page
+  // so the auto-publish effect can fire after the session is restored.
+  const PUBLISH_FLAG_KEY = 'groupDraftPublishing_v1';
+  let redirectTo = window.location.origin;
+  try {
+    if (localStorage.getItem(PUBLISH_FLAG_KEY) === '1') {
+      redirectTo = window.location.origin + '/create-startup-group/';
+    }
+  } catch {
+    // localStorage unavailable — use default redirect
+  }
+
   const { error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: window.location.origin,
+      redirectTo,
     },
   });
 

@@ -255,6 +255,13 @@ const App: React.FC = () => {
       setIsAuthModalOpen(true);
       navigate('/', { replace: true });
     }
+
+    // Safety net: if a group publish is pending but we landed on the homepage
+    // (e.g. OAuth redirect URL wasn't honored), redirect to the create page
+    // so the auto-publish effect can fire once the session is restored.
+    if (isPublishingPending() && window.location.pathname === '/') {
+      navigate('/create-startup-group/', { replace: true });
+    }
   }, [navigate]); // Run on mount and when navigate changes
 
   useEffect(() => {
