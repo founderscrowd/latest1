@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { User } from '@supabase/supabase-js';
 import { supabase, ensureUserProfile } from '../lib/supabase';
-import { trackLogin } from '../lib/metaPixel';
+import { trackLogin, trackCompleteRegistration } from '../lib/metaPixel';
 import { trackEvent as trackGAEvent } from '../lib/googleAnalytics';
+import { trackTikTokCompleteRegistration } from '../lib/tiktokPixel';
 
 // Network error detection helper
 const isNetworkError = (error: any): boolean => {
@@ -210,14 +211,20 @@ Please try refreshing the page. If the problem continues, please contact support
 
               if (event === 'SIGNED_IN') {
                 const provider = session.user.app_metadata?.provider;
-                const isNewUser = !session.user.user_metadata?.has_logged_in;
+                const isOAuth = provider && provider !== 'email';
 
-                if (provider && provider !== 'email') {
-                  await ensureUserProfile(session.user);
-                  trackGAEvent('login', { method: provider });
-                  trackLogin();
-                } else if (isNewUser) {
+                // Check whether a profile already existed before this sign-in.
+                // ensureUserProfile creates one if missing and returns true when it did.
+                const createdProfile = await ensureUserProfile(session.user);
+
+                // New registration only when a profile had to be created.
+                // Returning users (incl. returning Google users) are logins, not sign-ups.
+                const isNewUser = createdProfile;
+
+                if (isNewUser) {
                   trackGAEvent('sign_up', { method: provider || 'email' });
+                  trackCompleteRegistration();
+                  trackTikTokCompleteRegistration();
                 } else {
                   trackGAEvent('login', { method: provider || 'email' });
                   trackLogin();

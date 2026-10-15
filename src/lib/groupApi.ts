@@ -342,6 +342,36 @@ class GroupAPI {
     }
   }
 
+  // Publish a group via the idempotent server-side function
+  async publishGroup(draftId: string, groupData: CreateGroupData) {
+    const payload = {
+      name: groupData.name,
+      description: groupData.description,
+      tags: groupData.tags,
+      equity_available: groupData.equity_available,
+      funding_needed: groupData.funding_needed,
+      industry: groupData.industry,
+      max_members: groupData.max_members,
+      stage: groupData.stage,
+      is_public: groupData.is_public ?? true,
+      location_type: groupData.location_type,
+      country: groupData.country || '',
+      city: groupData.city || '',
+      legal_structure: groupData.legal_structure || 'not_yet_decided',
+      organisation_type: groupData.organisation_type || 'not_yet_decided',
+    };
+
+    const { data, error } = await supabase.rpc('publish_group', {
+      p_draft_id: draftId,
+      p_group_data: payload,
+    });
+
+    if (error) throw error;
+    if (!data) throw new Error('No response from server');
+    if (data.pending) throw new Error('A publish request is already in progress. Please wait a moment and try again.');
+    return data as Group;
+  }
+
   // Update group
   async updateGroup(groupId: string, updates: Partial<Group>, userId: string) {
     try {

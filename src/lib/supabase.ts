@@ -242,8 +242,8 @@ export const signInWithGoogle = async () => {
   if (error) throw error;
 };
 
-export const ensureUserProfile = async (user: any) => {
-  if (!user) return;
+export const ensureUserProfile = async (user: any): Promise<boolean> => {
+  if (!user) return false;
   try {
     const { data: existingProfile } = await supabase
       .from('profiles')
@@ -259,9 +259,11 @@ export const ensureUserProfile = async (user: any) => {
         meta.name ||
         (user.email ? user.email.split('@')[0] : '');
       await createUserProfile(user, username);
+      return true;
     }
+    return false;
   } catch {
-    // Non-fatal: the DB trigger should have created the profile.
+    return false;
   }
 };
 

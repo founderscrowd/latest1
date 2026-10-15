@@ -50,6 +50,7 @@ import { useAuth } from './hooks/useAuth';
 import { usePresence } from './hooks/usePresence';
 import { signOut } from './lib/supabase';
 import { groupAPI, formatLegalStructure } from './lib/groupApi';
+import { isPublishingPending } from './lib/groupDraft';
 import { siteSettingsAPI } from './lib/siteSettingsApi';
 import { stripeAPI } from './lib/stripeApi';
 import { trackTikTokPageView } from './lib/tiktokPixel';
@@ -1217,13 +1218,9 @@ const App: React.FC = () => {
             <CreateStartupGroupPage
               onBack={() => navigate('/')}
               siteLogoUrl={siteLogoUrl}
-              onCreateGroup={() => {
-                if (!user) {
-                  setInitialAuthModeSignUp(true);
-                  setIsAuthModalOpen(true);
-                } else {
-                  setIsCreateModalOpen(true);
-                }
+              onRequireAuth={() => {
+                setInitialAuthModeSignUp(true);
+                setIsAuthModalOpen(true);
               }}
             />
           }
@@ -2080,6 +2077,7 @@ const App: React.FC = () => {
         }}
         onAuthSuccess={handleAuthSuccess}
         initialIsSignUp={initialAuthModeSignUp}
+        pendingPublishMessage={isPublishingPending() ? 'Your group is ready. Sign up to publish it.' : undefined}
       />
 
       <PricingModal

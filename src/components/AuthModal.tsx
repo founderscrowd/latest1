@@ -11,9 +11,10 @@ interface AuthModalProps {
   onClose: () => void;
   onAuthSuccess: () => void;
   initialIsSignUp?: boolean;
+  pendingPublishMessage?: string;
 }
 
-const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuccess, initialIsSignUp = false }) => {
+const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuccess, initialIsSignUp = false, pendingPublishMessage }) => {
   const [isSignUp, setIsSignUp] = useState(initialIsSignUp);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -459,6 +460,12 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuccess, i
             <X size={20} />
           </button>
         </div>
+
+        {pendingPublishMessage && (
+          <div className="bg-green-50 border border-green-200 rounded-lg px-4 py-3 mb-4 text-center">
+            <p className="text-sm font-semibold text-green-800">{pendingPublishMessage}</p>
+          </div>
+        )}
 
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg text-sm mb-4">
