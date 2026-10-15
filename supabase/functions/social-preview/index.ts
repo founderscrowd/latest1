@@ -111,8 +111,9 @@ Deno.serve(async (req: Request) => {
   try {
     const { data: group, error } = await supabase
       .from("groups")
-      .select("id, name, slug, description, industry, equity_available, funding_needed, cover_image, is_public")
+      .select("id, name, slug, description, industry, equity_available, funding_needed, cover_image, is_public, deleted_at")
       .eq("slug", slug)
+      .is("deleted_at", null)
       .maybeSingle();
 
     if (error || !group) {

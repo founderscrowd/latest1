@@ -913,8 +913,10 @@ Are you sure you want to remove this member and revoke their equity?`
                 <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
                   <h4 className="font-semibold text-red-900 mb-2">Delete Group</h4>
                   <p className="text-sm text-red-700 mb-4">
-                    Once you delete this group, there is no going back. This action cannot be undone.
-                    All group data, members, and discussions will be permanently removed.
+                    Your group will be removed from EquityTake immediately, but you can restore it within 30 days from My Profile &rarr; My Groups.
+                  </p>
+                  <p className="text-sm text-red-700 mb-4">
+                    After 30 days, your group and its associated data will be permanently deleted.
                   </p>
                   
                   {!showDeleteConfirm ? (

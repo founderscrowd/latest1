@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { User, Calendar, Users, Building, ArrowLeft, CreditCard as Edit2, Save, X, Camera, Upload, LogOut, Crown, CreditCard, Clock, Bell } from 'lucide-react';
+import { User, Calendar, Users, Building, ArrowLeft, CreditCard as Edit2, Save, X, Camera, Upload, LogOut, Crown, CreditCard, Clock, Bell, RotateCcw } from 'lucide-react';
 import { CheckCircle, DollarSign, Briefcase } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { supabase, signOut } from '../lib/supabase';
@@ -37,6 +37,15 @@ interface ProfilePageProps {
   userSubscription?: any;
 }
 
+interface DeletedGroup {
+  id: string;
+  name: string;
+  description: string;
+  deleted_at: string;
+  created_at: string;
+  max_members: number;
+}
+
 const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onViewJoinedGroup, onCreateGroup, siteLogoUrl, userSubscription }) => {
   const { user } = useAuth();
   const [profile, setProfile] = useState<any>(null);
@@ -59,6 +68,8 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onViewJoinedGroup, on
   const [equityClaimsLoading, setEquityClaimsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [isSiteAdmin, setIsSiteAdmin] = useState(false);
+  const [deletedGroups, setDeletedGroups] = useState<DeletedGroup[]>([]);
+  const [restoringId, setRestoringId] = useState<string | null>(null);
 
   // Ref for billing section
   const billingRef = useRef<HTMLDivElement>(null);
@@ -156,9 +167,18 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onViewJoinedGroup, on
         setCreatedGroups(groupsWithMemberCounts);
       }
 
-      // Fetch groups joined by user (this would require a group_members table in a real app)
+      // Fetch groups joined by user
       const joinedGroupsData = await groupAPI.getUserJoinedGroups(user.id);
       setJoinedGroups(joinedGroupsData);
+
+      // Fetch soft-deleted groups for recovery UI
+      try {
+        const deleted = await groupAPI.getDeletedGroups(user.id);
+        setDeletedGroups(deleted as DeletedGroup[]);
+      } catch (err) {
+        console.error('Error fetching deleted groups:', err);
+        setDeletedGroups([]);
+      }
 
     } catch (error) {
       console.error('Error fetching profile:', error);
@@ -341,6 +361,27 @@ Are you absolutely sure you want to leave this group and forfeit your equity?`
       setTimeout(() => setSuccessMessage(''), 5000);
     } finally {
       setLeaving(false);
+    }
+  };
+
+  const handleRestoreGroup = async (groupId: string) => {
+    if (!user) return;
+    try {
+      setRestoringId(groupId);
+      await groupAPI.restoreGroup(groupId);
+      setDeletedGroups(prev => prev.filter(g => g.id !== groupId));
+      setSuccessMessage('Group restored successfully! It is now visible again.');
+      setTimeout(() => setSuccessMessage(''), 5000);
+      if (user) {
+        const deleted = await groupAPI.getDeletedGroups(user.id);
+        setDeletedGroups(deleted as DeletedGroup[]);
+      }
+    } catch (error: any) {
+      console.error('Error restoring group:', error);
+      setSuccessMessage(error.message || 'Failed to restore group. Please try again.');
+      setTimeout(() => setSuccessMessage(''), 5000);
+    } finally {
+      setRestoringId(null);
     }
   };
 
@@ -788,6 +829,57 @@ Are you absolutely sure you want to leave this group and forfeit your equity?`
                 </div>
               )}
             </div>
+
+            {/* Recently Deleted Groups */}
+            {deletedGroups.length > 0 && (
+              <div className="bg-white rounded-xl p-6 shadow-sm border border-orange-200">
+                <div className="flex items-center gap-2 mb-6">
+                  <Clock size={20} className="text-orange-600" />
+                  <h3 className="text-lg font-semibold text-slate-900">
+                    Recently Deleted Groups ({deletedGroups.length})
+                  </h3>
+                </div>
+
+                <div className="space-y-4">
+                  {deletedGroups.map((group) => {
+                    const deletedDate = new Date(group.deleted_at);
+                    const daysLeft = Math.max(0, 30 - Math.floor((Date.now() - deletedDate.getTime()) / (1000 * 60 * 60 * 24)));
+                    return (
+                      <div key={group.id} className="border border-orange-200 bg-orange-50 rounded-lg p-4">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-semibold text-slate-900 mb-1">{group.name}</h4>
+                            <p className="text-sm text-slate-600 mb-2 line-clamp-2">{group.description}</p>
+                            <div className="flex items-center gap-3 text-xs text-slate-500">
+                              <span>Deleted {deletedDate.toLocaleDateString()}</span>
+                              <span className="font-medium text-orange-700">
+                                {daysLeft} {daysLeft === 1 ? 'day' : 'days'} left to restore
+                              </span>
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => handleRestoreGroup(group.id)}
+                            disabled={restoringId === group.id}
+                            className="flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg text-sm font-semibold hover:bg-orange-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                          >
+                            {restoringId === group.id ? (
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                            ) : (
+                              <RotateCcw size={16} />
+                            )}
+                            Restore Group
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                <p className="text-xs text-slate-500 mt-4">
+                  Groups are permanently deleted after 30 days. Restore a group to recover its members, discussions, and equity data.
+                </p>
+              </div>
+            )}
           </div>
         )}
 

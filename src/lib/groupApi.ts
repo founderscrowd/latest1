@@ -90,7 +90,8 @@ class GroupAPI {
       console.log('Creating Supabase query...');
       let query = supabase
         .from('groups')
-        .select('*');
+        .select('*')
+        .is('deleted_at', null);
 
       console.log('Query created, applying filters...');
       // Apply filters
@@ -174,9 +175,11 @@ class GroupAPI {
         .from('groups')
         .select('*')
         .eq('id', groupId)
-        .single();
+        .is('deleted_at', null)
+        .maybeSingle();
 
       if (groupError) throw groupError;
+      if (!groupData) throw new Error('Group not found or no longer available.');
 
       // Get creator profile separately
       const { data: creatorProfile } = await supabase
@@ -216,6 +219,7 @@ class GroupAPI {
         .from('groups')
         .select('*')
         .eq('slug', slug)
+        .is('deleted_at', null)
         .maybeSingle();
 
       if (groupError) throw groupError;
@@ -421,29 +425,50 @@ class GroupAPI {
     }
   }
 
-  // Delete group
+  // Soft-delete group (sets deleted_at, recoverable for 30 days)
   async deleteGroup(groupId: string, userId: string) {
     try {
-      // Check if user is creator
-      const { data: group } = await supabase
-        .from('groups')
-        .select('creator_id')
-        .eq('id', groupId)
-        .maybeSingle();
-
-      if (group?.creator_id !== userId) {
-        throw new Error('Unauthorized: Only group creators can delete groups');
-      }
-
-      const { error } = await supabase
-        .from('groups')
-        .delete()
-        .eq('id', groupId);
+      const { data, error } = await supabase.rpc('soft_delete_group', {
+        p_group_id: groupId,
+      });
 
       if (error) throw error;
       return true;
     } catch (error) {
-      console.error('Error deleting group:', error);
+      console.error('Error soft-deleting group:', error);
+      throw error;
+    }
+  }
+
+  // Restore a soft-deleted group (clears deleted_at)
+  async restoreGroup(groupId: string) {
+    try {
+      const { data, error } = await supabase.rpc('restore_group', {
+        p_group_id: groupId,
+      });
+
+      if (error) throw error;
+      return true;
+    } catch (error) {
+      console.error('Error restoring group:', error);
+      throw error;
+    }
+  }
+
+  // Get soft-deleted groups for the current user (creator only)
+  async getDeletedGroups(userId: string) {
+    try {
+      const { data, error } = await supabase
+        .from('groups')
+        .select('*')
+        .eq('creator_id', userId)
+        .not('deleted_at', 'is', null)
+        .order('deleted_at', { ascending: false });
+
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      console.error('Error fetching deleted groups:', error);
       throw error;
     }
   }
