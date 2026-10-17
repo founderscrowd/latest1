@@ -68,7 +68,7 @@
   </url>
   <url>
     <loc>https://equitytakeaway.com/blog/</loc>
-    <lastmod>2026-10-10</lastmod>
+    <lastmod>2026-10-17</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -146,13 +146,19 @@
   </url>
   <url>
     <loc>https://equitytakeaway.com/blog/how-to-run-the-first-month-of-a-startup-group/</loc>
-    <lastmod>2026-10-10</lastmod>
+    <lastmod>2026-10-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://equitytakeaway.com/blog/how-to-set-a-proposed-company-value-for-an-idea-stage-startup/</loc>
-    <lastmod>2026-10-11</lastmod>
+    <lastmod>2026-10-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://equitytakeaway.com/blog/think-and-grow-rich-mastermind-group/</loc>
+    <lastmod>2026-10-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
