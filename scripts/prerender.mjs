@@ -96,7 +96,38 @@ function buildHtml({
     <meta name="twitter:description" content="${esc(description)}" />
     <meta name="twitter:image" content="https://equitytakeaway.com/social-share-default.jpg" />
 
-
+    <!-- Google Consent Mode v2: default consent state must be set BEFORE any
+         Google tags load. All optional categories default to denied until the
+         visitor grants permission via the cookie banner. This snippet only
+         initialises dataLayer + gtag and pushes the consent default; it does
+         NOT load the gtag.js library script (that remains consent-gated and is
+         loaded by the React app via ensureGoogleTagLoaded). -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){window.dataLayer.push(arguments);}
+      window.gtag = gtag;
+      gtag('consent', 'default', {
+        'analytics_storage': 'denied',
+        'ad_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied',
+        'wait_for_update': 500
+      });
+      try {
+        var stored = localStorage.getItem('cookieConsent');
+        if (stored) {
+          var parsed = JSON.parse(stored);
+          if (parsed && parsed.version === 'v1') {
+            gtag('consent', 'update', {
+              'analytics_storage': parsed.analytics === true ? 'granted' : 'denied',
+              'ad_storage': parsed.marketing === true ? 'granted' : 'denied',
+              'ad_user_data': parsed.marketing === true ? 'granted' : 'denied',
+              'ad_personalization': parsed.marketing === true ? 'granted' : 'denied'
+            });
+          }
+        }
+      } catch (e) { /* storage unavailable */ }
+    </script>
 
     <script type="module" crossorigin src="/assets/index-6dIil5pz.js"></script>
     <link rel="stylesheet" href="/assets/index-B5vig-LC.css" />
