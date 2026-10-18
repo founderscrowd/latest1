@@ -11,6 +11,36 @@ const CONSENT_VERSION = 'v1';
 
 export const CONSENT_EVENT = 'cookieConsentChanged';
 
+declare global {
+  interface Window {
+    gtag?: (...args: unknown[]) => void;
+  }
+}
+
+/**
+ * Push a Google Consent Mode v2 update reflecting the current consent state.
+ * Maps the app's analytics/marketing booleans to Google's consent categories:
+ *  - analytics_storage  <- analytics
+ *  - ad_storage         <- marketing
+ *  - ad_user_data       <- marketing
+ *  - ad_personalization <- marketing
+ *
+ * This is a pure bridge: it only calls gtag('consent', 'update', ...) when
+ * window.gtag exists (the inline head snippet defines it). It does not load
+ * any scripts and does not change how consent is stored.
+ */
+export function pushGoogleConsentUpdate(state: ConsentState): void {
+  if (typeof window === 'undefined') return;
+  if (typeof window.gtag !== 'function') return;
+  const granted = (b: boolean) => (b ? 'granted' : 'denied');
+  window.gtag('consent', 'update', {
+    analytics_storage: granted(state.analytics),
+    ad_storage: granted(state.marketing),
+    ad_user_data: granted(state.marketing),
+    ad_personalization: granted(state.marketing),
+  });
+}
+
 function getDefaultConsent(): ConsentState {
   return {
     essential: true,
@@ -53,6 +83,7 @@ export function setConsent(analytics: boolean, marketing: boolean): void {
   } catch {
     /* storage unavailable */
   }
+  pushGoogleConsentUpdate(state);
   window.dispatchEvent(new CustomEvent(CONSENT_EVENT, { detail: state }));
 }
 
