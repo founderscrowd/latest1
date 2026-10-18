@@ -169,7 +169,7 @@ const App: React.FC = () => {
     }
   }, [isCreateModalOpen, isAuthModalOpen, showProfile, selectedGroupId, showGroupProfile, showSiteSettings, showPrivacyPolicy, showTermsOfService, showPricingModal, showStripeSuccess, showStripeCancel]);
 
-  const { user, loading, error: authError } = useAuth();
+  const { user, loading, error: authError, timedOut, retry } = useAuth();
   usePresence(); // Initialize presence tracking
   const navigate = useNavigate();
   const location = useLocation();
@@ -1010,6 +1010,36 @@ const App: React.FC = () => {
     );
   }
 
+  if (timedOut && !authError) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="mt-4 p-6 bg-amber-50 border border-amber-200 rounded-lg max-w-lg mx-auto">
+            <h3 className="text-amber-900 font-semibold mb-2">Taking longer than usual</h3>
+            <p className="text-amber-800 text-sm leading-relaxed mb-4">
+              The application is taking longer than expected to start. This is usually a temporary
+              connection issue. Please retry, or refresh the page.
+            </p>
+            <div className="flex gap-2 justify-center">
+              <button
+                onClick={retry}
+                className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm font-medium"
+              >
+                Retry
+              </button>
+              <button
+                onClick={() => window.location.reload()}
+                className="px-4 py-2 text-slate-700 border border-slate-300 rounded-lg hover:bg-slate-100 transition-colors text-sm font-medium"
+              >
+                Refresh page
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (authError) {
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
@@ -1027,10 +1057,16 @@ const App: React.FC = () => {
               </ol>
             </div>
             <button
-              onClick={() => window.location.reload()}
-              className="mt-4 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm font-medium"
+              onClick={retry}
+              className="mt-4 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm font-medium mr-2"
             >
               Retry Connection
+            </button>
+            <button
+              onClick={() => window.location.reload()}
+              className="mt-4 px-4 py-2 text-slate-700 border border-slate-300 rounded-lg hover:bg-slate-100 transition-colors text-sm font-medium"
+            >
+              Refresh page
             </button>
           </div>
         </div>

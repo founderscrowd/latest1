@@ -6,36 +6,37 @@ import { trackEvent as trackGAEvent } from '../lib/googleAnalytics';
 import { trackTikTokCompleteRegistration } from '../lib/tiktokPixel';
 import { trackGoogleAdsConversion } from '../lib/googleAds';
 
-// Network error detection helper
+const STARTUP_TIMEOUT_MS = 8000;
+const MAX_RETRIES = 3;
+
+// Network error detection helper — never logs sensitive data, only error shape.
 const isNetworkError = (error: any): boolean => {
   if (!error) return false;
-  
-  const errorMessage = error.message?.toLowerCase() || '';
-  const errorString = error.toString?.()?.toLowerCase() || '';
-  
+  const msg = error.message?.toLowerCase() || '';
+  const str = error.toString?.()?.toLowerCase() || '';
   return (
-    errorMessage.includes('failed to fetch') ||
-    errorMessage.includes('network error') ||
-    errorMessage.includes('fetch error') ||
-    errorMessage.includes('networkerror') ||
-    errorMessage.includes('connection refused') ||
-    errorMessage.includes('connection failed') ||
-    errorMessage.includes('load failed') ||
-    errorMessage.includes('timeout') ||
-    errorMessage.includes('network request failed') ||
-    errorMessage.includes('fetch api cannot load') ||
-    errorMessage.includes('cors') ||
-    errorString.includes('failed to fetch') ||
-    errorString.includes('network error') ||
-    errorString.includes('networkerror') ||
-    errorString.includes('connection refused') ||
-    errorString.includes('connection failed') ||
-    errorString.includes('load failed') ||
-    errorString.includes('timeout') ||
-    errorString.includes('network request failed') ||
-    errorString.includes('fetch api cannot load') ||
-    errorString.includes('cors') ||
-    error.name === 'TypeError' && errorMessage.includes('fetch')
+    msg.includes('failed to fetch') ||
+    msg.includes('network error') ||
+    msg.includes('fetch error') ||
+    msg.includes('networkerror') ||
+    msg.includes('connection refused') ||
+    msg.includes('connection failed') ||
+    msg.includes('load failed') ||
+    msg.includes('timeout') ||
+    msg.includes('network request failed') ||
+    msg.includes('fetch api cannot load') ||
+    msg.includes('cors') ||
+    str.includes('failed to fetch') ||
+    str.includes('network error') ||
+    str.includes('networkerror') ||
+    str.includes('connection refused') ||
+    str.includes('connection failed') ||
+    str.includes('load failed') ||
+    str.includes('timeout') ||
+    str.includes('network request failed') ||
+    str.includes('fetch api cannot load') ||
+    str.includes('cors') ||
+    (error.name === 'TypeError' && msg.includes('fetch'))
   );
 };
 
@@ -43,168 +44,166 @@ export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [timedOut, setTimedOut] = useState(false);
+  const [retryNonce, setRetryNonce] = useState(0);
+
+  // Guards against overlapping auth attempts.
+  const initializingRef = useRef(false);
+  const resolvedRef = useRef(false);
 
   useEffect(() => {
-    // Get initial session
+    let startupTimer: ReturnType<typeof setTimeout> | null = null;
+    let cancelled = false;
+    resolvedRef.current = false;
+
+    // Safety-net timeout: if loading is still true after STARTUP_TIMEOUT_MS,
+    // force loading false and show a recoverable timeout state instead of an
+    // infinite spinner. Guarantees visitors are never stuck on
+    // "Loading application..." regardless of the failure mode.
+    startupTimer = setTimeout(() => {
+      if (resolvedRef.current || cancelled) return;
+      console.warn('[auth] Startup timeout reached — showing recovery UI');
+      setTimedOut(true);
+      setLoading(false);
+    }, STARTUP_TIMEOUT_MS);
+
     const initializeAuth = async () => {
+      if (initializingRef.current) {
+        console.warn('[auth] initializeAuth called while already running — skipping');
+        return;
+      }
+      initializingRef.current = true;
+
       try {
-        console.log('🔄 Initializing authentication...');
-        
-        // Add a longer delay and retry mechanism for connection issues
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
+        console.log('[auth] Initializing authentication');
+
         let retryCount = 0;
-        const maxRetries = 3;
-        let data, error;
-        
-        while (retryCount < maxRetries) {
+        let data: any = null;
+        let lastError: any = null;
+
+        // Retry loop handles BOTH thrown errors and non-throwing error
+        // results (the Supabase custom fetch wrapper resolves with 503
+        // instead of throwing, so the catch branch alone was insufficient).
+        while (retryCount < MAX_RETRIES) {
+          if (cancelled) return;
           try {
             const result = await supabase.auth.getSession();
+            if (result.error && isNetworkError(result.error) && retryCount < MAX_RETRIES - 1) {
+              lastError = result.error;
+              retryCount++;
+              console.warn(`[auth] getSession network error, attempt ${retryCount}/${MAX_RETRIES}`);
+              await new Promise(r => setTimeout(r, 1000 * retryCount));
+              continue;
+            }
             data = result.data;
-            error = result.error;
+            lastError = result.error;
             break;
           } catch (fetchError) {
+            lastError = fetchError;
             retryCount++;
-            console.warn(`🔄 Auth initialization attempt ${retryCount}/${maxRetries} failed:`, fetchError);
-            
-            if (retryCount < maxRetries) {
-              await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
-            } else {
-              error = fetchError;
+            if (retryCount < MAX_RETRIES) {
+              console.warn(`[auth] getSession threw, attempt ${retryCount}/${MAX_RETRIES}`);
+              await new Promise(r => setTimeout(r, 1000 * retryCount));
             }
           }
         }
-        
+
+        if (cancelled) return;
+
+        const error = lastError;
+
         if (error) {
-          // Handle network errors gracefully
           if (isNetworkError(error)) {
-            console.error('⚠️ Network error during auth initialization:', error.message);
-            console.warn('🔧 This usually means:');
-            console.warn('  - Internet connection problems');
-            console.warn('  - Supabase project is paused/inactive');
-            console.warn('  - Firewall/VPN blocking connection');
-            console.warn('  - Incorrect Supabase URL in .env file');
-            console.warn('📋 Please check your Supabase project status and network connection');
-            // Set error message for user to see
-            setError(`🔌 Connection Issue
+            console.warn('[auth] Network error during init — not signing out');
+            // Do NOT sign out — a transient network failure must not log
+            // users out or create duplicate profiles. Only surface an error
+            // if we genuinely have no session.
+            if (data?.session?.user) {
+              setUser(data.session.user);
+              setError(null);
+            } else {
+              setError(`Connection issue
 
-Unable to connect to the server: ${error.message || 'Network error'}
+Unable to reach the server. Please check your internet connection and try again.
 
-This is usually temporary. Please try:
-• Refreshing the page
-• Checking your internet connection
-• Waiting a moment and trying again
-
-If the problem persists, the service may be temporarily unavailable.`);
-            setUser(null);
-            setLoading(false);
-            return;
-          }
-          
-          // Handle invalid JWT for non-existent user
-          if (error.message && error.message.includes('User from sub claim in JWT does not exist')) {
-            console.warn('⚠️ Invalid JWT token detected - user no longer exists');
-            console.warn('🔧 Clearing invalid session from local storage');
-            try {
-              await supabase.auth.signOut({ scope: 'local' });
-              console.log('✅ Invalid session cleared successfully');
-            } catch (signOutError) {
-              console.warn('⚠️ Error clearing invalid session:', signOutError);
+This is usually temporary.`);
             }
-            setUser(null);
-            setLoading(false);
             return;
           }
-          
-          // Handle invalid refresh token errors (check both message and error details)
+
+          if (error.message?.includes('User from sub claim in JWT does not exist')) {
+            console.warn('[auth] Invalid JWT — user no longer exists, clearing local session');
+            try { await supabase.auth.signOut({ scope: 'local' }); } catch {}
+            setUser(null);
+            return;
+          }
+
           if (error.message && (
             error.message.includes('Invalid Refresh Token: Refresh Token Not Found') ||
             error.message.includes('refresh_token_not_found') ||
             error.message.includes('Invalid Refresh Token')
           )) {
-            console.warn('⚠️ Invalid refresh token detected - clearing session');
-            console.warn('🔧 Clearing invalid session from local storage');
-            try {
-              await supabase.auth.signOut({ scope: 'local' });
-              console.log('✅ Invalid refresh token session cleared successfully');
-            } catch (signOutError) {
-              console.warn('⚠️ Error clearing invalid refresh token session:', signOutError);
-            }
+            console.warn('[auth] Invalid refresh token — clearing local session only');
+            try { await supabase.auth.signOut({ scope: 'local' }); } catch {}
             setUser(null);
-            setError(null); // Clear error after handling invalid refresh token
-            setLoading(false);
             return;
           }
-          
-          // Handle other auth errors
-          console.error('Auth initialization error:', error);
-          setError(`❌ Authentication Error
+
+          console.error('[auth] Unhandled auth init error:', error.message || 'unknown');
+          setError(`Authentication issue
 
 ${error.message || 'Authentication service unavailable'}
 
-Please check your internet connection and try refreshing the page.`);
+Please try refreshing the page.`);
           setUser(null);
-          setLoading(false);
           return;
         }
-        
-        console.log('✅ Authentication initialized successfully');
-        setUser(data.session?.user ?? null);
-        setError(null); // Clear any previous errors on successful initialization
-        setLoading(false);
-      } catch (error: any) {
-        // Handle network connectivity issues
-        if (isNetworkError(error)) {
-          console.error('⚠️ Network connectivity issue during auth initialization:', error.message);
-          console.warn('🔧 This usually indicates:');
-          console.warn('  - Internet connection problems');
-          console.warn('  - Supabase project is paused/inactive');
-          console.warn('  - Firewall/VPN blocking connection');
-          console.warn('  - Incorrect Supabase URL in .env file');
-          console.warn('📋 Please check your Supabase project status and network connection');
-          
-          setError(`🔌 Connection Issue
 
-Unable to connect to the server: ${error.message || 'Network error'}
+        console.log('[auth] Session initialized, user present:', !!data?.session?.user);
+        setUser(data?.session?.user ?? null);
+        setError(null);
+      } catch (err: any) {
+        if (cancelled) return;
+        if (isNetworkError(err)) {
+          console.warn('[auth] Network error during init (caught) — not signing out');
+          setError(`Connection issue
 
-This is usually temporary. Please try:
-• Refreshing the page
-• Checking your internet connection
-• Waiting a moment and trying again
-
-If the problem persists, the service may be temporarily unavailable.`);
-          setUser(null);
-          setLoading(false);
-          return;
-        }
-        
-        console.error('Unexpected error during auth initialization:', error);
-        setError(`⚠️ Authentication Issue
-
-${error.message || 'Unexpected error occurred'}
+Unable to reach the server. Please check your internet connection and try again.`);
+        } else {
+          console.error('[auth] Unexpected init error:', err?.message || 'unknown');
+          setError(`Authentication issue
 
 Please try refreshing the page. If the problem continues, please contact support.`);
+        }
         setUser(null);
-        setLoading(false);
+      } finally {
+        if (!cancelled) {
+          resolvedRef.current = true;
+          initializingRef.current = false;
+          setLoading(false);
+          if (startupTimer) clearTimeout(startupTimer);
+        }
       }
     };
-    
+
     initializeAuth();
 
-    // Listen for auth changes
+    // Listen for auth changes. The callback is wrapped in try/finally so
+    // that setLoading(false) ALWAYS runs even if the body throws (e.g. a
+    // network error during ensureUserProfile). This is the critical fix:
+    // previously a throw would skip setLoading(false) and leave the app
+    // stuck on "Loading application..." indefinitely.
     let subscription: any;
-    
     try {
-      const { data } = supabase.auth.onAuthStateChange(
-        (event, session) => {
-          (async () => {
-            console.log('🔄 Auth state change:', event, session ? 'User present' : 'No user');
-            // Only clear errors on successful auth events
+      const { data } = supabase.auth.onAuthStateChange((event, session) => {
+        (async () => {
+          if (cancelled) return;
+          console.log('[auth] State change:', event, session ? 'session present' : 'no session');
+          try {
             if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
               setError(null);
             }
 
-            // Clear session data for sign-out events or when user is null
             if (event === 'SIGNED_OUT' || event === 'USER_DELETED' || !session?.user) {
               setUser(null);
             } else {
@@ -212,48 +211,61 @@ Please try refreshing the page. If the problem continues, please contact support
 
               if (event === 'SIGNED_IN') {
                 const provider = session.user.app_metadata?.provider;
-                const isOAuth = provider && provider !== 'email';
-
-                // Check whether a profile already existed before this sign-in.
-                // ensureUserProfile creates one if missing and returns true when it did.
-                const createdProfile = await ensureUserProfile(session.user);
-
-                // New registration only when a profile had to be created.
-                // Returning users (incl. returning Google users) are logins, not sign-ups.
-                const isNewUser = createdProfile;
-
-                if (isNewUser) {
-                  trackGAEvent('sign_up', { method: provider || 'email' });
-                  trackCompleteRegistration();
-                  trackTikTokCompleteRegistration();
-                  trackGoogleAdsConversion(session.user.id);
-                } else {
-                  trackGAEvent('login', { method: provider || 'email' });
-                  trackLogin();
+                try {
+                  const createdProfile = await ensureUserProfile(session.user);
+                  if (createdProfile) {
+                    trackGAEvent('sign_up', { method: provider || 'email' });
+                    trackCompleteRegistration();
+                    trackTikTokCompleteRegistration();
+                    trackGoogleAdsConversion(session.user.id);
+                  } else {
+                    trackGAEvent('login', { method: provider || 'email' });
+                    trackLogin();
+                  }
+                } catch (profileErr: any) {
+                  // Profile creation failure must NOT block loading or sign
+                  // the user out. Non-fatal — a later sign-in will retry.
+                  console.warn('[auth] Profile ensure failed during SIGNED_IN:', profileErr?.message || 'unknown');
                 }
               }
             }
-            setLoading(false);
-          })();
-        }
-      );
+          } catch (err: any) {
+            console.error('[auth] Error in onAuthStateChange callback:', err?.message || 'unknown');
+          } finally {
+            if (!cancelled) {
+              resolvedRef.current = true;
+              setLoading(false);
+              if (startupTimer) clearTimeout(startupTimer);
+            }
+          }
+        })();
+      });
       subscription = data.subscription;
-    } catch (error) {
-      console.error('❌ Failed to set up auth state listener:', error);
-      setError('🔌 Connection Issue\n\nUnable to establish connection. Please refresh the page and try again.');
+    } catch (err) {
+      console.error('[auth] Failed to set up auth state listener:', (err as any)?.message || 'unknown');
+      setError('Connection issue — unable to establish authentication. Please refresh the page.');
       setLoading(false);
+      if (startupTimer) clearTimeout(startupTimer);
     }
 
     return () => {
+      cancelled = true;
+      if (startupTimer) clearTimeout(startupTimer);
       if (subscription) {
-        try {
-          subscription.unsubscribe();
-        } catch (error) {
-          console.warn('⚠️ Error unsubscribing from auth changes:', error);
-        }
+        try { subscription.unsubscribe(); } catch {}
       }
     };
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [retryNonce]);
 
-  return { user, loading, error };
+  const retry = () => {
+    console.log('[auth] Retry requested by user');
+    setTimedOut(false);
+    setError(null);
+    setUser(null);
+    setLoading(true);
+    setRetryNonce(n => n + 1);
+  };
+
+  return { user, loading, error, timedOut, retry };
 };
