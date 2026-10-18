@@ -1,5 +1,5 @@
 import { hasMarketingConsent } from './cookieConsent';
-import { ensureGoogleTagLoaded } from './googleAnalytics';
+import { ensureGoogleTagLoaded, configureGoogleAdsIfNeeded } from './googleAnalytics';
 
 declare global {
   interface Window {
@@ -66,6 +66,9 @@ export function trackGoogleAdsConversion(userId: string): void {
   if (!hasMarketingConsent()) return;
 
   if (!ensureGoogleTagLoaded()) return;
+  if (typeof window.gtag !== 'function') return;
+
+  configureGoogleAdsIfNeeded();
   if (typeof window.gtag !== 'function') return;
 
   window.gtag('event', 'conversion', {

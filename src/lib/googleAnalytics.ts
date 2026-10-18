@@ -1,4 +1,4 @@
-import { getConsent, hasAnalyticsConsent, CONSENT_EVENT, clearTrackingCookies } from './cookieConsent';
+import { getConsent, hasAnalyticsConsent, hasMarketingConsent, CONSENT_EVENT, clearTrackingCookies } from './cookieConsent';
 
 declare global {
   interface Window {
@@ -9,11 +9,17 @@ declare global {
 }
 
 const GA_ID = 'G-MJF82NJCD6';
+// Google Ads account that must be registered with gtag.js so conversion events
+// (with send_to) are routed to the Ads destination. Only configured when
+// marketing consent (ad_storage) has been granted.
+const GOOGLE_ADS_ID = 'AW-18519986766';
 
 // Tracks whether the gtag.js library script has been injected.
 let tagLoaded = false;
 // Tracks whether GA4 (G-MJF82NJCD6) has been configured for page_view collection.
 let gaConfigured = false;
+// Tracks whether the Google Ads account has been registered with gtag.js.
+let adsConfigured = false;
 
 /**
  * Ensure the shared gtag.js library is available.
@@ -79,6 +85,21 @@ function configureGA4IfNeeded(): void {
 }
 
 /**
+ * Register the Google Ads account (AW-18519986766) with gtag.js so that
+ * conversion events carrying send_to are routed to the Ads destination and
+ * recognised by Tag Assistant. Only runs once and only when marketing consent
+ * (ad_storage) has been granted. Does not send any event by itself.
+ */
+export function configureGoogleAdsIfNeeded(): void {
+  if (adsConfigured) return;
+  if (!hasMarketingConsent()) return;
+  if (!ensureGoogleTagLoaded()) return;
+  if (typeof window.gtag !== 'function') return;
+  window.gtag('config', GOOGLE_ADS_ID);
+  adsConfigured = true;
+}
+
+/**
  * Load Google Analytics. Kept for backwards compatibility with existing
  * callers (App.tsx, consent change handler). Internally delegates to
  * ensureGoogleTagLoaded + configureGA4IfNeeded.
@@ -109,6 +130,12 @@ export function trackEvent(
 function onConsentChanged(e: Event): void {
   const detail = (e as CustomEvent).detail;
   const analyticsGranted = detail?.analytics === true;
+  const marketingGranted = detail?.marketing === true;
+  if (marketingGranted) {
+    configureGoogleAdsIfNeeded();
+  } else {
+    adsConfigured = false;
+  }
   if (analyticsGranted) {
     if (!tagLoaded) {
       loadGoogleAnalytics();
