@@ -55,7 +55,7 @@ import { siteSettingsAPI } from './lib/siteSettingsApi';
 import { stripeAPI } from './lib/stripeApi';
 import { trackTikTokPageView } from './lib/tiktokPixel';
 import { trackPageView as trackMetaPageView } from './lib/metaPixel';
-import { trackPageView as trackGAPageView, loadGoogleAnalytics } from './lib/googleAnalytics';
+import { trackPageView as trackGAPageView, loadGoogleAnalytics, configureGoogleAdsIfNeeded } from './lib/googleAnalytics';
 import { loadTikTokPixel } from './lib/tiktokPixel';
 import { loadMetaPixel } from './lib/metaPixel';
 import { getConsent } from './lib/cookieConsent';
@@ -188,6 +188,7 @@ const App: React.FC = () => {
     if (consent.marketing) {
       loadTikTokPixel();
       loadMetaPixel();
+      configureGoogleAdsIfNeeded();
     }
     if (consent.analytics) {
       loadGoogleAnalytics();
