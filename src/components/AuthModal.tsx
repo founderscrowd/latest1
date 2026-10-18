@@ -224,13 +224,15 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuccess, i
       }
 
       if (result.error) {
-        // Check if it's a username constraint violation
-        if (result.error.message && result.error.message.includes('username is already taken')) {
-          setError(result.error.message);
+        // signIn returns { data, error }; signUp throws instead.
+        // This branch handles signIn errors.
+        const errMsg = result.error.message || 'Sign-in failed. Please try again.';
+        if (errMsg.includes('username is already taken')) {
+          setError(errMsg);
           setDisplayNameAvailable(false);
           setDisplayNameError('This username is already taken');
         } else {
-          setError(result.error.message);
+          setError(errMsg);
         }
       } else {
         if (isSignUp) {
@@ -256,9 +258,16 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuccess, i
         onAuthSuccess();
         onClose();
       }
-    } catch (err) {
-      console.error('Authentication error:', err);
-      setError('An unexpected error occurred. Please try again.');
+    } catch (err: any) {
+      console.error('[auth-modal] Registration/sign-in error:', err?.message || 'unknown', err?.status || '');
+      const msg = err?.message || 'An unexpected error occurred. Please try again.';
+      if (msg.includes('username is already taken')) {
+        setError(msg);
+        setDisplayNameAvailable(false);
+        setDisplayNameError('This username is already taken');
+      } else {
+        setError(msg);
+      }
     } finally {
       setLoading(false);
     }

@@ -68,6 +68,7 @@ export const signUp = async (email: string, password: string, username: string) 
     });
 
     if (authError) {
+      console.error('[signUp] Supabase auth.signUp failed:', authError.message || 'unknown', 'status:', authError.status || '');
       throw authError;
     }
 
