@@ -4,6 +4,7 @@ import { supabase, ensureUserProfile } from '../lib/supabase';
 import { trackLogin, trackCompleteRegistration } from '../lib/metaPixel';
 import { trackEvent as trackGAEvent } from '../lib/googleAnalytics';
 import { trackTikTokCompleteRegistration } from '../lib/tiktokPixel';
+import { trackGoogleAdsConversion } from '../lib/googleAds';
 
 // Network error detection helper
 const isNetworkError = (error: any): boolean => {
@@ -225,6 +226,7 @@ Please try refreshing the page. If the problem continues, please contact support
                   trackGAEvent('sign_up', { method: provider || 'email' });
                   trackCompleteRegistration();
                   trackTikTokCompleteRegistration();
+                  trackGoogleAdsConversion(session.user.id);
                 } else {
                   trackGAEvent('login', { method: provider || 'email' });
                   trackLogin();
