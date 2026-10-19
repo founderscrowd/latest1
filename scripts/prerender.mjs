@@ -5,6 +5,17 @@
  * without needing JavaScript. The React SPA still hydrates and takes over
  * after load.
  *
+ * SEO guarantees:
+ *  - <meta charset="utf-8"> is the first element in <head>.
+ *  - Every internal href uses a trailing slash (matches hosting 301s).
+ *  - Canonical and og:url are absolute https URLs with trailing slash.
+ *  - Per-blog-post og:image / twitter:image from the post's featured image.
+ *  - Blog post bodies are never truncated — full markdown rendered.
+ *  - Blog fetch errors fail the build loudly (with retry); a genuinely
+ *    missing slug is the only case that writes a 404/noindex page.
+ *  - Homepage raw HTML includes crawlable <a href> links to all key pages,
+ *    plus a visible header nav and footer.
+ *
  * Usage: node scripts/prerender.mjs
  * Must run AFTER `vite build` so dist/ exists.
  */
@@ -27,6 +38,9 @@ try {
 
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || envSupabaseUrl || 'https://jdpugmeoocezzxqegmsu.supabase.co';
 const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY || envSupabaseKey || '';
+const SITE_ORIGIN = 'https://equitytakeaway.com';
+const DEFAULT_OG_IMAGE = `${SITE_ORIGIN}/social-share-default.jpg`;
+const TODAY = new Date().toISOString().slice(0, 10);
 
 // ---------- HTML escaping helpers ----------
 function esc(s) {
@@ -53,6 +67,23 @@ function truncate(text, maxLen) {
   return text.slice(0, maxLen - 1).trim() + '…';
 }
 
+// Normalise a path to a trailing-slash absolute site URL.
+// Homepage stays "/" (no double slash).
+function canonicalUrl(path) {
+  let p = path || '/';
+  if (p !== '/' && !p.endsWith('/')) p += '/';
+  return `${SITE_ORIGIN}${p}`;
+}
+
+// Absolute-ise an image URL. Storage URLs may already be absolute; relative
+// paths are joined to the site origin.
+function absoluteImageUrl(src) {
+  if (!src) return '';
+  if (/^https?:\/\//i.test(src)) return src;
+  if (src.startsWith('/')) return `${SITE_ORIGIN}${src}`;
+  return `${SITE_ORIGIN}/${src}`;
+}
+
 // ---------- Build the static <head> + <body> for a route ----------
 function buildHtml({
   path,
@@ -63,38 +94,42 @@ function buildHtml({
   canonical,
   ogType = 'website',
   robots = 'index, follow',
+  ogImage = DEFAULT_OG_IMAGE,
+  ogImageAlt = '',
 }) {
-  const fullTitle = title;
-  const url = `https://equitytakeaway.com${path.endsWith('/') ? path : path + '/'}`;
+  const url = canonicalUrl(path);
+  const canon = canonical ? canonicalUrl(canonical) : url;
+  const img = absoluteImageUrl(ogImage) || DEFAULT_OG_IMAGE;
 
   return `<!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#0a1e2e" />
-    <title>${esc(fullTitle)}</title>
+    <title>${esc(title)}</title>
     <meta name="description" content="${esc(description)}" />
     <meta name="robots" content="${esc(robots)}" />
-    <link rel="canonical" href="${esc(canonical || url)}" />
+    <link rel="canonical" href="${esc(canon)}" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <meta name="theme-color" content="#0a1e2e" />
 
     <!-- Open Graph / Social sharing -->
-    <meta property="og:title" content="${esc(fullTitle)}" />
+    <meta property="og:title" content="${esc(title)}" />
     <meta property="og:description" content="${esc(description)}" />
     <meta property="og:url" content="${esc(url)}" />
     <meta property="og:type" content="${esc(ogType)}" />
     <meta property="og:site_name" content="EquityTake" />
-    <meta property="og:image" content="https://equitytakeaway.com/social-share-default.jpg" />
+    <meta property="og:image" content="${esc(img)}" />
+    ${ogImageAlt ? `<meta property="og:image:alt" content="${esc(ogImageAlt)}" />` : ''}
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="${esc(fullTitle)}" />
+    <meta name="twitter:title" content="${esc(title)}" />
     <meta name="twitter:description" content="${esc(description)}" />
-    <meta name="twitter:image" content="https://equitytakeaway.com/social-share-default.jpg" />
+    <meta name="twitter:image" content="${esc(img)}" />
 
     <!-- Google Consent Mode v2: default consent state must be set BEFORE any
          Google tags load. All optional categories default to denied until the
@@ -140,51 +175,129 @@ function buildHtml({
 `;
 }
 
-// ---------- Supabase data fetching ----------
-async function fetchPublishedBlogPosts() {
-  try {
-    const url = `${SUPABASE_URL}/rest/v1/site_content?content_type=eq.blog_post&is_published=eq.true&order=published_at.desc`;
-    const res = await fetch(url, {
-      headers: {
-        apikey: SUPABASE_ANON_KEY,
-        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-    });
-    if (!res.ok) {
-      console.warn(`   Blog posts fetch returned ${res.status}: ${await res.text()}`);
-      return [];
+// ---------- Supabase fetch with retry and hard failure ----------
+async function fetchJsonWithRetry(url, label, attempts = 3) {
+  let lastErr;
+  for (let i = 1; i <= attempts; i++) {
+    try {
+      const res = await fetch(url, {
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        signal: AbortSignal.timeout(15000),
+      });
+      if (res.status === 404) return { status: 404, data: null };
+      if (!res.ok) {
+        const body = await res.text().catch(() => '');
+        lastErr = new Error(`${label} fetch returned ${res.status}: ${body.slice(0, 200)}`);
+        console.warn(`   ${label} fetch attempt ${i}/${attempts} failed: ${lastErr.message}`);
+        continue;
+      }
+      const data = await res.json();
+      return { status: 200, data };
+    } catch (e) {
+      lastErr = e;
+      console.warn(`   ${label} fetch attempt ${i}/${attempts} error: ${e.message}`);
     }
-    const data = await res.json();
-    return Array.isArray(data) ? data : [];
-  } catch (e) {
-    console.warn('   Blog posts fetch error:', e.message);
-    return [];
   }
+  throw lastErr || new Error(`${label} fetch failed`);
+}
+
+async function fetchPublishedBlogPosts() {
+  const url = `${SUPABASE_URL}/rest/v1/site_content?content_type=eq.blog_post&is_published=eq.true&order=published_at.desc`;
+  const { status, data } = await fetchJsonWithRetry(url, 'Blog posts');
+  if (status !== 200) return [];
+  return Array.isArray(data) ? data : [];
 }
 
 async function fetchPublicGroups() {
-  try {
-    const url = `${SUPABASE_URL}/rest/v1/groups?is_public=eq.true&status=eq.active&order=created_at.desc&limit=20`;
-    const res = await fetch(url, {
-      headers: {
-        apikey: SUPABASE_ANON_KEY,
-        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-    });
-    if (!res.ok) {
-      console.warn(`   Groups fetch returned ${res.status}: ${await res.text()}`);
-      return [];
-    }
-    const data = await res.json();
-    return Array.isArray(data) ? data : [];
-  } catch (e) {
-    console.warn('   Groups fetch error:', e.message);
-    return [];
-  }
+  const url = `${SUPABASE_URL}/rest/v1/groups?is_public=eq.true&status=eq.active&order=created_at.desc&limit=20`;
+  const { status, data } = await fetchJsonWithRetry(url, 'Groups');
+  if (status !== 200) return [];
+  return Array.isArray(data) ? data : [];
+}
+
+// Fetch a single blog post by slug. Throws on network error (so the build
+// fails loudly). Returns null only when Supabase confirms the slug doesn't
+// exist (404 or empty result).
+async function fetchBlogPostBySlug(slug) {
+  const url = `${SUPABASE_URL}/rest/v1/site_content?content_type=eq.blog_post&is_published=eq.true&slug=eq.${encodeURIComponent(slug)}`;
+  const { status, data } = await fetchJsonWithRetry(url, `Blog post "${slug}"`);
+  if (status === 404) return null;
+  if (!Array.isArray(data) || data.length === 0) return null;
+  return data[0];
+}
+
+// ---------- Shared header + footer (crawlable <a href> links) ----------
+// Rendered into every prerendered page so crawlers see the same nav/footer
+// the hydrated React app shows. All hrefs use trailing slashes.
+function headerHtml() {
+  return `<header style="background:#fff;border-bottom:1px solid #e2e8f0;padding:12px 0;position:sticky;top:0;z-index:50;">
+  <nav style="max-width:1152px;margin:0 auto;padding:0 16px;display:flex;justify-content:space-between;align-items:center;gap:8px;">
+    <a href="/" style="font-size:1.25rem;font-weight:700;color:#0f172a;text-decoration:none;">EquityTake</a>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <a href="/" style="padding:8px 12px;border-radius:8px;font-size:0.75rem;font-weight:600;color:#475569;text-decoration:none;">Home</a>
+      <a href="/startup-groups/" style="padding:8px 12px;border-radius:8px;font-size:0.75rem;font-weight:600;color:#475569;text-decoration:none;">Startup groups</a>
+      <a href="/cofounder-matching/" style="padding:8px 12px;border-radius:8px;font-size:0.75rem;font-weight:600;color:#475569;text-decoration:none;">Co-founder matching</a>
+      <a href="/find-a-cofounder/" style="padding:8px 12px;border-radius:8px;font-size:0.75rem;font-weight:600;color:#475569;text-decoration:none;">Find a co-founder</a>
+      <a href="/how-it-works/" style="padding:8px 12px;border-radius:8px;font-size:0.75rem;font-weight:600;color:#475569;text-decoration:none;">How it works</a>
+      <a href="/blog/" style="padding:8px 12px;border-radius:8px;font-size:0.75rem;font-weight:600;color:#475569;text-decoration:none;">Blog</a>
+      <a href="/about/" style="padding:8px 12px;border-radius:8px;font-size:0.75rem;font-weight:600;color:#475569;text-decoration:none;">About</a>
+    </div>
+  </nav>
+</header>`;
+}
+
+function footerHtml() {
+  return `<footer style="background:#0f172a;color:#fff;padding:48px 16px;">
+  <div style="max-width:1152px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:32px;">
+    <div>
+      <a href="/" style="font-size:1.25rem;font-weight:700;color:#fff;text-decoration:none;">EquityTake</a>
+      <p style="color:#cbd5e1;font-size:0.875rem;line-height:1.6;margin:12px 0;">EquityTake is a startup group and co-founder matching platform. Create a group around your idea, find potential co-founders, and discuss proposed equity allocations within the group.</p>
+    </div>
+    <div>
+      <h4 style="font-weight:600;color:#fff;margin:0 0 16px;">Platform</h4>
+      <ul style="list-style:none;padding:0;margin:0;font-size:0.875rem;line-height:2;">
+        <li><a href="/" style="color:#cbd5e1;text-decoration:none;">Home</a></li>
+        <li><a href="/startup-groups/" style="color:#cbd5e1;text-decoration:none;">Startup groups</a></li>
+        <li><a href="/communities-and-cooperatives/" style="color:#cbd5e1;text-decoration:none;">Communities &amp; cooperatives</a></li>
+        <li><a href="/create-startup-group/" style="color:#cbd5e1;text-decoration:none;">Create a startup group</a></li>
+        <li><a href="/cofounder-matching/" style="color:#cbd5e1;text-decoration:none;">Co-founder matching</a></li>
+        <li><a href="/groups/" style="color:#cbd5e1;text-decoration:none;">Browse groups</a></li>
+        <li><a href="/how-it-works/" style="color:#cbd5e1;text-decoration:none;">How it works</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 style="font-weight:600;color:#fff;margin:0 0 16px;">Resources</h4>
+      <ul style="list-style:none;padding:0;margin:0;font-size:0.875rem;line-height:2;">
+        <li><a href="/equity-for-cofounders/" style="color:#cbd5e1;text-decoration:none;">Equity for co-founders</a></li>
+        <li><a href="/startup-equity-split/" style="color:#cbd5e1;text-decoration:none;">Startup equity split</a></li>
+        <li><a href="/startup-team-building/" style="color:#cbd5e1;text-decoration:none;">Startup team building</a></li>
+        <li><a href="/find-a-cofounder/" style="color:#cbd5e1;text-decoration:none;">Find a co-founder</a></li>
+        <li><a href="/blog/" style="color:#cbd5e1;text-decoration:none;">Blog</a></li>
+        <li><a href="/about/" style="color:#cbd5e1;text-decoration:none;">About</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 style="font-weight:600;color:#fff;margin:0 0 16px;">Legal</h4>
+      <ul style="list-style:none;padding:0;margin:0;font-size:0.875rem;line-height:2;">
+        <li><a href="/privacy/" style="color:#cbd5e1;text-decoration:none;">Privacy Policy</a></li>
+        <li><a href="/terms/" style="color:#cbd5e1;text-decoration:none;">Terms of Service</a></li>
+        <li><a href="/cookies/" style="color:#cbd5e1;text-decoration:none;">Cookie Policy</a></li>
+      </ul>
+    </div>
+  </div>
+  <div style="border-top:1px solid #334155;margin-top:32px;padding-top:24px;text-align:center;color:#94a3b8;font-size:0.875rem;">&copy; EquityTake</div>
+</footer>`;
+}
+
+// Wrap body content with the shared header + footer so every prerendered page
+// has crawlable nav links in raw HTML.
+function withShell(bodyContent) {
+  return `${headerHtml()}${bodyContent}${footerHtml()}`;
 }
 
 // ---------- Content generators for each route ----------
@@ -193,11 +306,11 @@ function link(href, text) {
 }
 
 function pageShell(h1, bodyContent, linksHtml = '') {
-  return `<main style="font-family:system-ui,-apple-system,sans-serif;color:#1e293b;max-width:800px;margin:0 auto;padding:20px;">
+  return withShell(`<main style="font-family:system-ui,-apple-system,sans-serif;color:#1e293b;max-width:800px;margin:0 auto;padding:20px;">
   <h1 style="font-size:2rem;font-weight:700;margin:0 0 16px;">${esc(h1)}</h1>
   ${bodyContent}
   ${linksHtml}
-</main>`;
+</main>`);
 }
 
 function relatedReadingHtml(links) {
@@ -232,72 +345,7 @@ const routes = {
     title: 'Find Co-Founders & Startup Groups | EquityTake',
     description: 'Browse or create a startup group around an idea or project. Match co-founders inside the group and discuss proposed equity before you incorporate. Free to use.',
     h1: 'Find co-founders and build startup groups',
-    bodyHtml: `<main class="seo-snapshot" style="font-family:system-ui,-apple-system,sans-serif;color:#1e293b;max-width:800px;margin:0 auto;padding:20px;">
-  <h1 style="font-size:2rem;font-weight:700;margin:0 0 16px;">Find co-founders and build startup groups</h1>
-  <p style="font-size:1.1rem;line-height:1.6;color:#475569;margin:0 0 20px;">
-    Start or join a group built on one idea — then match with co-founders and talk through proposed equity splits.
-  </p>
-  <p style="margin:0 0 24px;">
-    <a href="/groups/" style="display:inline-block;padding:12px 24px;background:#ea580c;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;margin-right:12px;">Browse groups</a>
-    <a href="/create-startup-group/" style="display:inline-block;padding:12px 24px;border:1px solid #cbd5e1;color:#1e293b;text-decoration:none;border-radius:8px;font-weight:600;">Create a group</a>
-  </p>
-  <p style="font-size:0.9rem;color:#94a3b8;font-weight:500;margin:0 0 40px;">Not profile dating. Not a hobby meetup.</p>
-
-  <h2 style="font-size:1.5rem;font-weight:700;margin:0 0 12px;">How it works</h2>
-  <p style="color:#475569;margin:0 0 20px;">Three steps from idea to co-founder conversations.</p>
-  <ol style="color:#475569;line-height:1.7;padding-left:20px;margin:0 0 40px;">
-    <li><strong>Create or join a group.</strong> Start a startup group around your idea, or browse existing groups and request to join one that fits your skills and interests.</li>
-    <li><strong>Match with builders.</strong> Connect with potential co-founders inside the group. See what skills each member brings and find the right fit for your team.</li>
-    <li><strong>Discuss proposed equity.</strong> Talk through proposed equity splits within the group. Numbers are discussion proposals — not legal shares or formal allocations.</li>
-  </ol>
-
-  <h2 style="font-size:1.5rem;font-weight:700;margin:0 0 12px;">Who it's for</h2>
-  <p style="color:#475569;margin:0 0 20px;">EquityTake is built for people at the earliest stage of building something new.</p>
-  <ul style="color:#475569;line-height:1.7;padding-left:20px;margin:0 0 40px;">
-    <li><strong>Solo founders looking for co-founders.</strong> You have an idea and need the right people to make it real.</li>
-    <li><strong>Builders looking to join a team.</strong> You have skills and want to contribute to a startup.</li>
-    <li><strong>Early-stage teams forming.</strong> You're a small group starting out and want a structured space to discuss who does what and how equity might be split — before anything is formalised.</li>
-    <li><strong>People exploring startup ideas.</strong> You're curious about startup building and want to see what others are working on. Browse groups freely — no account needed to look around.</li>
-    <li><strong>People starting a self-governing community.</strong> You want to create a community that governs itself, for profit or non profit visions.</li>
-    <li><strong>People looking for property partners.</strong> You want partners for a property investment or a development, and a group built around that project.</li>
-  </ul>
-
-  <h2 style="font-size:1.5rem;font-weight:700;margin:0 0 12px;">Why EquityTake</h2>
-  <p style="color:#475569;margin:0 0 20px;">A place that starts from an idea or a project, not from a profile.</p>
-  <ul style="color:#475569;line-height:1.7;padding-left:20px;margin:0 0 40px;">
-    <li><strong>One idea, one group.</strong> You do not match profiles with no reason. You start a group around one idea or project, for profit or not, and the people join that.</li>
-    <li><strong>Free to use.</strong> EquityTake is fully free. Browse groups, create a group, join a group, and discuss proposed equity — no subscription, no paywall, no hidden costs.</li>
-    <li><strong>Auth for trust.</strong> You can browse groups without signing in. Creating a group, joining a group, and chatting require an account — so every member is a real person, not an anonymous post.</li>
-  </ul>
-
-  <h2 style="font-size:1.5rem;font-weight:700;margin:0 0 12px;">Frequently asked questions</h2>
-  <dl style="color:#475569;line-height:1.7;margin:0 0 40px;">
-    <dt style="font-weight:600;color:#1e293b;margin-top:16px;">Is EquityTake free to use?</dt>
-    <dd style="margin:4px 0 0 0;">Yes. EquityTake is fully free. You can browse, create, and join groups, and discuss proposed equity splits at no cost. There is no subscription or paywall.</dd>
-    <dt style="font-weight:600;color:#1e293b;margin-top:16px;">Do I need an account to browse groups?</dt>
-    <dd style="margin:4px 0 0 0;">No. You can browse all public groups freely without signing in. You only need an account to create a group, join a group, or participate in group discussions.</dd>
-    <dt style="font-weight:600;color:#1e293b;margin-top:16px;">Are the equity numbers legal shares?</dt>
-    <dd style="margin:4px 0 0 0;">No. Equity numbers shown on a group are proposals for discussion only. EquityTake does not issue shares, allocate legal ownership, or incorporate companies. If anyone asks you for funds, shares, or formal incorporation, get independent legal advice first.</dd>
-    <dt style="font-weight:600;color:#1e293b;margin-top:16px;">Is EquityTake a stock exchange or investment platform?</dt>
-    <dd style="margin:4px 0 0 0;">No. EquityTake is a co-founder matching and startup groups platform. It is not a stock exchange, investment platform, or legal incorporation service. The equity discussions are non-binding proposals to help teams talk through ownership before formalising anything.</dd>
-    <dt style="font-weight:600;color:#1e293b;margin-top:16px;">How does co-founder matching work?</dt>
-    <dd style="margin:4px 0 0 0;">Create or join a group around a startup idea. Inside the group, you can see other members' skills and interests. From there, you can connect directly and discuss whether you'd make a good co-founder team.</dd>
-    <dt style="font-weight:600;color:#1e293b;margin-top:16px;">Can I discuss a startup equity split before incorporating?</dt>
-    <dd style="margin:4px 0 0 0;">Yes — that's exactly what the proposed equity feature is for. Team members can suggest equity splits and discuss them openly within the group. These are non-binding proposals to help you align before spending money on legal incorporation.</dd>
-  </dl>
-
-  <h2 style="font-size:1.5rem;font-weight:700;margin:0 0 12px;">Explore more</h2>
-  <ul style="color:#475569;line-height:1.7;padding-left:20px;margin:0 0 40px;">
-    <li><a href="/how-it-works/" style="color:#ea580c;">How it works</a></li>
-    <li><a href="/groups/" style="color:#ea580c;">Browse all groups</a></li>
-    <li><a href="/cofounder-matching/" style="color:#ea580c;">Co-founder matching</a></li>
-    <li><a href="/find-a-cofounder/" style="color:#ea580c;">Find a co-founder</a></li>
-    <li><a href="/startup-groups/" style="color:#ea580c;">Startup groups</a></li>
-    <li><a href="/startup-equity-split/" style="color:#ea580c;">Startup equity split</a></li>
-    <li><a href="/about/" style="color:#ea580c;">About EquityTake</a></li>
-    <li><a href="/blog/" style="color:#ea580c;">Blog</a></li>
-  </ul>
-</main>`,
+    bodyHtml: null, // built dynamically by buildHomepage()
   },
   '/groups': {
     title: 'Browse Startup Groups – EquityTake',
@@ -307,7 +355,7 @@ const routes = {
   },
   '/startup-groups': {
     title: 'Startup Groups – EquityTake',
-    description: 'Browse startup groups on EquityTake. Each group is one idea and one team conversation — create a group, match co-founders, and discuss proposed equity inside the group.',
+    description: 'Startup groups on EquityTake give each idea its own group, chat, and proposed equity discussion. Browse groups, match co-founders, and talk through equity before incorporating.',
     h1: 'Startup groups',
     bodyHtml: marketingShell(
       'Startup groups',
@@ -547,9 +595,9 @@ const routes = {
     title: 'Sign in to EquityTake',
     description: 'Sign in to your EquityTake account to find co-founders, join startup groups, and discuss proposed equity splits.',
     h1: 'Sign in to EquityTake',
-    robots: 'noindex',
-    canonical: 'https://equitytakeaway.com/sign-in',
-    bodyHtml: `<main style="font-family:system-ui,-apple-system,sans-serif;color:#1e293b;max-width:480px;margin:0 auto;padding:20px;">
+    robots: 'noindex, follow',
+    canonical: '/sign-in/',
+    bodyHtml: withShell(`<main style="font-family:system-ui,-apple-system,sans-serif;color:#1e293b;max-width:480px;margin:0 auto;padding:20px;">
   <p style="text-align:center;margin:0 0 8px;font-size:1.5rem;font-weight:700;color:#1e293b;">EquityTake</p>
   <h1 style="font-size:1.75rem;font-weight:700;text-align:center;margin:0 0 8px;">Sign in to EquityTake</h1>
   <p style="font-size:0.9rem;color:#64748b;text-align:center;margin:0 0 24px;">Use your EquityTake account. This is not a Google, bank, or other site login.</p>
@@ -565,17 +613,110 @@ const routes = {
     <button type="submit" style="width:100%;padding:10px 12px;background:#ea580c;color:#fff;border:none;border-radius:8px;font-weight:600;font-size:0.9rem;cursor:pointer;">Sign In</button>
   </form>
   <p style="font-size:0.85rem;color:#475569;text-align:center;margin:20px 0 8px;">
-    Don't have an account? <a href="https://equitytakeaway.com/?auth=signup" style="color:#2563eb;font-weight:600;">Sign Up</a>
+    Don't have an account? <a href="/?auth=signup" style="color:#2563eb;font-weight:600;">Sign Up</a>
   </p>
   <p style="font-size:0.8rem;color:#94a3b8;text-align:center;margin:0 0 12px;">
-    <a href="https://equitytakeaway.com/forgot-password" style="color:#2563eb;">Forgot password?</a>
+    <a href="/forgot-password/" style="color:#2563eb;">Forgot password?</a>
   </p>
   <p style="font-size:0.8rem;color:#94a3b8;text-align:center;">
-    <a href="https://equitytakeaway.com" style="color:#64748b;">equitytakeaway.com</a>
+    <a href="/" style="color:#64748b;">equitytakeaway.com</a>
   </p>
-</main>`,
+</main>`),
   },
 };
+
+// ---------- Homepage with crawlable links + Explore section ----------
+function buildHomepage(groups) {
+  let groupsPreview = '';
+  if (groups && groups.length > 0) {
+    const items = groups.slice(0, 6).map((g) => {
+      const name = esc(g.name || 'Untitled group');
+      const slug = g.slug || g.id;
+      const href = g.slug ? `/groups/${esc(g.slug)}/` : '/groups/';
+      const desc = esc(truncate(stripHtml(g.description), 140));
+      return `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin-bottom:12px;">
+        <h3 style="font-size:1.15rem;font-weight:600;margin:0 0 6px;"><a href="${href}" style="color:#1e293b;text-decoration:none;">${name}</a></h3>
+        ${desc ? `<p style="color:#64748b;margin:0;font-size:0.9rem;">${desc}</p>` : ''}
+      </div>`;
+    }).join('\n');
+    groupsPreview = `<div style="margin:24px 0;">${items}</div>`;
+  } else {
+    groupsPreview = `<p style="color:#64748b;margin:24px 0;">No public groups yet. <a href="/create-startup-group/" style="color:#ea580c;">Create the first one</a>.</p>`;
+  }
+
+  return withShell(`<main class="seo-snapshot" style="font-family:system-ui,-apple-system,sans-serif;color:#1e293b;max-width:800px;margin:0 auto;padding:20px;">
+  <h1 style="font-size:2rem;font-weight:700;margin:0 0 16px;">Find co-founders and build startup groups</h1>
+  <p style="font-size:1.1rem;line-height:1.6;color:#475569;margin:0 0 20px;">
+    Start or join a group built on one idea — then match with co-founders and talk through proposed equity splits.
+  </p>
+  <p style="margin:0 0 24px;">
+    <a href="/groups/" style="display:inline-block;padding:12px 24px;background:#ea580c;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;margin-right:12px;">Browse groups</a>
+    <a href="/create-startup-group/" style="display:inline-block;padding:12px 24px;border:1px solid #cbd5e1;color:#1e293b;text-decoration:none;border-radius:8px;font-weight:600;">Create a group</a>
+  </p>
+  <p style="font-size:0.9rem;color:#94a3b8;font-weight:500;margin:0 0 40px;">Not profile dating. Not a hobby meetup.</p>
+
+  <h2 style="font-size:1.5rem;font-weight:700;margin:0 0 12px;">How it works</h2>
+  <p style="color:#475569;margin:0 0 20px;">Three steps from idea to co-founder conversations.</p>
+  <ol style="color:#475569;line-height:1.7;padding-left:20px;margin:0 0 40px;">
+    <li><strong>Create or join a group.</strong> Start a startup group around your idea, or browse existing groups and request to join one that fits your skills and interests.</li>
+    <li><strong>Match with builders.</strong> Connect with potential co-founders inside the group. See what skills each member brings and find the right fit for your team.</li>
+    <li><strong>Discuss proposed equity.</strong> Talk through proposed equity splits within the group. Numbers are discussion proposals — not legal shares or formal allocations.</li>
+  </ol>
+
+  <h2 style="font-size:1.5rem;font-weight:700;margin:0 0 12px;">Who it's for</h2>
+  <p style="color:#475569;margin:0 0 20px;">EquityTake is built for people at the earliest stage of building something new.</p>
+  <ul style="color:#475569;line-height:1.7;padding-left:20px;margin:0 0 40px;">
+    <li><strong>Solo founders looking for co-founders.</strong> You have an idea and need the right people to make it real.</li>
+    <li><strong>Builders looking to join a team.</strong> You have skills and want to contribute to a startup.</li>
+    <li><strong>Early-stage teams forming.</strong> You're a small group starting out and want a structured space to discuss who does what and how equity might be split — before anything is formalised.</li>
+    <li><strong>People exploring startup ideas.</strong> You're curious about startup building and want to see what others are working on. Browse groups freely — no account needed to look around.</li>
+    <li><strong>People starting a self-governing community.</strong> You want to create a community that governns itself, for profit or non profit visions.</li>
+    <li><strong>People looking for property partners.</strong> You want partners for a property investment or a development, and a group built around that project.</li>
+  </ul>
+
+  <h2 style="font-size:1.5rem;font-weight:700;margin:0 0 12px;">Why EquityTake</h2>
+  <p style="color:#475569;margin:0 0 20px;">A place that starts from an idea or a project, not from a profile.</p>
+  <ul style="color:#475569;line-height:1.7;padding-left:20px;margin:0 0 40px;">
+    <li><strong>One idea, one group.</strong> You do not match profiles with no reason. You start a group around one idea or project, for profit or not, and the people join that.</li>
+    <li><strong>Free to use.</strong> EquityTake is fully free. Browse groups, create a group, join a group, and discuss proposed equity — no subscription, no paywall, no hidden costs.</li>
+    <li><strong>Auth for trust.</strong> You can browse groups without signing in. Creating a group, joining a group, and chatting require an account — so every member is a real person, not an anonymous post.</li>
+  </ul>
+
+  <h2 style="font-size:1.5rem;font-weight:700;margin:0 0 12px;">Active groups</h2>
+  ${groupsPreview}
+  <p style="margin:0 0 40px;"><a href="/groups/" style="color:#ea580c;font-weight:600;">Browse all groups →</a></p>
+
+  <h2 style="font-size:1.5rem;font-weight:700;margin:0 0 12px;">Explore</h2>
+  <p style="color:#475569;margin:0 0 16px;">From idea or project → startup group → co-founders + proposed equity.</p>
+  <ul style="color:#475569;line-height:1.7;padding-left:20px;margin:0 0 40px;">
+    <li><a href="/create-startup-group/" style="color:#ea580c;">Create a startup group around your idea</a></li>
+    <li><a href="/startup-team-building/" style="color:#ea580c;">Startup team building</a></li>
+    <li><a href="/startup-groups/" style="color:#ea580c;">Startup groups</a></li>
+    <li><a href="/find-a-cofounder/" style="color:#ea580c;">Find a co-founder</a></li>
+    <li><a href="/cofounder-matching/" style="color:#ea580c;">Co-founder matching</a></li>
+    <li><a href="/equity-for-cofounders/" style="color:#ea580c;">Equity for co-founders</a></li>
+    <li><a href="/startup-equity-split/" style="color:#ea580c;">Startup equity split</a></li>
+    <li><a href="/how-it-works/" style="color:#ea580c;">How it works</a></li>
+    <li><a href="/blog/" style="color:#ea580c;">Blog</a></li>
+  </ul>
+
+  <h2 style="font-size:1.5rem;font-weight:700;margin:0 0 12px;">Frequently asked questions</h2>
+  <dl style="color:#475569;line-height:1.7;margin:0 0 40px;">
+    <dt style="font-weight:600;color:#1e293b;margin-top:16px;">Is EquityTake free to use?</dt>
+    <dd style="margin:4px 0 0 0;">Yes. EquityTake is fully free. You can browse, create, and join groups, and discuss proposed equity splits at no cost. There is no subscription or paywall.</dd>
+    <dt style="font-weight:600;color:#1e293b;margin-top:16px;">Do I need an account to browse groups?</dt>
+    <dd style="margin:4px 0 0 0;">No. You can browse all public groups freely without signing in. You only need an account to create a group, join a group, or participate in group discussions.</dd>
+    <dt style="font-weight:600;color:#1e293b;margin-top:16px;">Are the equity numbers legal shares?</dt>
+    <dd style="margin:4px 0 0 0;">No. Equity numbers shown on a group are proposals for discussion only. EquityTake does not issue shares, allocate legal ownership, or incorporate companies. If anyone asks you for funds, shares, or formal incorporation, get independent legal advice first.</dd>
+    <dt style="font-weight:600;color:#1e293b;margin-top:16px;">Is EquityTake a stock exchange or investment platform?</dt>
+    <dd style="margin:4px 0 0 0;">No. EquityTake is a co-founder matching and startup groups platform. It is not a stock exchange, investment platform, or legal incorporation service. The equity discussions are non-binding proposals to help teams talk through ownership before formalising anything.</dd>
+    <dt style="font-weight:600;color:#1e293b;margin-top:16px;">How does co-founder matching work?</dt>
+    <dd style="margin:4px 0 0 0;">Create or join a group around a startup idea. Inside the group, you can see other members' skills and interests. From there, you can connect directly and discuss whether you'd make a good co-founder team.</dd>
+    <dt style="font-weight:600;color:#1e293b;margin-top:16px;">Can I discuss a startup equity split before incorporating?</dt>
+    <dd style="margin:4px 0 0 0;">Yes — that's exactly what the proposed equity feature is for. Team members can suggest equity splits and discuss them openly within the group. These are non-binding proposals to help you align before spending money on legal incorporation.</dd>
+  </dl>
+</main>`);
+}
 
 // ---------- Generate /groups page with live data ----------
 function buildGroupsPage(groups) {
@@ -589,7 +730,7 @@ function buildGroupsPage(groups) {
         ? g.tags.map((t) => esc(t)).join(', ')
         : '';
       const slug = g.slug || g.id;
-      const linkHref = g.slug ? `/groups/${esc(g.slug)}` : `/groups`;
+      const linkHref = g.slug ? `/groups/${esc(g.slug)}/` : '/groups/';
       return `<div style="border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin-bottom:12px;">
         <h3 style="font-size:1.2rem;font-weight:600;margin:0 0 8px;"><a href="${linkHref}" style="color:#1e293b;text-decoration:none;">${name}</a></h3>
         ${desc ? `<p style="color:#64748b;margin:0 0 8px;font-size:0.95rem;">${desc}</p>` : ''}
@@ -602,7 +743,7 @@ function buildGroupsPage(groups) {
     groupsHtml = `<p style="color:#64748b;margin:24px 0;">No public groups available yet. Be the first to <a href="/create-startup-group/" style="color:#ea580c;">create one</a>.</p>`;
   }
 
-  const body = `<main style="font-family:system-ui,-apple-system,sans-serif;color:#1e293b;max-width:800px;margin:0 auto;padding:20px;">
+  return withShell(`<main style="font-family:system-ui,-apple-system,sans-serif;color:#1e293b;max-width:800px;margin:0 auto;padding:20px;">
   <h1 style="font-size:2rem;font-weight:700;margin:0 0 16px;">Browse startup groups</h1>
   <p style="font-size:1.1rem;line-height:1.6;color:#475569;margin:0 0 20px;">Each group is one idea and one team conversation. Browse, join, or create your own.</p>
   <p style="margin:0 0 24px;">
@@ -612,8 +753,7 @@ function buildGroupsPage(groups) {
   ${groupsHtml}
   <p style="font-size:0.85rem;color:#94a3b8;margin:24px 0;">Numbers and percentages on a group are proposals for discussion. EquityTake does not issue shares, collect investment, or incorporate companies.</p>
   <p style="font-size:0.9rem;color:#64748b;margin:16px 0 0 0;">New here? <a href="/blog/how-to-join-a-startup-group-without-wasting-months/" style="color:#ea580c;">How to join a startup group without wasting months →</a></p>
-</main>`;
-  return body;
+</main>`);
 }
 
 // ---------- Generate /blog page with live data ----------
@@ -638,12 +778,11 @@ function buildBlogListPage(posts) {
     postsHtml = `<p style="color:#64748b;margin:24px 0;">No blog posts available yet.</p>`;
   }
 
-  const body = `<main style="font-family:system-ui,-apple-system,sans-serif;color:#1e293b;max-width:800px;margin:0 auto;padding:20px;">
+  return withShell(`<main style="font-family:system-ui,-apple-system,sans-serif;color:#1e293b;max-width:800px;margin:0 auto;padding:20px;">
   <h1 style="font-size:2rem;font-weight:700;margin:0 0 16px;">Blog</h1>
   <p style="font-size:1.1rem;line-height:1.6;color:#475569;margin:0 0 20px;">Insights, updates, and stories from the EquityTake team. Learn about building startups, finding co-founders, and growing your business.</p>
   ${postsHtml}
-</main>`;
-  return body;
+</main>`);
 }
 
 // ---------- Markdown to HTML converter (sanitised) ----------
@@ -758,50 +897,69 @@ function renderMarkdown(md) {
   return result.join('\n');
 }
 
-// Convert Markdown links [text](url) to HTML <a> tags, leaving existing HTML untouched
-function convertMarkdownLinks(text) {
-  return text.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, text, url) => {
-    return `<a href="${url}">${text}</a>`;
-  });
-}
-
-// Strip all HTML tags except <a> (preserves existing and converted links)
-function stripHtmlPreserveLinks(html) {
-  if (!html) return '';
-  // Protect <a ...>text</a> by replacing with placeholders, strip other tags, then restore
-  const links = [];
-  let protectedHtml = String(html).replace(/<a\s+[^>]*>[\s\S]*?<\/a>/gi, (match) => {
-    links.push(match);
-    return `\x00LINK${links.length - 1}\x00`;
-  });
-  // Strip remaining HTML tags
-  let text = protectedHtml.replace(/<[^>]*>/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-  // Restore links
-  text = text.replace(/\x00LINK(\d+)\x00/g, (_, i) => links[Number(i)]);
-  return text;
-}
-
 // ---------- Generate a single blog post page ----------
+// IMPORTANT: No truncation. The full rendered markdown body is written to the
+// prerendered HTML so View Source shows the complete article.
 function buildBlogPostPage(post) {
   const title = esc(post.title || 'Untitled');
   const excerpt = post.meta_description || post.excerpt || truncate(stripHtml(post.content_body), 160);
   const date = post.published_at
     ? new Date(post.published_at).toLocaleDateString('en-GB', { year: 'numeric', month: 'long', day: 'numeric' })
     : '';
-  // Render markdown to sanitised HTML (headings, bold, lists, links, paragraphs)
+  // Render the FULL markdown body — no truncation.
   const rawBody = post.content_body || '';
   const bodyHtml = renderMarkdown(rawBody);
-  const fullBody = truncate(bodyHtml, 12000);
 
   const body = `<main style="font-family:system-ui,-apple-system,sans-serif;color:#1e293b;max-width:800px;margin:0 auto;padding:20px;">
   <h1 style="font-size:2rem;font-weight:700;margin:0 0 8px;">${title}</h1>
   ${date ? `<p style="color:#94a3b8;margin:0 0 24px;font-size:0.9rem;">Published ${date}</p>` : ''}
-  <div style="color:#475569;line-height:1.7;font-size:1.05rem;">${fullBody}</div>
+  <div style="color:#475569;line-height:1.7;font-size:1.05rem;">${bodyHtml}</div>
   <p style="margin:32px 0 16px;"><a href="/blog/" style="color:#ea580c;">&larr; Back to blog</a></p>
 </main>`;
-  return body;
+  return withShell(body);
+}
+
+// ---------- Sitemap generation ----------
+function buildSitemap(posts) {
+  const staticEntries = [
+    { path: '/', lastmod: TODAY, changefreq: 'daily', priority: '1.0' },
+    { path: '/groups/', lastmod: TODAY, changefreq: 'daily', priority: '0.9' },
+    { path: '/startup-groups/', lastmod: TODAY, changefreq: 'monthly', priority: '0.8' },
+    { path: '/create-startup-group/', lastmod: TODAY, changefreq: 'monthly', priority: '0.8' },
+    { path: '/cofounder-matching/', lastmod: TODAY, changefreq: 'monthly', priority: '0.8' },
+    { path: '/find-a-cofounder/', lastmod: TODAY, changefreq: 'monthly', priority: '0.8' },
+    { path: '/equity-for-cofounders/', lastmod: TODAY, changefreq: 'monthly', priority: '0.8' },
+    { path: '/startup-equity-split/', lastmod: TODAY, changefreq: 'monthly', priority: '0.8' },
+    { path: '/startup-team-building/', lastmod: TODAY, changefreq: 'monthly', priority: '0.8' },
+    { path: '/communities-and-cooperatives/', lastmod: TODAY, changefreq: 'monthly', priority: '0.8' },
+    { path: '/how-it-works/', lastmod: TODAY, changefreq: 'monthly', priority: '0.8' },
+    { path: '/blog/', lastmod: TODAY, changefreq: 'weekly', priority: '0.8' },
+    { path: '/about/', lastmod: TODAY, changefreq: 'monthly', priority: '0.7' },
+    { path: '/privacy/', lastmod: TODAY, changefreq: 'monthly', priority: '0.3' },
+    { path: '/terms/', lastmod: TODAY, changefreq: 'monthly', priority: '0.3' },
+    { path: '/cookies/', lastmod: TODAY, changefreq: 'monthly', priority: '0.3' },
+  ];
+
+  const postEntries = (posts || []).filter((p) => p.slug).map((p) => ({
+    path: `/blog/${p.slug}/`,
+    lastmod: p.published_at ? p.published_at.slice(0, 10) : TODAY,
+    changefreq: 'monthly',
+    priority: '0.7',
+  }));
+
+  const all = [...staticEntries, ...postEntries];
+  const urls = all.map((e) => `  <url>
+    <loc>${SITE_ORIGIN}${e.path}</loc>
+    <lastmod>${e.lastmod}</lastmod>
+    <changefreq>${e.changefreq}</changefreq>
+    <priority>${e.priority}</priority>
+  </url>`).join('\n');
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${urls}
+</urlset>
+`;
 }
 
 // ---------- Write a file ----------
@@ -830,10 +988,18 @@ async function main() {
   }
 
   console.log('🔍 Fetching live data from Supabase...');
-  const [posts, groups] = await Promise.all([
-    fetchPublishedBlogPosts(),
-    fetchPublicGroups(),
-  ]);
+  let posts, groups;
+  try {
+    [posts, groups] = await Promise.all([
+      fetchPublishedBlogPosts(),
+      fetchPublicGroups(),
+    ]);
+  } catch (e) {
+    console.error('❌ Prerender aborted: failed to fetch live data from Supabase.');
+    console.error('   Error:', e.message);
+    console.error('   A network error during prerender must fail the build loudly — no partial/noindex HTML written.');
+    process.exit(1);
+  }
   console.log(`   Found ${posts.length} blog posts, ${groups.length} public groups`);
 
   // Read the original dist/index.html to extract the correct asset filenames
@@ -843,10 +1009,6 @@ async function main() {
   const jsAsset = jsMatch ? jsMatch[1] : 'assets/index.js';
   const cssAsset = cssMatch ? cssMatch[1] : 'assets/index.css';
 
-  let generated = 0;
-  let skipped = 0;
-
-  // Patch the buildHtml function to use the actual built assets
   function buildHtmlWithAssets(opts) {
     const html = buildHtml(opts);
     return html
@@ -855,12 +1017,17 @@ async function main() {
       .replace('/src/main.tsx', `/${jsAsset}`);
   }
 
+  let generated = 0;
+  let skipped = 0;
+
   console.log('\n📄 Prerendering static routes...');
   for (const [routePath, config] of Object.entries(routes)) {
     let bodyHtml = config.bodyHtml;
 
     // Dynamic pages
-    if (routePath === '/groups') {
+    if (routePath === '/') {
+      bodyHtml = buildHomepage(groups);
+    } else if (routePath === '/groups') {
       bodyHtml = buildGroupsPage(groups);
     } else if (routePath === '/blog') {
       bodyHtml = buildBlogListPage(posts);
@@ -880,7 +1047,7 @@ async function main() {
       bodyHtml,
       ogType: 'website',
       robots: config.robots,
-      canonical: config.canonical,
+      canonical: config.canonical || routePath,
     });
     writeRoute(distDir, routePath, html);
     generated++;
@@ -893,6 +1060,9 @@ async function main() {
     const bodyHtml = buildBlogPostPage(post);
     const title = `${post.title} – EquityTake Blog`;
     const description = post.meta_description || post.excerpt || truncate(stripHtml(post.content_body), 160);
+    // Per-post og:image from the post's featured image; fall back to default.
+    const ogImage = absoluteImageUrl(post.featured_image_url) || DEFAULT_OG_IMAGE;
+    const ogImageAlt = post.title ? `${post.title} — article cover image` : '';
     const html = buildHtmlWithAssets({
       path: routePath,
       title,
@@ -900,10 +1070,20 @@ async function main() {
       h1: post.title,
       bodyHtml,
       ogType: 'article',
+      ogImage,
+      ogImageAlt,
+      canonical: routePath,
     });
     writeRoute(distDir, routePath, html);
     generated++;
   }
+
+  // Regenerate sitemap.xml from the live blog posts so it always has the
+  // correct trailing-slash URLs and current lastmod dates.
+  console.log('\n🗺  Regenerating sitemap.xml...');
+  const sitemapPath = join(distDir, 'sitemap.xml');
+  writeFileSync(sitemapPath, buildSitemap(posts), 'utf8');
+  console.log(`  ✓ Wrote ${sitemapPath.replace(distDir, '.')}`);
 
   console.log(`\n✅ Prerender complete: ${generated} pages generated, ${skipped} skipped.`);
 }

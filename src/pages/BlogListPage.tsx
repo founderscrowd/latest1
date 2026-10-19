@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, ChevronRight } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { blogAPI, SiteContent } from '../lib/blogApi';
+import { ROUTES, blogPostPath } from '../lib/routes';
 
 interface BlogListPageProps {
   siteLogoUrl: string | null;
@@ -62,14 +63,14 @@ const BlogListPage: React.FC<BlogListPageProps> = ({ siteLogoUrl }) => {
       <header className="bg-white border-b border-slate-200 py-4 sticky top-0 z-50 shadow-sm">
         <div className="max-w-4xl mx-auto px-4 flex items-center gap-4">
           <button
-            onClick={() => navigate('/')}
+            onClick={() => navigate(ROUTES.home)}
             className="flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors"
           >
             <ArrowLeft size={20} />
             <span className="text-sm font-medium">Back to Home</span>
           </button>
           {siteLogoUrl && (
-            <Link to="/" className="ml-auto">
+            <Link to={ROUTES.home} className="ml-auto">
               <img
                 src={siteLogoUrl}
                 alt="EquityTake Logo"
@@ -102,7 +103,7 @@ const BlogListPage: React.FC<BlogListPageProps> = ({ siteLogoUrl }) => {
             {blogPosts.map((post) => (
               <Link
                 key={post.id}
-                to={`/blog/${post.slug}/`}
+                to={blogPostPath(post.slug)}
                 className="bg-white rounded-xl shadow-sm p-6 hover:shadow-md transition-shadow group"
               >
                 <div className="flex gap-6">

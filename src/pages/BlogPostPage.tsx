@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Calendar, User } from 'lucide-react';
+import { ArrowLeft, Calendar, User, RefreshCw } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { blogAPI, SiteContent } from '../lib/blogApi';
 import NotFoundPage from './NotFoundPage';
+import { ROUTES, blogPostPath } from '../lib/routes';
 
 interface BlogPostPageProps {
   siteLogoUrl: string | null;
@@ -113,21 +114,25 @@ const BlogPostPage: React.FC<BlogPostPageProps> = ({ siteLogoUrl }) => {
   const [post, setPost] = useState<SiteContent | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
+  const [networkError, setNetworkError] = useState(false);
+  const [attemptedRetry, setAttemptedRetry] = useState(false);
 
   useEffect(() => {
     if (slug) {
       if (slug.startsWith('-')) {
         const cleanSlug = slug.replace(/^-+/, '');
-        navigate(`/blog/${cleanSlug}/`, { replace: true });
+        navigate(blogPostPath(cleanSlug), { replace: true });
         return;
       }
-      loadPost(slug);
+      loadPost(slug, false);
     }
   }, [slug]);
 
-  const loadPost = async (postSlug: string) => {
+  const loadPost = async (postSlug: string, isRetry: boolean) => {
     setLoading(true);
     setNotFound(false);
+    setNetworkError(false);
+    if (isRetry) setAttemptedRetry(true);
     try {
       const postData = await blogAPI.getBlogPostBySlug(postSlug);
       if (postData && postData.is_published) {
@@ -137,7 +142,11 @@ const BlogPostPage: React.FC<BlogPostPageProps> = ({ siteLogoUrl }) => {
       }
     } catch (error) {
       console.error('Error loading blog post:', error);
-      setNotFound(true);
+      setNetworkError(true);
+      if (!isRetry) {
+        setAttemptedRetry(true);
+        void loadPost(postSlug, true);
+      }
     } finally {
       setLoading(false);
     }
@@ -155,6 +164,32 @@ const BlogPostPage: React.FC<BlogPostPageProps> = ({ siteLogoUrl }) => {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto mb-4"></div>
           <p className="text-slate-600">Loading post...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (networkError && !loading) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <Helmet>
+          <title>Couldn't load this post | EquityTake Blog</title>
+          <meta name="robots" content="index, follow" />
+          <link rel="canonical" href={`https://equitytakeaway.com/blog/${slug}/`} />
+        </Helmet>
+        <div className="text-center max-w-md mx-auto px-4">
+          <h1 className="text-2xl font-bold text-slate-900 mb-3">Couldn't load this post</h1>
+          <p className="text-slate-600 mb-6">We couldn't reach the server to load this article. Your connection may be interrupted.</p>
+          <button
+            onClick={() => slug && loadPost(slug, true)}
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-orange-600 text-white rounded-lg font-semibold hover:bg-orange-700 transition-colors"
+          >
+            <RefreshCw size={16} />
+            Retry
+          </button>
+          <p className="mt-6">
+            <Link to={ROUTES.blog} className="text-slate-500 hover:text-slate-800 underline">Back to blog</Link>
+          </p>
         </div>
       </div>
     );
@@ -216,14 +251,14 @@ const BlogPostPage: React.FC<BlogPostPageProps> = ({ siteLogoUrl }) => {
       <header className="bg-white border-b border-slate-200 py-4 sticky top-0 z-50 shadow-sm">
         <div className="max-w-4xl mx-auto px-4 flex items-center gap-4">
           <Link
-            to="/blog/"
+            to={ROUTES.blog}
             className="flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors"
           >
             <ArrowLeft size={20} />
             <span className="text-sm font-medium">Back to Blog</span>
           </Link>
           {siteLogoUrl && (
-            <Link to="/" className="ml-auto">
+            <Link to={ROUTES.home} className="ml-auto">
               <img
                 src={siteLogoUrl}
                 alt="EquityTake Logo"

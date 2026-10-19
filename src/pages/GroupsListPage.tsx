@@ -7,6 +7,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { groupAPI, formatLegalStructure } from '../lib/groupApi';
 import Footer from '../components/Footer';
+import { ROUTES, blogPostPath, groupPath, groupManagePath } from '../lib/routes';
 
 interface GroupData {
   id: string;
@@ -187,7 +188,7 @@ const GroupsListPage: React.FC<GroupsListPageProps> = ({
             </p>
             <p className="mt-3 text-sm text-slate-500">
               New here?{' '}
-              <RouterLink to="/blog/how-to-join-a-startup-group-without-wasting-months/" className="text-orange-600 hover:text-orange-700 hover:underline font-medium">
+              <RouterLink to={blogPostPath('how-to-join-a-startup-group-without-wasting-months')} className="text-orange-600 hover:text-orange-700 hover:underline font-medium">
                 How to join a startup group without wasting months →
               </RouterLink>
             </p>
@@ -351,7 +352,7 @@ const GroupsListPage: React.FC<GroupsListPageProps> = ({
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          navigate(`/groups/${group.slug}/manage`);
+                          navigate(groupManagePath(group.slug));
                         }}
                         onMouseDown={(e) => e.stopPropagation()}
                         className="px-4 py-2 rounded-lg font-semibold text-xs transition-all hover:scale-105 bg-blue-600 text-white hover:bg-blue-700 cursor-pointer"
@@ -364,7 +365,7 @@ const GroupsListPage: React.FC<GroupsListPageProps> = ({
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          navigate(`/groups/${group.slug}/manage`);
+                          navigate(groupManagePath(group.slug));
                         }}
                         onMouseDown={(e) => e.stopPropagation()}
                         className="px-4 py-2 rounded-lg font-semibold text-xs transition-all hover:scale-105 bg-green-600 text-white hover:bg-green-700 cursor-pointer"
@@ -377,7 +378,7 @@ const GroupsListPage: React.FC<GroupsListPageProps> = ({
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
-                          navigate(`/groups/${group.slug}`);
+                          navigate(groupPath(group.slug));
                         }}
                         onMouseDown={(e) => e.stopPropagation()}
                         className="px-4 py-2 rounded-lg font-semibold text-xs transition-all hover:scale-105 bg-slate-600 text-white hover:bg-slate-700 cursor-pointer"

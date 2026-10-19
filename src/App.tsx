@@ -60,6 +60,7 @@ import { loadTikTokPixel } from './lib/tiktokPixel';
 import { loadMetaPixel } from './lib/metaPixel';
 import { getConsent } from './lib/cookieConsent';
 import CookieConsentBanner from './components/CookieConsentBanner';
+import { ROUTES, blogPostPath, groupPath, groupManagePath } from './lib/routes';
 
 // Build identifier for cache busting
 console.log('🚀🚀🚀 APP.TSX LOADED - BUILD v2025-10-03-ADMIN-FIX 🚀🚀🚀');
@@ -261,7 +262,7 @@ const App: React.FC = () => {
     // (e.g. OAuth redirect URL wasn't honored), redirect to the create page
     // so the auto-publish effect can fire once the session is restored.
     if (isPublishingPending() && window.location.pathname === '/') {
-      navigate('/create-startup-group/', { replace: true });
+      navigate(ROUTES.createStartupGroup, { replace: true });
     }
   }, [navigate]); // Run on mount and when navigate changes
 
@@ -881,7 +882,7 @@ const App: React.FC = () => {
 
   const handlePublicCreateGroup = () => {
     if (!user) {
-      navigate('/create-startup-group/');
+      navigate(ROUTES.createStartupGroup);
     } else {
       setIsCreateModalOpen(true);
     }
@@ -1316,14 +1317,14 @@ const App: React.FC = () => {
               <ProfilePage
                 onBack={() => navigate('/')}
                 onViewJoinedGroup={(groupId) => {
-                  groupAPI.getGroup(groupId).then(g => navigate(`/groups/${g.slug}/manage`));
+                  groupAPI.getGroup(groupId).then(g => navigate(groupManagePath(g.slug)));
                 }}
                 onCreateGroup={() => setIsCreateModalOpen(true)}
                 siteLogoUrl={siteLogoUrl}
                 userSubscription={userSubscription}
               />
             ) : (
-              <Navigate to="/" replace />
+              <Navigate to={ROUTES.home} replace />
             )
           }
         />
@@ -1335,7 +1336,7 @@ const App: React.FC = () => {
             user && isUserSiteAdmin ? (
               <SiteSettingsPage onBack={() => navigate('/')} />
             ) : (
-              <Navigate to="/" replace />
+              <Navigate to={ROUTES.home} replace />
             )
           }
         />
@@ -1402,10 +1403,10 @@ const App: React.FC = () => {
 
               {/* Desktop secondary links */}
               <div className="hidden md:flex gap-2 items-center">
-                <Link to="/" className="px-3 py-2 rounded-lg font-semibold text-xs text-slate-600 hover:text-slate-900 transition-colors">Home</Link>
-                <Link to="/how-it-works/" className="px-3 py-2 rounded-lg font-semibold text-xs text-slate-600 hover:text-slate-900 transition-colors">How It Works</Link>
-                <Link to="/blog/" className="px-3 py-2 rounded-lg font-semibold text-xs text-slate-600 hover:text-slate-900 transition-colors">Blog</Link>
-                <Link to="/about/" className="px-3 py-2 rounded-lg font-semibold text-xs text-slate-600 hover:text-slate-900 transition-colors">About</Link>
+                <Link to={ROUTES.home} className="px-3 py-2 rounded-lg font-semibold text-xs text-slate-600 hover:text-slate-900 transition-colors">Home</Link>
+                <Link to={ROUTES.howItWorks} className="px-3 py-2 rounded-lg font-semibold text-xs text-slate-600 hover:text-slate-900 transition-colors">How It Works</Link>
+                <Link to={ROUTES.blog} className="px-3 py-2 rounded-lg font-semibold text-xs text-slate-600 hover:text-slate-900 transition-colors">Blog</Link>
+                <Link to={ROUTES.about} className="px-3 py-2 rounded-lg font-semibold text-xs text-slate-600 hover:text-slate-900 transition-colors">About</Link>
                 <button
                   onClick={() => setShowFeedbackModal(true)}
                   className="flex items-center gap-1 px-3 py-2 rounded-lg font-semibold text-xs text-slate-600 hover:text-slate-900 transition-colors"
@@ -1525,28 +1526,28 @@ const App: React.FC = () => {
               <div className="md:hidden border-t border-slate-200 bg-white">
                 <div className="max-w-6xl mx-auto px-4 py-3 flex flex-col gap-1">
                   <Link
-                    to="/"
+                    to={ROUTES.home}
                     onClick={() => setMobileMenuOpen(false)}
                     className="px-3 py-2.5 rounded-lg font-semibold text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors"
                   >
                     Home
                   </Link>
                   <Link
-                    to="/how-it-works/"
+                    to={ROUTES.howItWorks}
                     onClick={() => setMobileMenuOpen(false)}
                     className="px-3 py-2.5 rounded-lg font-semibold text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors"
                   >
                     How It Works
                   </Link>
                   <Link
-                    to="/blog/"
+                    to={ROUTES.blog}
                     onClick={() => setMobileMenuOpen(false)}
                     className="px-3 py-2.5 rounded-lg font-semibold text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors"
                   >
                     Blog
                   </Link>
                   <Link
-                    to="/about/"
+                    to={ROUTES.about}
                     onClick={() => setMobileMenuOpen(false)}
                     className="px-3 py-2.5 rounded-lg font-semibold text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors"
                   >
@@ -1977,7 +1978,7 @@ const App: React.FC = () => {
               <h2 className="text-3xl font-bold text-slate-900 mb-2 text-center">Explore more</h2>
               <p className="text-slate-600 text-center mb-10">Learn more about co-founder matching, startup groups, and equity splits.</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                <Link to="/how-it-works/" className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-orange-400 hover:-translate-y-0.5 transition-all">
+                <Link to={ROUTES.howItWorks} className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-orange-400 hover:-translate-y-0.5 transition-all">
                   <span className="text-sm font-semibold text-slate-800">How it works</span>
                   <ArrowRight size={18} className="text-slate-400" />
                 </Link>
@@ -2001,11 +2002,11 @@ const App: React.FC = () => {
                   <span className="text-sm font-semibold text-slate-800">Startup equity split</span>
                   <ArrowRight size={18} className="text-slate-400" />
                 </Link>
-                <Link to="/about/" className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-orange-400 hover:-translate-y-0.5 transition-all">
+                <Link to={ROUTES.about} className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-orange-400 hover:-translate-y-0.5 transition-all">
                   <span className="text-sm font-semibold text-slate-800">About EquityTake</span>
                   <ArrowRight size={18} className="text-slate-400" />
                 </Link>
-                <Link to="/blog/" className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-orange-400 hover:-translate-y-0.5 transition-all">
+                <Link to={ROUTES.blog} className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 hover:border-orange-400 hover:-translate-y-0.5 transition-all">
                   <span className="text-sm font-semibold text-slate-800">Blog</span>
                   <ArrowRight size={18} className="text-slate-400" />
                 </Link>

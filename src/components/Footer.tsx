@@ -1,6 +1,7 @@
 // src/components/Footer.tsx
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { ROUTES } from '../lib/routes';
 
 interface FooterProps {
   siteLogoUrl: string | null;
@@ -29,7 +30,7 @@ const Footer: React.FC<FooterProps> = ({
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
         {/* Brand Section */}
         <div className="md:col-span-1">
-          <Link to="/" className="block mb-4">
+          <Link to={ROUTES.home} className="block mb-4">
             <span className="text-xl font-semibold text-white">EquityTake</span>
           </Link>
           <p className="text-slate-300 text-sm leading-relaxed mb-4">
@@ -51,32 +52,32 @@ const Footer: React.FC<FooterProps> = ({
           <h4 className="font-semibold text-white mb-4">Platform</h4>
           <ul className="space-y-2 text-sm">
             <li>
-              <Link to="/" className="text-slate-300 hover:text-white transition-colors">
+              <Link to={ROUTES.home} className="text-slate-300 hover:text-white transition-colors">
                 Home
               </Link>
             </li>
             <li>
-              <Link to="/startup-groups/" className="text-slate-300 hover:text-white transition-colors">
+              <Link to={ROUTES.startupGroups} className="text-slate-300 hover:text-white transition-colors">
                 Startup groups
               </Link>
             </li>
             <li>
-              <Link to="/communities-and-cooperatives/" className="text-slate-300 hover:text-white transition-colors">
+              <Link to={ROUTES.communitiesAndCooperatives} className="text-slate-300 hover:text-white transition-colors">
                 Communities &amp; cooperatives
               </Link>
             </li>
             <li>
-              <Link to="/create-startup-group/" className="text-slate-300 hover:text-white transition-colors">
+              <Link to={ROUTES.createStartupGroup} className="text-slate-300 hover:text-white transition-colors">
                 Create a startup group
               </Link>
             </li>
             <li>
-              <Link to="/cofounder-matching/" className="text-slate-300 hover:text-white transition-colors">
+              <Link to={ROUTES.cofounderMatching} className="text-slate-300 hover:text-white transition-colors">
                 Co-founder matching
               </Link>
             </li>
             <li>
-              <Link to="/" className="text-slate-300 hover:text-white transition-colors">
+              <Link to={ROUTES.groups} className="text-slate-300 hover:text-white transition-colors">
                 Browse groups
               </Link>
             </li>
@@ -89,7 +90,7 @@ const Footer: React.FC<FooterProps> = ({
                   How it works
                 </button>
               ) : (
-                <Link to="/how-it-works/" className="text-slate-300 hover:text-white transition-colors">
+                <Link to={ROUTES.howItWorks} className="text-slate-300 hover:text-white transition-colors">
                   How it works
                 </Link>
               )}
@@ -102,27 +103,32 @@ const Footer: React.FC<FooterProps> = ({
           <h4 className="font-semibold text-white mb-4">Resources</h4>
           <ul className="space-y-2 text-sm">
             <li>
-              <Link to="/equity-for-cofounders/" className="text-slate-300 hover:text-white transition-colors">
+              <Link to={ROUTES.equityForCofounders} className="text-slate-300 hover:text-white transition-colors">
                 Equity for co-founders
               </Link>
             </li>
             <li>
-              <Link to="/startup-equity-split/" className="text-slate-300 hover:text-white transition-colors">
+              <Link to={ROUTES.startupEquitySplit} className="text-slate-300 hover:text-white transition-colors">
                 Startup equity split
               </Link>
             </li>
             <li>
-              <Link to="/startup-team-building/" className="text-slate-300 hover:text-white transition-colors">
+              <Link to={ROUTES.startupTeamBuilding} className="text-slate-300 hover:text-white transition-colors">
                 Startup team building
               </Link>
             </li>
             <li>
-              <Link to="/blog/" className="text-slate-300 hover:text-white transition-colors">
+              <Link to={ROUTES.findACofounder} className="text-slate-300 hover:text-white transition-colors">
+                Find a co-founder
+              </Link>
+            </li>
+            <li>
+              <Link to={ROUTES.blog} className="text-slate-300 hover:text-white transition-colors">
                 Blog
               </Link>
             </li>
             <li>
-              <Link to="/about/" className="text-slate-300 hover:text-white transition-colors">
+              <Link to={ROUTES.about} className="text-slate-300 hover:text-white transition-colors">
                 About
               </Link>
             </li>
@@ -142,7 +148,7 @@ const Footer: React.FC<FooterProps> = ({
                   Privacy Policy
                 </button>
               ) : (
-                <Link to="/privacy/" className="text-slate-300 hover:text-white transition-colors">
+                <Link to={ROUTES.privacy} className="text-slate-300 hover:text-white transition-colors">
                   Privacy Policy
                 </Link>
               )}
@@ -156,7 +162,7 @@ const Footer: React.FC<FooterProps> = ({
                   Terms of Service
                 </button>
               ) : (
-                <Link to="/terms/" className="text-slate-300 hover:text-white transition-colors">
+                <Link to={ROUTES.terms} className="text-slate-300 hover:text-white transition-colors">
                   Terms of Service
                 </Link>
               )}
@@ -170,7 +176,7 @@ const Footer: React.FC<FooterProps> = ({
                   Cookie Policy
                 </button>
               ) : (
-                <Link to="/cookies/" className="text-slate-300 hover:text-white transition-colors">
+                <Link to={ROUTES.cookies} className="text-slate-300 hover:text-white transition-colors">
                   Cookie Policy
                 </Link>
               )}

@@ -2,6 +2,7 @@ import React from 'react';
 import { ArrowLeft, Rocket, Search, Users } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
+import { ROUTES } from '../lib/routes';
 
 interface MarketingPageProps {
   onBack: () => void;
@@ -18,14 +19,14 @@ interface MarketingPageProps {
 }
 
 const footerLinks = [
-  { to: '/startup-groups/', label: 'Startup groups' },
-  { to: '/create-startup-group/', label: 'Create a startup group' },
-  { to: '/cofounder-matching/', label: 'Co-founder matching' },
-  { to: '/', label: 'Browse groups' },
-  { to: '/equity-for-cofounders/', label: 'Equity for co-founders' },
-  { to: '/startup-equity-split/', label: 'Startup equity split' },
-  { to: '/startup-team-building/', label: 'Startup team building' },
-  { to: '/how-it-works/', label: 'How it works' },
+  { to: ROUTES.startupGroups, label: 'Startup groups' },
+  { to: ROUTES.createStartupGroup, label: 'Create a startup group' },
+  { to: ROUTES.cofounderMatching, label: 'Co-founder matching' },
+  { to: ROUTES.groups, label: 'Browse groups' },
+  { to: ROUTES.equityForCofounders, label: 'Equity for co-founders' },
+  { to: ROUTES.startupEquitySplit, label: 'Startup equity split' },
+  { to: ROUTES.startupTeamBuilding, label: 'Startup team building' },
+  { to: ROUTES.howItWorks, label: 'How it works' },
 ];
 
 const MarketingPage: React.FC<MarketingPageProps> = ({
@@ -98,7 +99,7 @@ const MarketingPage: React.FC<MarketingPageProps> = ({
             Create a startup group
           </button>
           <Link
-            to={secondaryCtaTo ?? "/"}
+            to={secondaryCtaTo ?? ROUTES.groups}
             className="px-6 py-3 text-sm font-semibold border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-100 hover:-translate-y-0.5 transition-all"
           >
             {secondaryCtaLabel ?? "Browse groups"}
@@ -113,7 +114,7 @@ const MarketingPage: React.FC<MarketingPageProps> = ({
 
         <div className="mt-6 text-center">
           <Link
-            to="/how-it-works/"
+            to={ROUTES.howItWorks}
             className="text-sm text-slate-500 hover:text-slate-800 underline underline-offset-4 transition-colors"
           >
             See how it works
