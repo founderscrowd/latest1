@@ -35,5 +35,10 @@
 # Dynamic group routes — SPA shell (prerendered HTML takes precedence for known groups)
 /groups/:slug/*     /index.html  200
 
+# Blog post SPA fallback — prerendered HTML takes precedence for posts that
+# existed at build time; this catches posts published in Supabase AFTER the
+# last build so they render via React Router instead of returning 404.
+/blog/*             /index.html  200
+
 # 404 catch-all: unknown paths serve the prerendered 404 page with HTTP 404
 /*  /404.html  404

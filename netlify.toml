@@ -173,6 +173,15 @@
   status = 200
   force = false
 
+# Blog post SPA fallback — prerendered HTML takes precedence for posts that
+# existed at build time; this catches posts published in Supabase AFTER the
+# last build so they render via React Router instead of returning 404.
+[[redirects]]
+  from = "/blog/*"
+  to = "/index.html"
+  status = 200
+  force = false
+
 # 404 catch-all: any path that doesn't match a prerendered HTML file, a static
 # asset, or one of the explicit SPA routes above serves the prerendered 404
 # page with HTTP 404. This prevents unknown URLs from serving the homepage.
