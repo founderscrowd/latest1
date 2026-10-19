@@ -623,6 +623,21 @@ const routes = {
   </p>
 </main>`),
   },
+  '/404': {
+    title: 'Page not found | EquityTake',
+    description: 'The page you are looking for does not exist on EquityTake.',
+    h1: 'Page not found',
+    robots: 'noindex, follow',
+    canonical: '/404/',
+    bodyHtml: withShell(`<main style="font-family:system-ui,-apple-system,sans-serif;color:#1e293b;max-width:600px;margin:0 auto;padding:40px 20px;text-align:center;">
+  <h1 style="font-size:2rem;font-weight:700;margin:0 0 16px;">Page not found</h1>
+  <p style="color:#475569;line-height:1.6;margin:0 0 24px;">The page you are looking for does not exist, or it may have moved.</p>
+  <p style="margin:0 0 16px;"><a href="/" style="display:inline-block;padding:12px 24px;background:#ea580c;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;">Go to the homepage</a></p>
+  <p style="margin:0 0 8px;"><a href="/groups/" style="color:#ea580c;">Browse startup groups</a></p>
+  <p style="margin:0 0 8px;"><a href="/blog/" style="color:#ea580c;">Read the blog</a></p>
+  <p style="margin:0"><a href="/how-it-works/" style="color:#ea580c;">How it works</a></p>
+</main>`),
+  },
 };
 
 // ---------- Homepage with crawlable links + Explore section ----------
@@ -786,6 +801,32 @@ function buildBlogListPage(posts) {
 }
 
 // ---------- Markdown to HTML converter (sanitised) ----------
+// Normalise an internal href to a trailing slash.
+// - Adds trailing slash to internal paths (starting with "/" or the site origin)
+//   that have no file extension, no query, no hash, and don't already end in "/".
+// - Leaves external links, assets, anchors, and mailto: untouched.
+function normalizeHref(href) {
+  if (!href) return href;
+  let url = href.trim();
+  // Only normalise internal links: root-relative or pointing at our origin.
+  const isOrigin = url.startsWith(SITE_ORIGIN);
+  const isRoot = url.startsWith('/');
+  if (!isOrigin && !isRoot) return href;
+  // Extract the path portion.
+  let path = isOrigin ? url.slice(SITE_ORIGIN.length) : url;
+  // Leave query strings and hashes alone (e.g. /?auth=signup, /blog/#section).
+  if (path.includes('?') || path.includes('#')) return href;
+  // Leave the homepage alone.
+  if (path === '/') return href;
+  // Leave files with extensions alone (e.g. /favicon.svg, /assets/index.js).
+  if (/\.[a-zA-Z0-9]{1,8}$/.test(path)) return href;
+  // Already has trailing slash.
+  if (path.endsWith('/')) return href;
+  // Add the trailing slash.
+  const normalized = path + '/';
+  return isOrigin ? SITE_ORIGIN + normalized : normalized;
+}
+
 function renderMarkdown(md) {
   if (!md) return '';
   let text = String(md);
@@ -793,7 +834,9 @@ function renderMarkdown(md) {
   // Extract existing HTML tags (e.g. <a href="...">) and protect them
   const htmlTokens = [];
   text = text.replace(/<[^>]+>/g, (m) => {
-    htmlTokens.push(m);
+    // Normalise hrefs inside existing HTML <a> tags from the blog content.
+    const normalised = m.replace(/href="([^"]*)"/g, (_, href) => `href="${normalizeHref(href)}"`);
+    htmlTokens.push(normalised);
     return `\x00HTML${htmlTokens.length - 1}\x00`;
   });
 
@@ -803,9 +846,9 @@ function renderMarkdown(md) {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
 
-  // Convert markdown links [text](url) to <a> tags
+  // Convert markdown links [text](url) to <a> tags (with trailing-slash normalisation)
   text = text.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, linkText, url) => {
-    return `<a href="${url}">${linkText}</a>`;
+    return `<a href="${normalizeHref(url)}">${linkText}</a>`;
   });
 
   // Bold **text** or __text__
@@ -967,6 +1010,9 @@ function writeRoute(distDir, routePath, html) {
   let filePath;
   if (routePath === '/') {
     filePath = join(distDir, 'index.html');
+  } else if (routePath === '/404') {
+    // 404 is a standalone file at dist/404.html (Netlify catch-all)
+    filePath = join(distDir, '404.html');
   } else {
     // Remove leading slash
     const cleanPath = routePath.replace(/^\//, '');
@@ -1084,6 +1130,36 @@ async function main() {
   const sitemapPath = join(distDir, 'sitemap.xml');
   writeFileSync(sitemapPath, buildSitemap(posts), 'utf8');
   console.log(`  ✓ Wrote ${sitemapPath.replace(distDir, '.')}`);
+
+  // Generate SPA-only noindex HTML files for app routes that must stay as
+  // client-only fallbacks (login, dashboard, profile, settings, etc.). These
+  // are NOT in the sitemap and carry meta robots noindex so they are not
+  // indexed. They exist so the hosting 404 catch-all doesn't fire for real
+  // SPA routes, and so crawlers that do hit them see noindex.
+  const spaRoutes = [
+    '/forgot-password',
+    '/reset-password',
+    '/redirect',
+    '/payment/success',
+    '/payment/cancelled',
+    '/profile',
+    '/settings',
+  ];
+  console.log('\n🔒 Writing SPA-only noindex route stubs...');
+  for (const spaPath of spaRoutes) {
+    const stubHtml = buildHtmlWithAssets({
+      path: spaPath,
+      title: 'EquityTake',
+      description: 'EquityTake — sign in or continue to your account.',
+      h1: 'EquityTake',
+      bodyHtml: withShell('<main style="font-family:system-ui,sans-serif;text-align:center;padding:40px 20px;"><p style="color:#64748b;">Loading…</p></main>'),
+      ogType: 'website',
+      robots: 'noindex, follow',
+      canonical: spaPath,
+    });
+    writeRoute(distDir, spaPath, stubHtml);
+    generated++;
+  }
 
   console.log(`\n✅ Prerender complete: ${generated} pages generated, ${skipped} skipped.`);
 }

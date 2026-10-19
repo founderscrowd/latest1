@@ -1,1 +1,39 @@
-/* /index.html 200
+# Social crawler previews for group pages
+/groups/:slug  https://jdpugmeoocezzxqegmsu.supabase.co/functions/v2/social-preview?slug=:splat  200
+  facebookexternalhit
+  Twitterbot
+  LinkedInBot
+  WhatsApp
+  TelegramBot
+  Slackbot
+  Discordbot
+  Googlebot
+  Bingbot
+
+# 301: /our-vision is not a standalone page — it lives at /blog/our-vision/
+/our-vision     /blog/our-vision/  301!
+/our-vision/    /blog/our-vision/  301!
+
+# SPA-only app routes: serve the SPA shell with 200 so React Router handles them.
+# Not in the sitemap; prerendered stubs carry meta robots noindex.
+/sign-in            /index.html  200
+/sign-in/           /index.html  200
+/profile            /index.html  200
+/profile/           /index.html  200
+/settings           /index.html  200
+/settings/          /index.html  200
+/forgot-password    /index.html  200
+/forgot-password/   /index.html  200
+/reset-password     /index.html  200
+/reset-password/    /index.html  200
+/redirect           /index.html  200
+/payment/success    /index.html  200
+/payment/success/   /index.html  200
+/payment/cancelled  /index.html  200
+/payment/cancelled/ /index.html  200
+
+# Dynamic group routes — SPA shell (prerendered HTML takes precedence for known groups)
+/groups/:slug/*     /index.html  200
+
+# 404 catch-all: unknown paths serve the prerendered 404 page with HTTP 404
+/*  /404.html  404

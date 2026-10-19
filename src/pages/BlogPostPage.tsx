@@ -10,13 +10,33 @@ interface BlogPostPageProps {
   siteLogoUrl: string | null;
 }
 
+const SITE_ORIGIN = 'https://equitytakeaway.com';
+
+// Normalise internal hrefs to a trailing slash so links inside blog post bodies
+// never 301. External links, assets, query strings and hashes are left alone.
+function normalizeHref(href: string): string {
+  if (!href) return href;
+  const url = href.trim();
+  const isOrigin = url.startsWith(SITE_ORIGIN);
+  const isRoot = url.startsWith('/');
+  if (!isOrigin && !isRoot) return href;
+  let path = isOrigin ? url.slice(SITE_ORIGIN.length) : url;
+  if (path.includes('?') || path.includes('#')) return href;
+  if (path === '/') return href;
+  if (/\.[a-zA-Z0-9]{1,8}$/.test(path)) return href;
+  if (path.endsWith('/')) return href;
+  const normalized = path + '/';
+  return isOrigin ? SITE_ORIGIN + normalized : normalized;
+}
+
 function renderMarkdown(md: string): string {
   if (!md) return '';
   let text = String(md);
 
   const htmlTokens: string[] = [];
   text = text.replace(/<[^>]+>/g, (m) => {
-    htmlTokens.push(m);
+    const normalised = m.replace(/href="([^"]*)"/g, (_, href: string) => `href="${normalizeHref(href)}"`);
+    htmlTokens.push(normalised);
     return `\x00HTML${htmlTokens.length - 1}\x00`;
   });
 
@@ -25,8 +45,8 @@ function renderMarkdown(md: string): string {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
 
-  text = text.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, linkText, url) => {
-    return `<a href="${url}">${linkText}</a>`;
+  text = text.replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, (_, linkText, url: string) => {
+    return `<a href="${normalizeHref(url)}">${linkText}</a>`;
   });
 
   text = text.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');

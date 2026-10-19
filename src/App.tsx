@@ -2043,6 +2043,9 @@ const App: React.FC = () => {
             </>
           }
         />
+        {/* /our-vision is not a standalone page — redirect to the blog post */}
+        <Route path="/our-vision" element={<Navigate to={blogPostPath('our-vision')} replace />} />
+        <Route path="/our-vision/" element={<Navigate to={blogPostPath('our-vision')} replace />} />
         <Route path="*" element={<NotFoundPage siteLogoUrl={siteLogoUrl} />} />
       </Routes>
 
