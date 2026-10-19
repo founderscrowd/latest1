@@ -1,18 +1,20 @@
-# Social crawler previews for group pages
-/groups/:slug  https://jdpugmeoocezzxqegmsu.supabase.co/functions/v2/social-preview?slug=:splat  200
-  facebookexternalhit
-  Twitterbot
-  LinkedInBot
-  WhatsApp
-  TelegramBot
-  Slackbot
-  Discordbot
-  Googlebot
-  Bingbot
-
 # 301: /our-vision is not a standalone page — it lives at /blog/our-vision/
 /our-vision     /blog/our-vision/  301!
 /our-vision/    /blog/our-vision/  301!
+
+# Blog post SPA fallback — prerendered HTML takes precedence for posts that
+# existed at build time; this catches posts published in Supabase AFTER the
+# last build so they render via React Router instead of returning 404.
+/blog/*             /index.html  200
+
+# SPA fallback for dynamic group routes.
+# Prerendered /groups/<slug>/index.html files (written by the prerender script
+# for public groups) take precedence over this for known groups. Groups created
+# in Supabase after the last build fall through to this rule and render via
+# React Router with HTTP 200. This replaces an earlier rule that proxied
+# /groups/:slug to a Supabase Edge Function, which returned 401 JSON to
+# visitors because Netlify's proxy did not forward a Supabase apikey.
+/groups/*           /index.html  200
 
 # SPA-only app routes: serve the SPA shell with 200 so React Router handles them.
 # Not in the sitemap; prerendered stubs carry meta robots noindex.
@@ -31,14 +33,6 @@
 /payment/success/   /index.html  200
 /payment/cancelled  /index.html  200
 /payment/cancelled/ /index.html  200
-
-# Dynamic group routes — SPA shell (prerendered HTML takes precedence for known groups)
-/groups/:slug/*     /index.html  200
-
-# Blog post SPA fallback — prerendered HTML takes precedence for posts that
-# existed at build time; this catches posts published in Supabase AFTER the
-# last build so they render via React Router instead of returning 404.
-/blog/*             /index.html  200
 
 # 404 catch-all: unknown paths serve the prerendered 404 page with HTTP 404
 /*  /404.html  404

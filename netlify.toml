@@ -34,40 +34,6 @@
 # [plugins.inputs]
 # buildDir = "dist"
 
-# Social crawler previews for group pages
-# Facebook, Twitter, LinkedIn, and other crawlers don't run JavaScript,
-# so we proxy their requests to a Supabase Edge Function that returns
-# pre-rendered HTML with group-specific Open Graph meta tags.
-[[redirects]]
-  from = "/groups/:slug"
-  to = "https://jdpugmeoocezzxqegmsu.supabase.co/functions/v2/social-preview?slug=:splat"
-  status = 200
-  force = false
-  [redirects.conditions]
-    [redirects.conditions.User-Agent]
-    facebookexternalhit = ["facebookexternalhit/1.1", "facebookexternalhit/1.0"]
-    Twitterbot = ["Twitterbot/1.0"]
-    LinkedInBot = ["LinkedInBot/1.0"]
-    WhatsApp = ["WhatsApp"]
-    TelegramBot = ["TelegramBot"]
-    Slackbot = ["Slackbot"]
-    Discordbot = ["Discordbot"]
-    Googlebot = ["Googlebot"]
-    Bingbot = ["Bingbot"]
-
-# 301: /our-vision is not a standalone page — it lives at /blog/our-vision/
-[[redirects]]
-  from = "/our-vision"
-  to = "/blog/our-vision/"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/our-vision/"
-  to = "/blog/our-vision/"
-  status = 301
-  force = true
-
 # SPA-only app routes: serve the SPA shell (index.html) with 200 so React Router
 # can handle them. These are NOT in the sitemap and the prerendered stubs carry
 # meta robots noindex. Listed explicitly so the 404 catch-all below doesn't fire.
@@ -162,22 +128,24 @@
   status = 200
   force = false
 
-# Dynamic group routes (slug-based) — serve the SPA shell so React Router
-# can render the group profile/detail page. The social-preview redirect above
-# handles crawler requests for /groups/:slug (without trailing slash).
-# The prerendered /groups/<slug>/index.html (written by the prerender script
-# for public groups) takes precedence over this for known groups.
-[[redirects]]
-  from = "/groups/:slug/*"
-  to = "/index.html"
-  status = 200
-  force = false
-
 # Blog post SPA fallback — prerendered HTML takes precedence for posts that
 # existed at build time; this catches posts published in Supabase AFTER the
 # last build so they render via React Router instead of returning 404.
 [[redirects]]
   from = "/blog/*"
+  to = "/index.html"
+  status = 200
+  force = false
+
+# SPA fallback for dynamic group routes.
+# Prerendered /groups/<slug>/index.html files (written by the prerender script
+# for public groups) take precedence over this for known groups. Groups created
+# in Supabase after the last build fall through to this rule and render via
+# React Router with HTTP 200. This replaces an earlier rule that proxied
+# /groups/:slug to a Supabase Edge Function, which returned 401 JSON to
+# visitors because Netlify's proxy did not forward a Supabase apikey.
+[[redirects]]
+  from = "/groups/*"
   to = "/index.html"
   status = 200
   force = false

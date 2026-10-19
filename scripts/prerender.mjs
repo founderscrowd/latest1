@@ -214,7 +214,10 @@ async function fetchPublishedBlogPosts() {
 }
 
 async function fetchPublicGroups() {
-  const url = `${SUPABASE_URL}/rest/v1/groups?is_public=eq.true&status=eq.active&order=created_at.desc&limit=20`;
+  // Fetch all public, active, non-deleted groups so every one gets its own
+  // prerendered page. limit=500 is well above expected group count; if the
+  // project ever exceeds it, raise the limit or add pagination.
+  const url = `${SUPABASE_URL}/rest/v1/groups?is_public=eq.true&status=eq.active&deleted_at=is.null&order=created_at.desc&limit=500`;
   const { status, data } = await fetchJsonWithRetry(url, 'Groups');
   if (status !== 200) return [];
   return Array.isArray(data) ? data : [];
@@ -771,6 +774,52 @@ function buildGroupsPage(groups) {
 </main>`);
 }
 
+// ---------- Generate a single group page ----------
+// Renders a crawlable, self-canonical HTML page for a public, active group.
+// Only public group fields are used — no member data, chat content, emails, or
+// phone numbers. React Router hydrates and takes over after load.
+function buildGroupPage(group) {
+  const name = esc(group.name || 'Untitled group');
+  const description = esc(buildGroupDescription(group));
+  const industry = group.industry ? esc(group.industry) : '';
+  const equityAvailable = (group.equity_available != null) ? `${esc(group.equity_available)}% equity available` : '';
+  const companyValue = group.funding_needed ? `Proposed Company Value: ${esc(group.funding_needed)}` : '';
+  const tags = Array.isArray(group.tags) && group.tags.length > 0
+    ? group.tags.map((t) => esc(t)).join(', ')
+    : '';
+  const fullDesc = esc(truncate(stripHtml(group.description), 400));
+
+  const metaRows = [
+    industry && `<p style="color:#94a3b8;margin:0 0 4px;font-size:0.9rem;">Industry: ${industry}</p>`,
+    equityAvailable && `<p style="color:#94a3b8;margin:0 0 4px;font-size:0.9rem;">${equityAvailable}</p>`,
+    companyValue && `<p style="color:#94a3b8;margin:0 0 4px;font-size:0.9rem;">${companyValue}</p>`,
+    tags && `<p style="color:#94a3b8;margin:0;font-size:0.9rem;">Tags: ${tags}</p>`,
+  ].filter(Boolean).join('\n');
+
+  return withShell(`<main style="font-family:system-ui,-apple-system,sans-serif;color:#1e293b;max-width:800px;margin:0 auto;padding:20px;">
+  <h1 style="font-size:2rem;font-weight:700;margin:0 0 16px;">${name}</h1>
+  <p style="font-size:1.05rem;line-height:1.6;color:#475569;margin:0 0 20px;">${description}</p>
+  ${metaRows ? `<div style="margin:0 0 24px;">${metaRows}</div>` : ''}
+  ${fullDesc ? `<div style="color:#475569;line-height:1.7;margin:0 0 24px;">${fullDesc}</div>` : ''}
+  <p style="margin:0 0 24px;">
+    <a href="/sign-in/" style="display:inline-block;padding:12px 24px;background:#ea580c;color:#fff;text-decoration:none;border-radius:8px;font-weight:600;margin-right:12px;">Sign in to join</a>
+    <a href="/groups/" style="display:inline-block;padding:12px 24px;border:1px solid #cbd5e1;color:#1e293b;text-decoration:none;border-radius:8px;font-weight:600;">Browse all groups</a>
+  </p>
+  <p style="font-size:0.85rem;color:#94a3b8;margin:24px 0;">Equity numbers are proposals for discussion. EquityTake does not issue shares, collect investment, or incorporate companies. If anyone asks for funds, shares, or formal incorporation, get independent legal advice first.</p>
+  <p style="font-size:0.9rem;color:#64748b;margin:16px 0 0 0;"><a href="/how-it-works/" style="color:#ea580c;">How it works</a> &middot; <a href="/cofounder-matching/" style="color:#ea580c;">Co-founder matching</a> &middot; <a href="/create-startup-group/" style="color:#ea580c;">Create your own group</a></p>
+</main>`);
+}
+
+function buildGroupDescription(group) {
+  const parts = [];
+  const desc = stripHtml(group.description || '').slice(0, 140);
+  if (desc) parts.push(desc + (group.description && group.description.length > 140 ? '...' : ''));
+  if (group.industry) parts.push(`Industry: ${group.industry}`);
+  if (group.equity_available != null) parts.push(`${group.equity_available}% equity available`);
+  if (group.funding_needed) parts.push(`Company Value: ${group.funding_needed}`);
+  return parts.join(' | ') || `Join ${group.name || 'this group'} on EquityTake — connect with co-founders and discuss proposed equity.`;
+}
+
 // ---------- Generate /blog page with live data ----------
 function buildBlogListPage(posts) {
   let postsHtml = '';
@@ -963,7 +1012,7 @@ function buildBlogPostPage(post) {
 }
 
 // ---------- Sitemap generation ----------
-function buildSitemap(posts) {
+function buildSitemap(posts, groups) {
   const staticEntries = [
     { path: '/', lastmod: TODAY, changefreq: 'daily', priority: '1.0' },
     { path: '/groups/', lastmod: TODAY, changefreq: 'daily', priority: '0.9' },
@@ -990,7 +1039,14 @@ function buildSitemap(posts) {
     priority: '0.7',
   }));
 
-  const all = [...staticEntries, ...postEntries];
+  const groupEntries = (groups || []).filter((g) => g.slug).map((g) => ({
+    path: `/groups/${g.slug}/`,
+    lastmod: TODAY,
+    changefreq: 'weekly',
+    priority: '0.7',
+  }));
+
+  const all = [...staticEntries, ...postEntries, ...groupEntries];
   const urls = all.map((e) => `  <url>
     <loc>${SITE_ORIGIN}${e.path}</loc>
     <lastmod>${e.lastmod}</lastmod>
@@ -1099,6 +1155,30 @@ async function main() {
     generated++;
   }
 
+  console.log('\n👥 Prerendering public group pages...');
+  for (const group of groups) {
+    if (!group.slug) continue;
+    const routePath = `/groups/${group.slug}`;
+    const bodyHtml = buildGroupPage(group);
+    const title = `${group.name || 'Untitled group'} – EquityTake`;
+    const description = buildGroupDescription(group);
+    const ogImage = absoluteImageUrl(group.cover_image) || DEFAULT_OG_IMAGE;
+    const ogImageAlt = group.name ? `${group.name} — group cover image` : '';
+    const html = buildHtmlWithAssets({
+      path: routePath,
+      title,
+      description,
+      h1: group.name || 'Untitled group',
+      bodyHtml,
+      ogType: 'website',
+      ogImage,
+      ogImageAlt,
+      canonical: routePath,
+    });
+    writeRoute(distDir, routePath, html);
+    generated++;
+  }
+
   console.log('\n📝 Prerendering blog posts...');
   for (const post of posts) {
     if (!post.slug) continue;
@@ -1128,7 +1208,7 @@ async function main() {
   // correct trailing-slash URLs and current lastmod dates.
   console.log('\n🗺  Regenerating sitemap.xml...');
   const sitemapPath = join(distDir, 'sitemap.xml');
-  writeFileSync(sitemapPath, buildSitemap(posts), 'utf8');
+  writeFileSync(sitemapPath, buildSitemap(posts, groups), 'utf8');
   console.log(`  ✓ Wrote ${sitemapPath.replace(distDir, '.')}`);
 
   // Generate SPA-only noindex HTML files for app routes that must stay as
