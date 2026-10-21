@@ -29,7 +29,9 @@ const AboutPage: React.FC<AboutPageProps> = ({ siteLogoUrl }) => {
     }
   };
 
-  const canonicalUrl = `${window.location.origin}/about/`;
+const SITE_ORIGIN = 'https://equitytakeaway.com';
+
+  const canonicalUrl = `${SITE_ORIGIN}/about/`;
   const description = 'Learn more about EquityTake - connecting co-founders to build startups together through collaborative groups. Join our community of entrepreneurs and innovators.';
 
   return (
@@ -37,6 +39,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ siteLogoUrl }) => {
       <Helmet>
         <title>About Us | EquityTake</title>
         <meta name="description" content={description} />
+        <meta name="robots" content="index, follow" />
         <link rel="canonical" href={canonicalUrl} />
 
         {/* Open Graph tags for social sharing */}

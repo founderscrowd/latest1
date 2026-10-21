@@ -36,7 +36,9 @@ const BlogListPage: React.FC<BlogListPageProps> = ({ siteLogoUrl }) => {
     return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   };
 
-  const canonicalUrl = `${window.location.origin}/blog/`;
+const SITE_ORIGIN = 'https://equitytakeaway.com';
+
+const canonicalUrl = `${SITE_ORIGIN}/blog/`;
   const description = 'Insights, updates, and stories from the EquityTake team. Learn about building startups, finding co-founders, and growing your business.';
 
   return (
@@ -44,6 +46,7 @@ const BlogListPage: React.FC<BlogListPageProps> = ({ siteLogoUrl }) => {
       <Helmet>
         <title>Blog | EquityTake</title>
         <meta name="description" content={description} />
+        <meta name="robots" content="index, follow" />
         <link rel="canonical" href={canonicalUrl} />
 
         {/* Open Graph tags for social sharing */}

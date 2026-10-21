@@ -106,30 +106,30 @@ function buildHtml({
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>${esc(title)}</title>
-    <meta name="description" content="${esc(description)}" />
-    <meta name="robots" content="${esc(robots)}" />
-    <link rel="canonical" href="${esc(canon)}" />
+    <title data-rh="true">${esc(title)}</title>
+    <meta name="description" data-rh="true" content="${esc(description)}" />
+    <meta name="robots" data-rh="true" content="${esc(robots)}" />
+    <link rel="canonical" data-rh="true" href="${esc(canon)}" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/favicon.svg" />
     <meta name="theme-color" content="#0a1e2e" />
 
     <!-- Open Graph / Social sharing -->
-    <meta property="og:title" content="${esc(title)}" />
-    <meta property="og:description" content="${esc(description)}" />
-    <meta property="og:url" content="${esc(url)}" />
-    <meta property="og:type" content="${esc(ogType)}" />
+    <meta property="og:title" data-rh="true" content="${esc(title)}" />
+    <meta property="og:description" data-rh="true" content="${esc(description)}" />
+    <meta property="og:url" data-rh="true" content="${esc(url)}" />
+    <meta property="og:type" data-rh="true" content="${esc(ogType)}" />
     <meta property="og:site_name" content="EquityTake" />
-    <meta property="og:image" content="${esc(img)}" />
-    ${ogImageAlt ? `<meta property="og:image:alt" content="${esc(ogImageAlt)}" />` : ''}
+    <meta property="og:image" data-rh="true" content="${esc(img)}" />
+    ${ogImageAlt ? `<meta property="og:image:alt" data-rh="true" content="${esc(ogImageAlt)}" />` : ''}
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
 
     <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="${esc(title)}" />
-    <meta name="twitter:description" content="${esc(description)}" />
-    <meta name="twitter:image" content="${esc(img)}" />
+    <meta name="twitter:card" data-rh="true" content="summary_large_image" />
+    <meta name="twitter:title" data-rh="true" content="${esc(title)}" />
+    <meta name="twitter:description" data-rh="true" content="${esc(description)}" />
+    <meta name="twitter:image" data-rh="true" content="${esc(img)}" />
 
     <!-- Google Consent Mode v2: default consent state must be set BEFORE any
          Google tags load. All optional categories default to denied until the

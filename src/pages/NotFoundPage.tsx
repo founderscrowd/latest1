@@ -13,6 +13,12 @@ const NotFoundPage: React.FC<NotFoundPageProps> = ({ siteLogoUrl }) => {
       <Helmet>
         <title>Page not found | EquityTake</title>
         <meta name="robots" content="noindex, nofollow" />
+        {/* No canonical link here. Because the SPA shell and prerendered HTML
+            tag their <link rel="canonical"> with data-rh="true", react-helmet-async
+            treats it as a Helmet-managed tag. When this Helmet renders with no
+            <link> children, Helmet removes the inherited canonical so the
+            not-found page does not carry a canonical pointing to the homepage
+            or any other page. */}
       </Helmet>
 
       <header className="bg-white border-b border-slate-200 py-4 sticky top-0 z-50 shadow-sm">

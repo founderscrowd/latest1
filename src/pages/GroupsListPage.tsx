@@ -137,7 +137,8 @@ const GroupsListPage: React.FC<GroupsListPageProps> = ({
       <Helmet>
         <title>Browse Startup Groups - EquityTake</title>
         <meta name="description" content="Browse and join innovative startup groups. Find co-founders and register interest in exciting ventures." />
-        <link rel="canonical" href={`${window.location.origin}/groups/`} />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://equitytakeaway.com/groups/" />
       </Helmet>
 
       {/* Header */}

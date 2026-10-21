@@ -116,8 +116,8 @@ const GroupDetailsRoute: React.FC<GroupDetailsRouteProps> = ({
   const groupIndustry = groupData?.industry || '';
   const groupEquity = groupData?.equity_available;
   const groupFunding = groupData?.funding_needed || '';
-  const groupUrl = `${window.location.origin}/groups/${slug}/`;
-  const defaultShareImage = `${window.location.origin}/social-share-default.png`;
+  const groupUrl = `https://equitytakeaway.com/groups/${slug}/`;
+  const defaultShareImage = `https://equitytakeaway.com/social-share-default.png`;
 
   const shareDescription = groupData
     ? `${groupDescription.slice(0, 140)}${groupDescription.length > 140 ? '...' : ''}${groupIndustry ? ` | Industry: ${groupIndustry}` : ''}${groupEquity ? ` | ${groupEquity}% equity available` : ''}${groupFunding ? ` | Funding: ${groupFunding}` : ''}`

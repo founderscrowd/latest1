@@ -42,13 +42,14 @@ const MarketingPage: React.FC<MarketingPageProps> = ({
   secondaryCtaTo,
   secondaryCtaLabel,
 }) => {
-  const canonicalUrl = `${window.location.origin}${window.location.pathname.endsWith('/') ? window.location.pathname : window.location.pathname + '/'}`;
+  const canonicalUrl = `https://equitytakeaway.com${window.location.pathname.endsWith('/') ? window.location.pathname : window.location.pathname + '/'}`;
 
   return (
     <div className="min-h-screen bg-slate-50">
       <Helmet>
         <title>{title} | EquityTake</title>
         <meta name="description" content={metaDescription} />
+        <meta name="robots" content="index, follow" />
         <link rel="canonical" href={canonicalUrl} />
         <meta property="og:title" content={`${title} | EquityTake`} />
         <meta property="og:description" content={metaDescription} />

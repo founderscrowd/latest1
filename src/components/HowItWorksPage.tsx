@@ -9,7 +9,7 @@ interface HowItWorksPageProps {
 }
 
 const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onBack, siteLogoUrl }) => {
-  const canonicalUrl = `${window.location.origin}/how-it-works/`;
+  const canonicalUrl = 'https://equitytakeaway.com/how-it-works/';
   const title = 'How EquityTake Works | Idea to Team to Startup';
   const description =
     'See how EquityTake turns an idea into a founding team: create a group, discuss contributions, and propose equity using Proposed Company Value and Reference Value. Free to use.';
@@ -52,6 +52,7 @@ const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onBack, siteLogoUrl }) 
       <Helmet>
         <title>{title}</title>
         <meta name="description" content={description} />
+        <meta name="robots" content="index, follow" />
         <link rel="canonical" href={canonicalUrl} />
 
         <meta property="og:title" content="How EquityTake Works" />
