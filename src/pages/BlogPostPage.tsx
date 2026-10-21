@@ -179,15 +179,12 @@ const BlogPostPage: React.FC<BlogPostPageProps> = ({ siteLogoUrl }) => {
   };
 
   if (loading) {
-    // While loading, emit NO robots or canonical tags so Google never indexes
-    // a half-loaded page or treats it as a duplicate of another post. The
-    // prerendered HTML already carries the correct tags for crawlers that
-    // don't run JavaScript; this only affects the hydrated SPA.
+    // Do NOT render a Helmet here. Rendering one would let react-helmet-async
+    // overwrite the valid prerendered <title>, canonical, and robots tags with
+    // a transient loading title, which can leak to crawlers. By rendering no
+    // Helmet, the prerendered metadata stays intact until the real post loads.
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <Helmet>
-          <title>Loading post... | EquityTake Blog</title>
-        </Helmet>
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600 mx-auto mb-4"></div>
           <p className="text-slate-600">Loading post...</p>
@@ -197,12 +194,13 @@ const BlogPostPage: React.FC<BlogPostPageProps> = ({ siteLogoUrl }) => {
   }
 
   if (networkError && !loading) {
+    // Temporary network/database error — the post may well exist. Do NOT set
+    // noindex and do NOT render a Helmet that would overwrite the valid
+    // prerendered canonical and robots tags. A transient outage must not turn
+    // a real, indexable post into a noindexed page. Only a confirmed
+    // not-found result (handled below) renders the noindex NotFoundPage.
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <Helmet>
-          <title>Couldn't load this post | EquityTake Blog</title>
-          <meta name="robots" content="noindex, nofollow" />
-        </Helmet>
         <div className="text-center max-w-md mx-auto px-4">
           <h1 className="text-2xl font-bold text-slate-900 mb-3">Couldn't load this post</h1>
           <p className="text-slate-600 mb-6">We couldn't reach the server to load this article. Your connection may be interrupted.</p>
