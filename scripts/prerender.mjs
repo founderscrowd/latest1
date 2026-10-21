@@ -1039,12 +1039,7 @@ function buildSitemap(posts, groups) {
     priority: '0.7',
   }));
 
-  const groupEntries = (groups || []).filter((g) => g.slug).map((g) => ({
-    path: `/groups/${g.slug}/`,
-    lastmod: TODAY,
-    changefreq: 'weekly',
-    priority: '0.7',
-  }));
+  const groupEntries = [];
 
   const all = [...staticEntries, ...postEntries, ...groupEntries];
   const urls = all.map((e) => `  <url>
@@ -1173,6 +1168,7 @@ async function main() {
       ogType: 'website',
       ogImage,
       ogImageAlt,
+      robots: 'noindex, follow',
       canonical: routePath,
     });
     writeRoute(distDir, routePath, html);

@@ -129,6 +129,7 @@ const GroupDetailsRoute: React.FC<GroupDetailsRouteProps> = ({
       <Helmet>
         <title>{groupName} | EquityTake</title>
         <meta name="description" content={shareDescription} />
+        <meta name="robots" content="noindex, follow" />
         <link rel="canonical" href={groupUrl} />
 
         {/* Open Graph tags for social sharing */}
