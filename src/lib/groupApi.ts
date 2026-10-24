@@ -131,7 +131,7 @@ class GroupAPI {
         (data || []).map(async (group) => {
           // Get creator profile
           const { data: creatorProfile } = await supabase
-            .from('profiles')
+            .from('public_profile_display')
             .select('username, avatar_url')
             .eq('id', group.creator_id)
             .maybeSingle();
@@ -183,7 +183,7 @@ class GroupAPI {
 
       // Get creator profile separately
       const { data: creatorProfile } = await supabase
-        .from('profiles')
+        .from('public_profile_display')
         .select('username, avatar_url')
         .eq('id', groupData.creator_id)
         .maybeSingle();
@@ -227,7 +227,7 @@ class GroupAPI {
 
       // Get creator profile separately
       const { data: creatorProfile } = await supabase
-        .from('profiles')
+        .from('public_profile_display')
         .select('username, avatar_url')
         .eq('id', groupData.creator_id)
         .maybeSingle();
@@ -618,7 +618,7 @@ class GroupAPI {
 
       // Fetch profiles for these users
       const { data: profilesData, error: profilesError } = await supabase
-        .from('profiles')
+        .from('public_profile_display')
         .select('id, username, avatar_url')
         .in('id', userIds);
 
