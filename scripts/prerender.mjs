@@ -85,6 +85,10 @@ function absoluteImageUrl(src) {
 }
 
 // ---------- Build the static <head> + <body> for a route ----------
+// Set omitCanonical = true to skip the <link rel="canonical"> tag (used by the
+// neutral blog fallback, which must not claim a canonical URL before the
+// article's existence is confirmed by React). Set omitRobots = true to skip
+// the <meta name="robots"> tag for the same reason.
 function buildHtml({
   path,
   title,
@@ -96,10 +100,15 @@ function buildHtml({
   robots = 'index, follow',
   ogImage = DEFAULT_OG_IMAGE,
   ogImageAlt = '',
+  omitCanonical = false,
+  omitRobots = false,
 }) {
   const url = canonicalUrl(path);
   const canon = canonical ? canonicalUrl(canonical) : url;
   const img = absoluteImageUrl(ogImage) || DEFAULT_OG_IMAGE;
+
+  const robotsTag = omitRobots ? '' : `<meta name="robots" data-rh="true" content="${esc(robots)}" />`;
+  const canonicalTag = omitCanonical ? '' : `<link rel="canonical" data-rh="true" href="${esc(canon)}" />`;
 
   return `<!doctype html>
 <html lang="en">
@@ -108,8 +117,8 @@ function buildHtml({
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title data-rh="true">${esc(title)}</title>
     <meta name="description" data-rh="true" content="${esc(description)}" />
-    <meta name="robots" data-rh="true" content="${esc(robots)}" />
-    <link rel="canonical" data-rh="true" href="${esc(canon)}" />
+    ${robotsTag}
+    ${canonicalTag}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/favicon.svg" />
     <meta name="theme-color" content="#0a1e2e" />
@@ -989,9 +998,27 @@ function renderMarkdown(md) {
   return result.join('\n');
 }
 
+// ---------- Safe JSON embedding for prerendered HTML ----------
+// Escapes characters that can break out of a <script type="application/json">
+// context: </script>, <!--, and U+2028/U+2029 (JSON line/paragraph separators
+// that are valid in JSON but invalid in JS string literals).
+function safeJsonForHtml(jsonString) {
+  return jsonString
+    .replace(/<\//g, '<\\/')
+    .replace(/<!--/g, '<\\!--')
+    .replace(/\u2028/g, '\\u2028')
+    .replace(/\u2029/g, '\\u2029');
+}
+
 // ---------- Generate a single blog post page ----------
 // IMPORTANT: No truncation. The full rendered markdown body is written to the
 // prerendered HTML so View Source shows the complete article.
+//
+// The post's public data is also embedded as a JSON payload inside a
+// <script type="application/json" id="prerendered-blog-post"> tag so that
+// BlogPostPage can initialise from it without a runtime Supabase request.
+// This ensures the article remains visible even if Supabase is temporarily
+// unreachable after hydration.
 function buildBlogPostPage(post) {
   const title = esc(post.title || 'Untitled');
   const excerpt = post.meta_description || post.excerpt || truncate(stripHtml(post.content_body), 160);
@@ -1002,13 +1029,41 @@ function buildBlogPostPage(post) {
   const rawBody = post.content_body || '';
   const bodyHtml = renderMarkdown(rawBody);
 
-  const body = `<main style="font-family:system-ui,-apple-system,sans-serif;color:#1e293b;max-width:800px;margin:0 auto;padding:20px;">
+  // Build the embedded JSON payload. Only include public, published fields.
+  const embeddedData = {
+    slug: post.slug,
+    title: post.title,
+    content_body: post.content_body,
+    excerpt: post.excerpt,
+    featured_image_url: post.featured_image_url || null,
+    is_published: true,
+    meta_description: post.meta_description || null,
+    published_at: post.published_at || null,
+    updated_at: post.updated_at || null,
+  };
+  const embeddedJson = safeJsonForHtml(JSON.stringify(embeddedData));
+
+  const body = `<script type="application/json" id="prerendered-blog-post">${embeddedJson}</script>
+<main style="font-family:system-ui,-apple-system,sans-serif;color:#1e293b;max-width:800px;margin:0 auto;padding:20px;">
   <h1 style="font-size:2rem;font-weight:700;margin:0 0 8px;">${title}</h1>
   ${date ? `<p style="color:#94a3b8;margin:0 0 24px;font-size:0.9rem;">Published ${date}</p>` : ''}
   <div style="color:#475569;line-height:1.7;font-size:1.05rem;">${bodyHtml}</div>
   <p style="margin:32px 0 16px;"><a href="/blog/" style="color:#ea580c;">&larr; Back to blog</a></p>
 </main>`;
   return withShell(body);
+}
+
+// ---------- Neutral blog fallback for unknown /blog/* URLs ----------
+// Served by Netlify when no prerendered blog post HTML exists for a slug.
+// Contains no homepage metadata, no canonical, no robots tag, and no JSON-LD
+// so that crawlers do not associate this URL with the homepage. React Router
+// hydrates and fetches from Supabase to determine whether the article exists.
+function buildBlogFallback() {
+  return withShell(`<main style="font-family:system-ui,-apple-system,sans-serif;color:#1e293b;max-width:800px;margin:0 auto;padding:20px;">
+  <h1 style="font-size:2rem;font-weight:700;margin:0 0 8px;">EquityTake Blog</h1>
+  <p style="color:#64748b;line-height:1.7;margin:0 0 24px;">Loading article…</p>
+  <p><a href="/blog/" style="color:#ea580c;">&larr; Back to blog</a></p>
+</main>`);
 }
 
 // ---------- Sitemap generation ----------
@@ -1199,6 +1254,27 @@ async function main() {
     writeRoute(distDir, routePath, html);
     generated++;
   }
+
+  // Neutral blog fallback: served by Netlify's /blog/* redirect rule when no
+  // prerendered blog post HTML exists for the requested slug. Contains no
+  // homepage canonical, no robots tag, and no JSON-LD. React Router hydrates
+  // and fetches from Supabase to confirm whether the article exists.
+  console.log('\n📝 Writing neutral blog fallback...');
+  const blogFallbackHtml = buildHtmlWithAssets({
+    path: '/blog-fallback',
+    title: 'EquityTake Blog',
+    description: 'EquityTake blog — insights on finding co-founders and building startups.',
+    h1: 'EquityTake Blog',
+    bodyHtml: buildBlogFallback(),
+    ogType: 'website',
+    omitCanonical: true,
+    omitRobots: true,
+  });
+  const fallbackDir = join(distDir, 'blog-fallback');
+  mkdirSync(fallbackDir, { recursive: true });
+  writeFileSync(join(fallbackDir, 'index.html'), blogFallbackHtml, 'utf8');
+  console.log(`  ✓ Wrote dist/blog-fallback/index.html`);
+  generated++;
 
   // Regenerate sitemap.xml from the live blog posts so it always has the
   // correct trailing-slash URLs and current lastmod dates.

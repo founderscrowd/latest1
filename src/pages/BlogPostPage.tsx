@@ -136,17 +136,67 @@ const BlogPostPage: React.FC<BlogPostPageProps> = ({ siteLogoUrl }) => {
   const [notFound, setNotFound] = useState(false);
   const [networkError, setNetworkError] = useState(false);
   const [attemptedRetry, setAttemptedRetry] = useState(false);
+  const refreshRef = React.useRef(false);
 
+  // On slug change: try to read embedded prerendered data before any fetch.
+  // If embedded data exists and matches the requested slug, render it
+  // immediately (no spinner) and refresh from Supabase in the background.
+  // If no embedded data (post published after last build, or served from the
+  // neutral fallback), fall back to the original loading-then-fetch flow.
   useEffect(() => {
-    if (slug) {
-      if (slug.startsWith('-')) {
-        const cleanSlug = slug.replace(/^-+/, '');
-        navigate(blogPostPath(cleanSlug), { replace: true });
-        return;
+    refreshRef.current = false;
+    if (!slug) return;
+
+    if (slug.startsWith('-')) {
+      const cleanSlug = slug.replace(/^-+/, '');
+      navigate(blogPostPath(cleanSlug), { replace: true });
+      return;
+    }
+
+    let embedded: Partial<SiteContent> | null = null;
+    try {
+      const el = document.getElementById('prerendered-blog-post');
+      if (el && el.textContent) {
+        embedded = JSON.parse(el.textContent);
       }
+    } catch {
+      // Corrupt or missing embedded data — fall back to fetch.
+    }
+
+    if (embedded && embedded.slug === slug && embedded.is_published) {
+      // We have valid embedded data for this slug. Render immediately.
+      setPost(embedded as SiteContent);
+      setNotFound(false);
+      setNetworkError(false);
+      setLoading(false);
+      // Background refresh: fetch the latest version from Supabase. If it
+      // succeeds and the post was updated, swap in the fresh data. If it
+      // fails, the embedded content stays — a transient outage does not
+      // become a 404 or an error page.
+      refreshRef.current = true;
+      void refreshPost(slug, embedded as SiteContent);
+    } else {
+      // No embedded data (or slug mismatch) — use the original fetch flow.
       loadPost(slug, false);
     }
   }, [slug]);
+
+  const refreshPost = async (postSlug: string, currentPost: SiteContent) => {
+    try {
+      const freshData = await blogAPI.getBlogPostBySlug(postSlug);
+      if (freshData && freshData.is_published) {
+        // Only update if the fetched version is newer or different.
+        if (!currentPost.updated_at || !freshData.updated_at || freshData.updated_at > currentPost.updated_at) {
+          setPost(freshData);
+        }
+      }
+      // If Supabase says the post doesn't exist or isn't published, keep
+      // showing the embedded version — it was published at prerender time
+      // and a Supabase discrepancy should not blank the page.
+    } catch {
+      // Network error during refresh — silently keep the embedded content.
+    }
+  };
 
   const loadPost = async (postSlug: string, isRetry: boolean) => {
     setLoading(true);

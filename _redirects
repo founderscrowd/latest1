@@ -5,7 +5,10 @@
 # Blog post SPA fallback — prerendered HTML takes precedence for posts that
 # existed at build time; this catches posts published in Supabase AFTER the
 # last build so they render via React Router instead of returning 404.
-/blog/*             /index.html  200
+# Serves the neutral blog fallback (no homepage canonical or metadata) rather
+# than /index.html so crawlers do not see the homepage's SEO tags on unknown
+# blog URLs.
+/blog/*             /blog-fallback/  200
 
 # SPA fallback for dynamic group routes.
 # Prerendered /groups/<slug>/index.html files (written by the prerender script
