@@ -3,6 +3,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, User, RefreshCw } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 import { blogAPI, SiteContent } from '../lib/blogApi';
+import { getPrerenderedBlogPost } from '../lib/prerenderedBlogPost';
 import NotFoundPage from './NotFoundPage';
 import { ROUTES, blogPostPath } from '../lib/routes';
 
@@ -155,10 +156,7 @@ const BlogPostPage: React.FC<BlogPostPageProps> = ({ siteLogoUrl }) => {
 
     let embedded: Partial<SiteContent> | null = null;
     try {
-      const el = document.getElementById('prerendered-blog-post');
-      if (el && el.textContent) {
-        embedded = JSON.parse(el.textContent);
-      }
+      embedded = getPrerenderedBlogPost();
     } catch {
       // Corrupt or missing embedded data — fall back to fetch.
     }

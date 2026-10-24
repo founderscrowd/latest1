@@ -102,6 +102,8 @@ function buildHtml({
   ogImageAlt = '',
   omitCanonical = false,
   omitRobots = false,
+  omitOgUrl = false,
+  headExtra = '',
 }) {
   const url = canonicalUrl(path);
   const canon = canonical ? canonicalUrl(canonical) : url;
@@ -109,6 +111,7 @@ function buildHtml({
 
   const robotsTag = omitRobots ? '' : `<meta name="robots" data-rh="true" content="${esc(robots)}" />`;
   const canonicalTag = omitCanonical ? '' : `<link rel="canonical" data-rh="true" href="${esc(canon)}" />`;
+  const ogUrlTag = omitOgUrl ? '' : `<meta property="og:url" data-rh="true" content="${esc(url)}" />`;
 
   return `<!doctype html>
 <html lang="en">
@@ -126,7 +129,7 @@ function buildHtml({
     <!-- Open Graph / Social sharing -->
     <meta property="og:title" data-rh="true" content="${esc(title)}" />
     <meta property="og:description" data-rh="true" content="${esc(description)}" />
-    <meta property="og:url" data-rh="true" content="${esc(url)}" />
+    ${ogUrlTag}
     <meta property="og:type" data-rh="true" content="${esc(ogType)}" />
     <meta property="og:site_name" content="EquityTake" />
     <meta property="og:image" data-rh="true" content="${esc(img)}" />
@@ -139,6 +142,9 @@ function buildHtml({
     <meta name="twitter:title" data-rh="true" content="${esc(title)}" />
     <meta name="twitter:description" data-rh="true" content="${esc(description)}" />
     <meta name="twitter:image" data-rh="true" content="${esc(img)}" />
+
+    <!-- Prerendered blog post data (outside #root so React doesn't replace it) -->
+    ${headExtra}
 
     <!-- Google Consent Mode v2: default consent state must be set BEFORE any
          Google tags load. All optional categories default to denied until the
@@ -640,7 +646,7 @@ const routes = {
     description: 'The page you are looking for does not exist on EquityTake.',
     h1: 'Page not found',
     robots: 'noindex, follow',
-    canonical: '/404/',
+    omitCanonical: true,
     bodyHtml: withShell(`<main style="font-family:system-ui,-apple-system,sans-serif;color:#1e293b;max-width:600px;margin:0 auto;padding:40px 20px;text-align:center;">
   <h1 style="font-size:2rem;font-weight:700;margin:0 0 16px;">Page not found</h1>
   <p style="color:#475569;line-height:1.6;margin:0 0 24px;">The page you are looking for does not exist, or it may have moved.</p>
@@ -1043,14 +1049,13 @@ function buildBlogPostPage(post) {
   };
   const embeddedJson = safeJsonForHtml(JSON.stringify(embeddedData));
 
-  const body = `<script type="application/json" id="prerendered-blog-post">${embeddedJson}</script>
-<main style="font-family:system-ui,-apple-system,sans-serif;color:#1e293b;max-width:800px;margin:0 auto;padding:20px;">
+  const body = `<main style="font-family:system-ui,-apple-system,sans-serif;color:#1e293b;max-width:800px;margin:0 auto;padding:20px;">
   <h1 style="font-size:2rem;font-weight:700;margin:0 0 8px;">${title}</h1>
   ${date ? `<p style="color:#94a3b8;margin:0 0 24px;font-size:0.9rem;">Published ${date}</p>` : ''}
   <div style="color:#475569;line-height:1.7;font-size:1.05rem;">${bodyHtml}</div>
   <p style="margin:32px 0 16px;"><a href="/blog/" style="color:#ea580c;">&larr; Back to blog</a></p>
 </main>`;
-  return withShell(body);
+  return { body: withShell(body), headExtra: `<script type="application/json" id="prerendered-blog-post">${embeddedJson}</script>` };
 }
 
 // ---------- Neutral blog fallback for unknown /blog/* URLs ----------
@@ -1200,6 +1205,7 @@ async function main() {
       ogType: 'website',
       robots: config.robots,
       canonical: config.canonical || routePath,
+      omitCanonical: config.omitCanonical || false,
     });
     writeRoute(distDir, routePath, html);
     generated++;
@@ -1234,7 +1240,7 @@ async function main() {
   for (const post of posts) {
     if (!post.slug) continue;
     const routePath = `/blog/${post.slug}`;
-    const bodyHtml = buildBlogPostPage(post);
+    const { body: bodyHtml, headExtra: blogHeadExtra } = buildBlogPostPage(post);
     const title = `${post.title} – EquityTake Blog`;
     const description = post.meta_description || post.excerpt || truncate(stripHtml(post.content_body), 160);
     // Per-post og:image from the post's featured image; fall back to default.
@@ -1250,6 +1256,7 @@ async function main() {
       ogImage,
       ogImageAlt,
       canonical: routePath,
+      headExtra: blogHeadExtra,
     });
     writeRoute(distDir, routePath, html);
     generated++;
@@ -1269,6 +1276,7 @@ async function main() {
     ogType: 'website',
     omitCanonical: true,
     omitRobots: true,
+    omitOgUrl: true,
   });
   const fallbackDir = join(distDir, 'blog-fallback');
   mkdirSync(fallbackDir, { recursive: true });
