@@ -163,11 +163,11 @@ class GroupFilesAPI {
    */
   async getDownloadUrl(fileId: string): Promise<SignedDownloadUrl> {
     try {
-      const { data: session } = await supabase.auth.getSession();
-      const token = session.data.session?.access_token;
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
 
       if (!token) {
-        throw new Error('Authentication required.');
+        throw new Error('Your session has expired. Please sign in again.');
       }
 
       const response = await fetch(
@@ -208,11 +208,11 @@ class GroupFilesAPI {
    */
   async deleteFile(fileId: string): Promise<void> {
     try {
-      const { data: session } = await supabase.auth.getSession();
-      const token = session.data.session?.access_token;
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
 
       if (!token) {
-        throw new Error('Authentication required.');
+        throw new Error('Your session has expired. Please sign in again.');
       }
 
       const response = await fetch(
@@ -288,8 +288,8 @@ class GroupFilesAPI {
    */
   private async cleanupOrphanedRecord(fileId: string): Promise<void> {
     try {
-      const { data: session } = await supabase.auth.getSession();
-      const token = session.data.session?.access_token;
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
       if (!token) return;
 
       await fetch(
