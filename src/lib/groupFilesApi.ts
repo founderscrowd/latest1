@@ -40,17 +40,25 @@ class GroupFilesAPI {
     try {
       const { data, error } = await supabase
         .from('group_files')
-        .select(`
-          *,
-          uploader_profile:public_profile_display!group_files_uploader_user_id_fkey(username, avatar_url)
-        `)
+        .select('*')
         .eq('group_id', groupId)
         .order('is_pinned', { ascending: false })
         .order('display_order', { ascending: true })
         .order('uploaded_at', { ascending: false });
 
       if (error) throw error;
-      return data || [];
+
+      const files = data || [];
+      if (files.length === 0) return files;
+
+      const uploaderIds = [...new Set(files.map(f => f.uploader_user_id).filter(Boolean))];
+      const profiles = await this.fetchUploaderProfiles(uploaderIds);
+      const profileMap = new Map(profiles.map(p => [p.id, p]));
+
+      return files.map(f => ({
+        ...f,
+        uploader_profile: profileMap.get(f.uploader_user_id) || undefined,
+      }));
     } catch (error) {
       console.error('Error listing group files:', error);
       throw error;
@@ -130,10 +138,7 @@ class GroupFilesAPI {
       // Fetch and return the complete file record
       const { data: fileRecord, error: fetchError } = await supabase
         .from('group_files')
-        .select(`
-          *,
-          uploader_profile:public_profile_display!group_files_uploader_user_id_fkey(username, avatar_url)
-        `)
+        .select('*')
         .eq('id', file_id)
         .maybeSingle();
 
@@ -141,7 +146,10 @@ class GroupFilesAPI {
         throw new Error('File uploaded but record could not be retrieved.');
       }
 
-      return fileRecord;
+      const profiles = await this.fetchUploaderProfiles([fileRecord.uploader_user_id]);
+      const profile = profiles.find(p => p.id === fileRecord.uploader_user_id);
+
+      return { ...fileRecord, uploader_profile: profile || undefined };
     } catch (error) {
       console.error('Error uploading group file:', error);
       throw error;
@@ -254,7 +262,7 @@ class GroupFilesAPI {
    * Get the total storage used by a group (sum of file sizes).
    * Useful for showing a storage usage indicator in the UI (Stage 2/3).
    */
-  async getGroupStorageUsage(groupId: string): Promise<{ fileCount: number; totalBytes: number }> {
+  async getGroupStorageUsage(groupId: string): Promise<{ fileCount: number; totalBytes: number } | null> {
     try {
       const { data, error } = await supabase
         .from('group_files')
@@ -269,8 +277,8 @@ class GroupFilesAPI {
         totalBytes: files.reduce((sum, f) => sum + f.file_size, 0),
       };
     } catch (error) {
-      console.error('Error getting group storage usage:', error);
-      throw error;
+      console.warn('Storage usage query failed:', error);
+      return null;
     }
   }
 
@@ -298,6 +306,24 @@ class GroupFilesAPI {
     } catch {
       // Best-effort cleanup — the user can retry and the record will
       // be visible in their file list (with a broken download) if this fails.
+    }
+  }
+
+  private async fetchUploaderProfiles(userIds: string[]): Promise<Array<{ id: string; username: string; avatar_url: string | null }>> {
+    if (userIds.length === 0) return [];
+    try {
+      const { data, error } = await supabase
+        .from('public_profile_display')
+        .select('id, username, avatar_url')
+        .in('id', userIds);
+      if (error) {
+        console.warn('Uploader profile fetch failed:', error);
+        return [];
+      }
+      return data || [];
+    } catch (err) {
+      console.warn('Uploader profile fetch failed:', err);
+      return [];
     }
   }
 

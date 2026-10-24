@@ -128,7 +128,8 @@ const GroupFilesTab: React.FC<GroupFilesTabProps> = ({ groupId, userRole, curren
   const [showUploadArea, setShowUploadArea] = useState(false);
   const [uploadItems, setUploadItems] = useState<UploadItem[]>([]);
   const [isDragOver, setIsDragOver] = useState(false);
-  const [storageUsage, setStorageUsage] = useState({ fileCount: 0, totalBytes: 0 });
+  const [storageUsage, setStorageUsage] = useState<{ fileCount: number; totalBytes: number } | null>(null);
+  const [storageUnavailable, setStorageUnavailable] = useState(false);
   const [deletingFileId, setDeletingFileId] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [editingDescriptionId, setEditingDescriptionId] = useState<string | null>(null);
@@ -146,12 +147,17 @@ const GroupFilesTab: React.FC<GroupFilesTabProps> = ({ groupId, userRole, curren
     try {
       setLoading(true);
       setError(null);
-      const [fileData, usage] = await Promise.all([
-        groupFilesAPI.listFiles(groupId),
-        groupFilesAPI.getGroupStorageUsage(groupId),
-      ]);
+      const fileData = await groupFilesAPI.listFiles(groupId);
       setFiles(fileData);
-      setStorageUsage(usage);
+
+      setStorageUnavailable(false);
+      try {
+        const usage = await groupFilesAPI.getGroupStorageUsage(groupId);
+        setStorageUsage(usage);
+      } catch {
+        setStorageUsage(null);
+        setStorageUnavailable(true);
+      }
     } catch (err) {
       console.error('Error fetching files:', err);
       setError('Could not load files. Please try again.');
@@ -285,8 +291,8 @@ const GroupFilesTab: React.FC<GroupFilesTabProps> = ({ groupId, userRole, curren
     const pendingItems = uploadItems.filter(item => item.status === 'pending');
     if (pendingItems.length === 0) return;
 
-    const remainingFiles = MAX_FILES - storageUsage.fileCount;
-    const remainingBytes = MAX_TOTAL_BYTES - storageUsage.totalBytes;
+    const remainingFiles = storageUsage ? MAX_FILES - storageUsage.fileCount : MAX_FILES;
+    const remainingBytes = storageUsage ? MAX_TOTAL_BYTES - storageUsage.totalBytes : MAX_TOTAL_BYTES;
 
     let skippedCount = 0;
     let pendingBytes = 0;
@@ -428,8 +434,10 @@ const GroupFilesTab: React.FC<GroupFilesTabProps> = ({ groupId, userRole, curren
     }
   };
 
-  const storagePercent = Math.min(100, (storageUsage.totalBytes / MAX_TOTAL_BYTES) * 100);
+  const storagePercent = storageUsage ? Math.min(100, (storageUsage.totalBytes / MAX_TOTAL_BYTES) * 100) : 0;
   const storageColor = storagePercent > 90 ? 'bg-red-500' : storagePercent > 70 ? 'bg-amber-500' : 'bg-emerald-500';
+  const remainingFiles = storageUsage ? MAX_FILES - storageUsage.fileCount : MAX_FILES;
+  const remainingBytes = storageUsage ? MAX_TOTAL_BYTES - storageUsage.totalBytes : MAX_TOTAL_BYTES;
 
   if (loading) {
     return (
@@ -459,22 +467,34 @@ const GroupFilesTab: React.FC<GroupFilesTabProps> = ({ groupId, userRole, curren
     <div className="space-y-4">
       {/* Storage Usage Bar */}
       <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-200">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-2">
-            <HardDrive className="w-4 h-4 text-slate-500" />
-            <span className="text-sm font-medium text-slate-700">Group Storage</span>
+        {storageUnavailable ? (
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <HardDrive className="w-4 h-4 text-slate-500" />
+              <span className="text-sm font-medium text-slate-700">Group Storage</span>
+            </div>
+            <span className="text-xs text-slate-400 italic">Storage usage unavailable</span>
           </div>
-          <span className="text-xs text-slate-500">
-            {formatFileSize(storageUsage.totalBytes)} of {formatFileSize(MAX_TOTAL_BYTES)} used
-            {' · '}{storageUsage.fileCount}/{MAX_FILES} files
-          </span>
-        </div>
-        <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
-          <div
-            className={`h-full rounded-full transition-all ${storageColor}`}
-            style={{ width: `${storagePercent}%` }}
-          />
-        </div>
+        ) : (
+          <>
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <HardDrive className="w-4 h-4 text-slate-500" />
+                <span className="text-sm font-medium text-slate-700">Group Storage</span>
+              </div>
+              <span className="text-xs text-slate-500">
+                {formatFileSize(storageUsage?.totalBytes ?? 0)} of {formatFileSize(MAX_TOTAL_BYTES)} used
+                {' · '}{storageUsage?.fileCount ?? 0}/{MAX_FILES} files
+              </span>
+            </div>
+            <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+              <div
+                className={`h-full rounded-full transition-all ${storageColor}`}
+                style={{ width: `${storagePercent}%` }}
+              />
+            </div>
+          </>
+        )}
       </div>
 
       {/* Action Bar */}
