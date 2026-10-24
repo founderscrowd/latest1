@@ -8,6 +8,7 @@ import { trackTikTokViewContent, trackTikTokJoinGroup } from '../lib/tiktokPixel
 import { trackEvent as trackGAEvent } from '../lib/googleAnalytics';
 import ConfirmationModal from './ConfirmationModal';
 import PrivateChatModal from './PrivateChatModal';
+import MemberAvatar from './MemberAvatar';
 
 interface GroupDetailsPageProps {
   groupId: string;
@@ -516,19 +517,13 @@ Are you sure you want to leave this group and lose all access to your engagement
                 {members.length > 0 ? (
                   members.map((member) => (
                     <div key={member.id} className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-slate-200 rounded-full flex items-center justify-center">
-                        {member.profile?.avatar_url ? (
-                          <img
-                            src={member.profile.avatar_url}
-                            alt={member.profile.username || 'Member'}
-                            className="w-8 h-8 rounded-full object-cover"
-                          />
-                        ) : (
-                          <span className="text-slate-600 text-sm font-medium">
-                            {(member.profile?.username || 'U')[0].toUpperCase()}
-                          </span>
-                        )}
-                      </div>
+                      <MemberAvatar
+                        avatarUrl={member.profile?.avatar_url}
+                        username={member.profile?.username}
+                        sizeClass="w-8 h-8"
+                        fallbackGradient="bg-slate-200"
+                        textClass="text-slate-600 text-sm font-medium"
+                      />
                       <div className="flex-1">
                         <div className="font-medium text-slate-900">
                           {member.profile?.username || 'Unknown User'}
@@ -568,19 +563,13 @@ Are you sure you want to leave this group and lose all access to your engagement
                   Created By
                 </h3>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-slate-200 rounded-full flex items-center justify-center">
-                    {group.creator_profile.avatar_url ? (
-                      <img
-                        src={group.creator_profile.avatar_url}
-                        alt={group.creator_profile.username}
-                        className="w-10 h-10 rounded-full object-cover"
-                      />
-                    ) : (
-                      <span className="text-slate-600 font-medium">
-                        {group.creator_profile.username[0].toUpperCase()}
-                      </span>
-                    )}
-                  </div>
+                  <MemberAvatar
+                    avatarUrl={group.creator_profile.avatar_url}
+                    username={group.creator_profile.username}
+                    sizeClass="w-10 h-10"
+                    fallbackGradient="bg-slate-200"
+                    textClass="text-slate-600 font-medium"
+                  />
                   <div>
                     <div className="font-medium text-slate-900">
                       {group.creator_profile.username}

@@ -4,6 +4,7 @@ import { useAuth } from '../hooks/useAuth';
 import { groupAPI, FOR_PROFIT_STRUCTURES, NON_PROFIT_STRUCTURES, isValidStructureForProfitStatus } from '../lib/groupApi';
 import { supabase } from '../lib/supabase';
 import ConfirmationModal from './ConfirmationModal';
+import MemberAvatar from './MemberAvatar';
 
 interface Group {
   id: string;
@@ -1115,11 +1116,13 @@ Are you sure you want to remove this member and revoke their equity?`
                     {pendingMembers.map((member) => (
                       <div key={member.id} className="flex items-center justify-between p-4 border border-orange-200 bg-orange-50 rounded-lg">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center">
-                            <span className="text-white font-semibold">
-                              {member.profile?.username?.charAt(0)?.toUpperCase() || 'M'}
-                            </span>
-                          </div>
+                          <MemberAvatar
+                            avatarUrl={member.profile?.avatar_url}
+                            username={member.profile?.username}
+                            sizeClass="w-10 h-10"
+                            fallbackGradient="bg-gradient-to-br from-orange-500 to-red-600"
+                            textClass="text-white font-semibold"
+                          />
                           <div>
                             <h4 className="font-semibold text-slate-900">
                               {member.profile?.username || 'Unknown User'}
@@ -1206,11 +1209,13 @@ Are you sure you want to remove this member and revoke their equity?`
                   {approvedMembers.map((member) => (
                     <div key={member.id} className="flex items-center justify-between p-4 border border-slate-200 rounded-lg">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                          <span className="text-white font-semibold">
-                            {member.profile?.username?.charAt(0)?.toUpperCase() || 'M'}
-                          </span>
-                        </div>
+                        <MemberAvatar
+                          avatarUrl={member.profile?.avatar_url}
+                          username={member.profile?.username}
+                          sizeClass="w-10 h-10"
+                          fallbackGradient="bg-gradient-to-br from-blue-500 to-purple-600"
+                          textClass="text-white font-semibold"
+                        />
                         <div>
                           <h4 className="font-semibold text-slate-900">
                             {member.profile?.username || 'Unknown User'}

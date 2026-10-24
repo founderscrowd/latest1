@@ -45,6 +45,7 @@ import MembersHoverPreview from './MembersHoverPreview';
 import FullScreenDescriptionModal from './FullScreenDescriptionModal';
 import ConfirmationModal from './ConfirmationModal';
 import PrivateChatModal from './PrivateChatModal';
+import MemberAvatar from './MemberAvatar';
 
 interface Group {
   id: string;
@@ -1045,11 +1046,13 @@ Are you absolutely sure you want to leave this group and forfeit your equity?`
                 <div className="space-y-3">
                   {members.slice(0, 5).map((member) => (
                     <div key={member.id} className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                        <span className="text-white font-semibold text-sm">
-                          {member.profile?.username?.charAt(0)?.toUpperCase() || 'M'}
-                        </span>
-                      </div>
+                      <MemberAvatar
+                        avatarUrl={member.profile?.avatar_url}
+                        username={member.profile?.username}
+                        sizeClass="w-8 h-8"
+                        fallbackGradient="bg-gradient-to-br from-blue-500 to-purple-600"
+                        textClass="text-white font-semibold text-sm"
+                      />
                       <div className="flex-1">
                         <div className="font-medium text-slate-900 text-sm">
                           {member.profile?.username || 'Unknown User'}
@@ -1093,11 +1096,13 @@ Are you absolutely sure you want to leave this group and forfeit your equity?`
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {members.map((member) => (
                 <div key={member.id} className="flex items-center gap-3 p-4 border border-slate-200 rounded-lg">
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                    <span className="text-white font-semibold">
-                      {member.profile?.username?.charAt(0)?.toUpperCase() || 'M'}
-                    </span>
-                  </div>
+                  <MemberAvatar
+                    avatarUrl={member.profile?.avatar_url}
+                    username={member.profile?.username}
+                    sizeClass="w-12 h-12"
+                    fallbackGradient="bg-gradient-to-br from-blue-500 to-purple-600"
+                    textClass="text-white font-semibold"
+                  />
                   <div className="flex-1">
                     <div className="font-medium text-slate-900">
                       {member.profile?.username || 'Unknown User'}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Users, Crown, ArrowRight, MessageSquare } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
+import MemberAvatar from './MemberAvatar';
 
 interface GroupMember {
   id: string;
@@ -128,11 +129,13 @@ const MembersHoverPreview: React.FC<MembersHoverPreviewProps> = ({
               {previewMembers.map((member) => (
                 <div key={member.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 transition-colors">
                   <div className="relative w-8 h-8">
-                    <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                      <span className="text-white font-semibold text-sm">
-                        {member.profile?.username?.charAt(0)?.toUpperCase() || 'M'}
-                      </span>
-                    </div>
+                    <MemberAvatar
+                      avatarUrl={member.profile?.avatar_url}
+                      username={member.profile?.username}
+                      sizeClass="w-8 h-8"
+                      fallbackGradient="bg-gradient-to-br from-blue-500 to-purple-600"
+                      textClass="text-white font-semibold text-sm"
+                    />
                     {(member.role === 'admin' || member.role === 'starter') && (
                       <div className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-500 rounded-full flex items-center justify-center">
                         <Crown size={8} className="text-white" />
