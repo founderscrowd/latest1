@@ -25,7 +25,8 @@ import {
   MoreVertical,
   Menu, 
   X,
-  User
+  User,
+  FolderOpen
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { groupAPI } from '../lib/groupApi';
@@ -46,6 +47,7 @@ import FullScreenDescriptionModal from './FullScreenDescriptionModal';
 import ConfirmationModal from './ConfirmationModal';
 import PrivateChatModal from './PrivateChatModal';
 import MemberAvatar from './MemberAvatar';
+import GroupFilesTab from './GroupFilesTab';
 
 interface Group {
   id: string;
@@ -420,6 +422,9 @@ Are you absolutely sure you want to leave this group and forfeit your equity?`
   const isMember = userMembership?.status === 'approved';
   const canManageGroup = isCreator || isAdmin;
   const canClaimEquity = isMember && !isCreator && group.equity_available > 0;
+  const canViewFiles = userMembership?.status === 'approved' &&
+    (userMembership?.role === 'starter' || userMembership?.role === 'admin' || userMembership?.role === 'cofounder');
+  const userRole = userMembership?.role || null;
 
   if (showSettings) {
     return (
@@ -956,6 +961,9 @@ Are you absolutely sure you want to leave this group and forfeit your equity?`
                  { key: 'forum', label: 'Forum', icon: MessageSquare },
                  { key: 'chat', label: 'Group Chat', icon: MessageSquare }
                ] : []),
+               ...(canViewFiles ? [
+                 { key: 'files', label: 'Files & Resources', icon: FolderOpen }
+               ] : []),
                ...(canManageGroup ? [
                  { key: 'settings', label: 'Group Settings', icon: Settings }
                ] : [])
@@ -1195,6 +1203,14 @@ Are you absolutely sure you want to leave this group and forfeit your equity?`
               </div>
             )}
           </>
+        )}
+
+        {activeTab === 'files' && canViewFiles && (
+          <GroupFilesTab
+            groupId={groupId}
+            userRole={userRole}
+            currentUserId={user?.id || null}
+          />
         )}
 
         {activeTab === 'settings' && canManageGroup && (
