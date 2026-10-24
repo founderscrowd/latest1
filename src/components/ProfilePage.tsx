@@ -217,33 +217,36 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onViewJoinedGroup, on
       // Handle avatar upload if a new file was selected
       if (avatarFile) {
         const fileExt = avatarFile.name.split('.').pop();
-        const fileName = `${user.id}.${fileExt}`;
-        const filePath = `avatars/${fileName}`;
+        const filePath = `${user.id}/avatar.${fileExt}`;
 
         const { error: uploadError } = await supabase.storage
           .from('avatars')
           .upload(filePath, avatarFile, { upsert: true });
 
         if (uploadError) {
-          throw uploadError;
+          throw new Error('Failed to upload profile picture: ' + uploadError.message);
         }
 
         const { data } = supabase.storage
           .from('avatars')
           .getPublicUrl(filePath);
 
-        avatarUrl = data.publicUrl;
+        avatarUrl = `${data.publicUrl}?t=${Date.now()}`;
       }
 
-      // Update profile
+      // Update profile — only include avatar_url when a new image was uploaded
+      const updateData: Record<string, any> = {
+        id: user.id,
+        username: editedUsername,
+        updated_at: new Date().toISOString(),
+      };
+      if (avatarFile) {
+        updateData.avatar_url = avatarUrl;
+      }
+
       const { error } = await supabase
         .from('profiles')
-        .upsert({
-          id: user.id,
-          username: editedUsername,
-          avatar_url: avatarUrl,
-          updated_at: new Date().toISOString(),
-        });
+        .upsert(updateData);
 
       if (error) {
         throw error;
@@ -253,7 +256,7 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onViewJoinedGroup, on
       setProfile({
         ...profile,
         username: editedUsername,
-        avatar_url: avatarUrl,
+        ...(avatarFile ? { avatar_url: avatarUrl } : {}),
       });
 
       setIsEditing(false);
@@ -261,10 +264,13 @@ const ProfilePage: React.FC<ProfilePageProps> = ({ onBack, onViewJoinedGroup, on
       setAvatarPreview(null);
       setSuccessMessage('Profile updated successfully!');
       setTimeout(() => setSuccessMessage(''), 3000);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating profile:', error);
-      setSuccessMessage('Error updating profile. Please try again.');
-      setTimeout(() => setSuccessMessage(''), 3000);
+      const msg = error?.message?.includes('Failed to upload')
+        ? error.message
+        : 'Error updating profile. Please try again.';
+      setSuccessMessage(msg);
+      setTimeout(() => setSuccessMessage(''), 5000);
     } finally {
       setUploading(false);
     }
