@@ -1,0 +1,46 @@
+# EquityTake
+
+> EquityTake is a free platform for forming startup and project groups around a shared goal, like Meetup for building something. Bring an idea or project, create a startup group around it, find co-founders inside the group and propose how equity could be split. It is idea-led team formation, not profile-based co-founder matching.
+
+Each group is one idea and one team conversation. The creator describes the problem, lists the co-founders and skills needed and suggests a starting equity split for discussion. Members talk in group chat, share files and agree roles. Creating a group also lets other people evaluate and pressure-test your idea before anyone commits. Equity on EquityTake is a proposal for discussion only: any ownership agreement is made off-platform with the members' own legal and tax advice. EquityTake does not handle investments, take payments for shares, legally issue equity or incorporate companies; no money or shares change hands on the platform. Anyone can browse groups; creating, joining and chatting need a free account.
+
+## Core pages
+
+- [EquityTake home](https://equitytakeaway.com/): Browse or create a startup group around an idea or project, match co-founders and discuss proposed equity before you incorporate.
+- [How EquityTake works](https://equitytakeaway.com/how-it-works/): From idea to team: create a group, discuss contributions and propose equity using Proposed Company Value and Reference Value.
+- [Create a startup group](https://equitytakeaway.com/create-startup-group/): Create a group around your idea so builders can find it, pressure-test it and join.
+- [Browse startup groups](https://equitytakeaway.com/groups/): Public list of groups, each built around one idea or project.
+- [Startup groups](https://equitytakeaway.com/startup-groups/): What a startup group is: one idea with its own group, chat and proposed equity discussion.
+- [Find a co-founder](https://equitytakeaway.com/find-a-cofounder/): Find a co-founder by joining a group that fits and checking skills and working style in group chat.
+- [Co-founder matching](https://equitytakeaway.com/cofounder-matching/): Matching happens through groups built around an idea, not profiles.
+- [Startup equity split](https://equitytakeaway.com/startup-equity-split/): Talk through who does what and what they contribute; splits are discussion proposals, not a final cap table.
+- [Equity for co-founders](https://equitytakeaway.com/equity-for-cofounders/): Discussing proposed equity inside a group; EquityTake is not a stock exchange or a law firm.
+- [Startup team building](https://equitytakeaway.com/startup-team-building/): Meet people around one idea, agree roles, then take legal steps outside EquityTake if the team is real.
+- [Communities and cooperatives](https://equitytakeaway.com/communities-and-cooperatives/): The same group format for communities, cooperatives and non-profit projects.
+- [About EquityTake](https://equitytakeaway.com/about/): Who is behind EquityTake and why it exists.
+
+## Guides
+
+- [How to Find a Co-Founder for Your Startup (2026 UK Guide)](https://equitytakeaway.com/blog/how-to-find-a-co-founder-for-your-start-up/): Where to find a co-founder, how to vet them and when to talk equity.
+- [How to Validate a Startup Idea Before You Incorporate](https://equitytakeaway.com/blog/how-to-validate-a-startup-idea-before-you-incorporate/): Test an idea with strangers before registering a company, and decide whether to build, pivot or stop.
+- [Create a Startup Group Around Your Idea (Step-by-Step)](https://equitytakeaway.com/blog/create-a-startup-group-around-your-idea/): Write a clear description, name roles, time proposed equity talks and invite builders.
+- [How to Split Startup Equity Fairly Among Founders](https://equitytakeaway.com/blog/how-to-split-startup-equity-fairly/): Equal versus contribution-based splits, vesting concepts and early proposed equity talks.
+- [How to Set a Proposed Company Value for an Idea-Stage Startup](https://equitytakeaway.com/blog/how-to-set-a-proposed-company-value-for-an-idea-stage-startup/): What Proposed Company Value means, how it sets Reference Value and when to revisit it.
+- [How to Join a Startup Group Without Wasting Months](https://equitytakeaway.com/blog/how-to-join-a-startup-group-without-wasting-months/): Filter for fit, ask about roles and proposed equity, and protect your time.
+- [How to Run the First Month of a Startup Group](https://equitytakeaway.com/blog/how-to-run-the-first-month-of-a-startup-group/): Set a cadence, pressure-test the idea and revisit proposed equity.
+- [Startup Groups That Actually Help You Build](https://equitytakeaway.com/blog/startup-groups-that-actually-help-you-build/): What useful startup groups look like: idea-first teams, clear roles and early equity talks.
+- [Fair Equity at the Start Is How You Avoid a War Later](https://equitytakeaway.com/blog/fair-equity-at-the-start-is-how-you-avoid-a-war-later/): Set fair, visible proposed splits at the start instead of an automatic fifty-fifty.
+- [Sweat Equity Agreements UK (Europe and US similar)](https://equitytakeaway.com/blog/sweat-equity-agreements-uk-europe-and-us-similar-what-actually-works/): What actually works before you trade time for proposed shares.
+- [How to Spot Fair Equity-Based Start-up Opportunities](https://equitytakeaway.com/blog/how-to-spot-fair-equity-based-start-up-opportunities-in-early-stage-projects/): Clear roles, honest proposed splits and red flags before you join.
+- [How to Start Owning a Business from Scratch](https://equitytakeaway.com/blog/how-to-start-owning-a-business-from-scratch/): Start owning from an idea, with people who will evaluate and pressure-test it.
+
+## Optional
+
+- [Blog](https://equitytakeaway.com/blog/): All EquityTake articles.
+- [Think and Grow Rich and the Master Mind](https://equitytakeaway.com/blog/think-and-grow-rich-mastermind-group/): What Napoleon Hill actually said about the Master Mind group.
+- [Why isn't this taught in schools?](https://equitytakeaway.com/blog/why-isnt-this-taught-in-schools/): A plain-English look at founder shares and equity literacy.
+- [Mind the Gap](https://equitytakeaway.com/blog/mind-the-gap/): How communities and startup groups can widen access to opportunity.
+- [Our Vision](https://equitytakeaway.com/blog/our-vision/): Why EquityTake helps groups form and align before legal obligations begin.
+- [Terms of Service](https://equitytakeaway.com/terms/)
+- [Privacy Policy](https://equitytakeaway.com/privacy/)
+- [Cookie Policy](https://equitytakeaway.com/cookies/)
