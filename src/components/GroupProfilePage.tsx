@@ -48,6 +48,7 @@ import ConfirmationModal from './ConfirmationModal';
 import PrivateChatModal from './PrivateChatModal';
 import MemberAvatar from './MemberAvatar';
 import GroupFilesTab from './GroupFilesTab';
+import ImportantDocuments from './ImportantDocuments';
 
 interface Group {
   id: string;
@@ -1035,6 +1036,11 @@ Are you absolutely sure you want to leave this group and forfeit your equity?`
                   </p>
                 </div>
               </div>
+
+              {/* Important Documents */}
+              {canViewFiles && (
+                <ImportantDocuments groupId={groupId} userRole={userRole} />
+              )}
             </div>
 
             {/* Sidebar */}

@@ -19,6 +19,9 @@ import {
   Check,
   HardDrive,
   Image as ImageIcon,
+  Pin,
+  ChevronUp,
+  ChevronDown,
 } from 'lucide-react';
 import { groupFilesAPI, GroupFile } from '../lib/groupFilesApi';
 import { useAuth } from '../hooks/useAuth';
@@ -138,7 +141,13 @@ const GroupFilesTab: React.FC<GroupFilesTabProps> = ({ groupId, userRole, curren
   const [previewFile, setPreviewFile] = useState<GroupFile | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewLoading, setPreviewLoading] = useState(false);
+  const [pinLoadingId, setPinLoadingId] = useState<string | null>(null);
+  const [pinError, setPinError] = useState<string | null>(null);
+  const [reordering, setReordering] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const canPin = userRole === 'starter' || userRole === 'admin';
+  const pinnedFiles = files.filter(f => f.is_pinned).sort((a, b) => a.display_order - b.display_order);
 
   const canUpload = userRole === 'starter' || userRole === 'admin' || userRole === 'cofounder';
   const canDeleteAny = userRole === 'starter' || userRole === 'admin';
@@ -434,6 +443,49 @@ const GroupFilesTab: React.FC<GroupFilesTabProps> = ({ groupId, userRole, curren
     }
   };
 
+  const handlePinToggle = async (file: GroupFile) => {
+    setPinLoadingId(file.id);
+    setPinError(null);
+    try {
+      if (file.is_pinned) {
+        await groupFilesAPI.unpinFile(file.id);
+      } else {
+        await groupFilesAPI.pinFile(file.id);
+      }
+      await fetchFiles();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Could not update pin status.';
+      setPinError(msg);
+      setTimeout(() => setPinError(null), 5000);
+    } finally {
+      setPinLoadingId(null);
+    }
+  };
+
+  const handleReorderPinned = async (fileId: string, direction: 'up' | 'down') => {
+    const currentOrder = [...pinnedFiles];
+    const idx = currentOrder.findIndex(f => f.id === fileId);
+    if (idx === -1) return;
+    if (direction === 'up' && idx === 0) return;
+    if (direction === 'down' && idx === currentOrder.length - 1) return;
+
+    const swapIdx = direction === 'up' ? idx - 1 : idx + 1;
+    const reordered = [...currentOrder];
+    [reordered[idx], reordered[swapIdx]] = [reordered[swapIdx], reordered[idx]];
+
+    setReordering(true);
+    try {
+      await groupFilesAPI.reorderPinnedFiles(groupId, reordered.map(f => f.id));
+      await fetchFiles();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Could not reorder documents.';
+      setPinError(msg);
+      setTimeout(() => setPinError(null), 5000);
+    } finally {
+      setReordering(false);
+    }
+  };
+
   const storagePercent = storageUsage ? Math.min(100, (storageUsage.totalBytes / MAX_TOTAL_BYTES) * 100) : 0;
   const storageColor = storagePercent > 90 ? 'bg-red-500' : storagePercent > 70 ? 'bg-amber-500' : 'bg-emerald-500';
   const remainingFiles = storageUsage ? MAX_FILES - storageUsage.fileCount : MAX_FILES;
@@ -571,6 +623,15 @@ const GroupFilesTab: React.FC<GroupFilesTabProps> = ({ groupId, userRole, curren
             <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
             <span>{deleteError}</span>
             <button onClick={() => setDeleteError(null)} className="ml-auto text-red-400 hover:text-red-600">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+        {pinError && (
+          <div className="mt-3 flex items-start gap-2 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-3">
+            <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+            <span>{pinError}</span>
+            <button onClick={() => setPinError(null)} className="ml-auto text-amber-400 hover:text-amber-600">
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -814,6 +875,29 @@ const GroupFilesTab: React.FC<GroupFilesTabProps> = ({ groupId, userRole, curren
                   </div>
 
                   <div className="col-span-2 flex items-center justify-end gap-1">
+                    {canPin && (
+                      <button
+                        onClick={() => handlePinToggle(file)}
+                        disabled={pinLoadingId === file.id || reordering}
+                        className={`p-1.5 rounded-lg transition-colors disabled:opacity-50 ${
+                          file.is_pinned
+                            ? 'text-amber-600 hover:bg-amber-50'
+                            : 'text-slate-400 hover:text-amber-600 hover:bg-amber-50'
+                        }`}
+                        title={file.is_pinned ? 'Unpin from Important Documents' : 'Pin to Important Documents'}
+                      >
+                        {pinLoadingId === file.id ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Pin className="w-4 h-4" fill={file.is_pinned ? 'currentColor' : 'none'} />
+                        )}
+                      </button>
+                    )}
+                    {!canPin && file.is_pinned && (
+                      <span className="p-1.5 text-amber-500" title="Pinned document">
+                        <Pin className="w-4 h-4" fill="currentColor" />
+                      </span>
+                    )}
                     <button
                       onClick={() => handleDownload(file)}
                       className="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
@@ -862,6 +946,30 @@ const GroupFilesTab: React.FC<GroupFilesTabProps> = ({ groupId, userRole, curren
                     </div>
                   </div>
                   <div className="flex items-center gap-2 mt-2">
+                    {canPin && (
+                      <button
+                        onClick={() => handlePinToggle(file)}
+                        disabled={pinLoadingId === file.id || reordering}
+                        className={`flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors disabled:opacity-50 ${
+                          file.is_pinned
+                            ? 'text-amber-600 hover:bg-amber-50'
+                            : 'text-slate-600 hover:bg-slate-100'
+                        }`}
+                      >
+                        {pinLoadingId === file.id ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        ) : (
+                          <Pin className="w-3.5 h-3.5" fill={file.is_pinned ? 'currentColor' : 'none'} />
+                        )}
+                        {file.is_pinned ? 'Unpin' : 'Pin'}
+                      </button>
+                    )}
+                    {!canPin && file.is_pinned && (
+                      <span className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-amber-600">
+                        <Pin className="w-3.5 h-3.5" fill="currentColor" />
+                        Pinned
+                      </span>
+                    )}
                     <button
                       onClick={() => handleDownload(file)}
                       className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"

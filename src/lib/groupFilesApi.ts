@@ -327,6 +327,79 @@ class GroupFilesAPI {
     }
   }
 
+  async pinFile(fileId: string): Promise<void> {
+    try {
+      const { error } = await supabase.rpc('pin_group_file', { p_file_id: fileId });
+      if (error) throw new Error(this.mapPinError(error.message));
+    } catch (error) {
+      console.error('Error pinning group file:', error);
+      throw error;
+    }
+  }
+
+  async unpinFile(fileId: string): Promise<void> {
+    try {
+      const { error } = await supabase.rpc('unpin_group_file', { p_file_id: fileId });
+      if (error) throw new Error(this.mapPinError(error.message));
+    } catch (error) {
+      console.error('Error unpinning group file:', error);
+      throw error;
+    }
+  }
+
+  async reorderPinnedFiles(groupId: string, orderedFileIds: string[]): Promise<void> {
+    try {
+      const { error } = await supabase.rpc('reorder_pinned_files', {
+        p_group_id: groupId,
+        p_ordered_ids: orderedFileIds,
+      });
+      if (error) throw new Error(this.mapPinError(error.message));
+    } catch (error) {
+      console.error('Error reordering pinned files:', error);
+      throw error;
+    }
+  }
+
+  async listPinnedFiles(groupId: string): Promise<GroupFile[]> {
+    try {
+      const { data, error } = await supabase
+        .from('group_files')
+        .select('*')
+        .eq('group_id', groupId)
+        .eq('is_pinned', true)
+        .order('display_order', { ascending: true });
+
+      if (error) throw error;
+
+      const files = data || [];
+      if (files.length === 0) return files;
+
+      const uploaderIds = [...new Set(files.map(f => f.uploader_user_id).filter(Boolean))];
+      const profiles = await this.fetchUploaderProfiles(uploaderIds);
+      const profileMap = new Map(profiles.map(p => [p.id, p]));
+
+      return files.map(f => ({
+        ...f,
+        uploader_profile: profileMap.get(f.uploader_user_id) || undefined,
+      }));
+    } catch (error) {
+      console.error('Error listing pinned files:', error);
+      throw error;
+    }
+  }
+
+  private mapPinError(message: string): string {
+    if (message.includes('not a member')) return 'You are not a member of this group.';
+    if (message.includes('permission to pin')) return 'You do not have permission to pin files.';
+    if (message.includes('permission to unpin')) return 'You do not have permission to unpin files.';
+    if (message.includes('permission to reorder')) return 'You do not have permission to reorder files.';
+    if (message.includes('already has 3 pinned')) return 'This group already has 3 important documents. Unpin one before pinning another.';
+    if (message.includes('File not found')) return 'File not found.';
+    if (message.includes('not pinned or do not belong')) return 'One or more files could not be reordered.';
+    if (message.includes('Duplicate file IDs')) return 'Duplicate files detected. Please refresh and try again.';
+    return 'Could not update pinned documents. Please try again.';
+  }
+
   private mapRpcError(message: string): string {
     if (message.includes('not a member')) return 'You are not a member of this group.';
     if (message.includes('permission to upload')) return 'You do not have permission to upload files.';
