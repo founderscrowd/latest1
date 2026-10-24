@@ -1441,7 +1441,7 @@ async function main() {
     bodyHtml: buildBlogFallback(),
     ogType: 'website',
     omitCanonical: true,
-    robots: 'noindex, follow',
+    omitRobots: true,
     omitOgUrl: true,
   });
   const fallbackDir = join(distDir, 'blog-fallback');
