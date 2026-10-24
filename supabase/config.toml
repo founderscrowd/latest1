@@ -21,3 +21,9 @@ verify_jwt = true
 
 [functions.sitemap]
 verify_jwt = false
+
+[functions.group-files-delete]
+verify_jwt = true
+
+[functions.group-files-download]
+verify_jwt = true

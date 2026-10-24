@@ -1,0 +1,45 @@
+{
+  "projectId": "57224416",
+  "functions": {
+    "ai-knowledge-sync": {
+      "hasChanged": false,
+      "hash": "cc4e570423746dc1cf97cbf4c4d1aa6af69ea0cef3b8fbbb61a984bbf16277e9"
+    },
+    "ai-support": {
+      "hasChanged": false,
+      "hash": "7f3ee779ade0a026941320362aa984262bb08a4280c1aeddedbad566817a15a7"
+    },
+    "sitemap": {
+      "hasChanged": false,
+      "hash": "43f61d8ba0ef901d902f026392821d5530193a650e821a5cbd94a0af83df4b4d"
+    },
+    "social-preview": {
+      "hasChanged": false,
+      "hash": "fa0e073925d1af9de34912565997c27fc45e2f3a61b2ec0a0400845575ebfd9f"
+    },
+    "stripe-cancel-subscription": {
+      "hasChanged": false,
+      "hash": "f0fbcc1c533b86de09116afbadcc1c454442eed3fc62adcf8df3bab2c8101967"
+    },
+    "stripe-checkout": {
+      "hasChanged": false,
+      "hash": "90ee62a7ea04677033bdc8db897ed8b38a87f70bca4f4ff4d96af476c54cc155"
+    },
+    "stripe-sync-subscription": {
+      "hasChanged": false,
+      "hash": "2239a2f6cdb7d9f17c29e40f9db979696e49bc23cb64f363eade4cc1e0d8b65d"
+    },
+    "stripe-webhook": {
+      "hasChanged": false,
+      "hash": "25c69b6fea7b7f21c8b46baaeba68a9af9aad24e797ae9974a016bc638ae6a8c"
+    },
+    "group-files-delete": {
+      "hasChanged": false,
+      "hash": "1e323d47000e9b6deb5e9ff974fa64f56c1d9735e4647a4017f004373a4f604e"
+    },
+    "group-files-download": {
+      "hasChanged": false,
+      "hash": "37fc579dccc121ec563944eaf9c95132a631f60031aff8dee874247c8dc48fa0"
+    }
+  }
+}
