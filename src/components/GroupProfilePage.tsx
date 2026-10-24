@@ -425,7 +425,7 @@ Are you absolutely sure you want to leave this group and forfeit your equity?`
       <>
         <GroupSettingsPage
           groupId={groupId}
-          onBack={() => setShowSettings(false)}
+          onBack={() => { setShowSettings(false); fetchGroupData(); }}
           onGroupUpdated={handleGroupUpdated}
         />
 
