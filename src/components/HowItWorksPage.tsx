@@ -24,12 +24,12 @@ const HowItWorksPage: React.FC<HowItWorksPageProps> = ({ onBack, siteLogoUrl }) 
       a: 'Proposed Company Value multiplied by the equity percentage. A $20,000 Proposed Company Value and 5% equity is a $1,000 Reference Value.',
     },
     {
-      q: 'Does a Skills / Tasks claim mean cash was invested?',
+      q: 'Does a Skills / Tasks application mean cash was invested?',
       a: 'No. Reference Value is only the reference attached to that proposed equity. It is not cash invested.',
     },
     {
       q: 'Does EquityTake issue shares?',
-      a: 'No. Claims and allocations on EquityTake are proposed. They do not issue shares, transfer ownership, or create a binding agreement by themselves.',
+      a: 'No. Applications and allocations on EquityTake are proposed. They do not issue shares, transfer ownership, or create a binding agreement by themselves.',
     },
     {
       q: 'Is EquityTake free?',

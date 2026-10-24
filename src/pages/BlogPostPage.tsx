@@ -12,6 +12,7 @@ interface BlogPostPageProps {
 }
 
 const SITE_ORIGIN = 'https://equitytakeaway.com';
+const ORG_ID = `${SITE_ORIGIN}/#organization`;
 
 // Normalise internal hrefs to a trailing slash so links inside blog post bodies
 // never 301. External links, assets, query strings and hashes are left alone.
@@ -249,6 +250,9 @@ const BlogPostPage: React.FC<BlogPostPageProps> = ({ siteLogoUrl }) => {
     // not-found result (handled below) renders the noindex NotFoundPage.
     return (
       <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+        <Helmet>
+          <title>EquityTake Blog</title>
+        </Helmet>
         <div className="text-center max-w-md mx-auto px-4">
           <h1 className="text-2xl font-bold text-slate-900 mb-3">Couldn't load this post</h1>
           <p className="text-slate-600 mb-6">We couldn't reach the server to load this article. Your connection may be interrupted.</p>
@@ -307,17 +311,28 @@ const BlogPostPage: React.FC<BlogPostPageProps> = ({ siteLogoUrl }) => {
             "@type": "BlogPosting",
             "headline": post.title,
             "description": metaDescription,
-            "image": post.featured_image_url,
+            "image": post.featured_image_url || `${SITE_ORIGIN}/social-share-default.jpg`,
             "datePublished": post.published_at,
             "dateModified": post.updated_at,
-            "author": {
-              "@type": "Organization",
-              "name": "EquityTake"
-            },
+            "mainEntityOfPage": { "@type": "WebPage", "@id": canonicalUrl },
+            "url": canonicalUrl,
+            "author": { "@type": "Organization", "name": "EquityTake", "url": `${SITE_ORIGIN}/` },
             "publisher": {
               "@type": "Organization",
-              "name": "EquityTake"
+              "@id": ORG_ID,
+              "name": "EquityTake",
             }
+          })}
+        </script>
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              { "@type": "ListItem", "position": 1, "name": "Home", "item": `${SITE_ORIGIN}/` },
+              { "@type": "ListItem", "position": 2, "name": "Blog", "item": `${SITE_ORIGIN}/blog/` },
+              { "@type": "ListItem", "position": 3, "name": post.title, "item": canonicalUrl },
+            ]
           })}
         </script>
       </Helmet>

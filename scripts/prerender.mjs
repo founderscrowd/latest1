@@ -249,6 +249,21 @@ async function fetchBlogPostBySlug(slug) {
   return data[0];
 }
 
+// Fetch the site logo URL from site_settings (non-fatal — falls back to a
+// static file if the setting is missing or the fetch fails).
+async function fetchSiteLogoUrl() {
+  const url = `${SUPABASE_URL}/rest/v1/site_settings?key=eq.logo_url&select=value`;
+  try {
+    const { status, data } = await fetchJsonWithRetry(url, 'Site logo');
+    if (status === 200 && Array.isArray(data) && data.length > 0) {
+      return data[0].value || null;
+    }
+  } catch {
+    // Non-fatal — fall back to static logo.
+  }
+  return null;
+}
+
 // ---------- Shared header + footer (crawlable <a href> links) ----------
 // Rendered into every prerendered page so crawlers see the same nav/footer
 // the hydrated React app shows. All hrefs use trailing slashes.
@@ -647,6 +662,7 @@ const routes = {
     h1: 'Page not found',
     robots: 'noindex, follow',
     omitCanonical: true,
+    omitOgUrl: true,
     bodyHtml: withShell(`<main style="font-family:system-ui,-apple-system,sans-serif;color:#1e293b;max-width:600px;margin:0 auto;padding:40px 20px;text-align:center;">
   <h1 style="font-size:2rem;font-weight:700;margin:0 0 16px;">Page not found</h1>
   <p style="color:#475569;line-height:1.6;margin:0 0 24px;">The page you are looking for does not exist, or it may have moved.</p>
@@ -1016,6 +1032,143 @@ function safeJsonForHtml(jsonString) {
     .replace(/\u2029/g, '\\u2029');
 }
 
+// ---------- JSON-LD structured data ----------
+const ORG_ID = `${SITE_ORIGIN}/#organization`;
+const SITE_LOGO_FALLBACK = `${SITE_ORIGIN}/equitylogo3%20(1).png`;
+
+function jsonLdScript(obj, { dataRh = false } = {}) {
+  const json = safeJsonForHtml(JSON.stringify(obj));
+  const attr = dataRh ? ' data-rh="true"' : '';
+  return `<script type="application/ld+json"${attr}>${json}</script>`;
+}
+
+const HOMEPAGE_FAQS = [
+  { q: 'Is EquityTake free to use?', a: 'Yes. EquityTake is fully free. You can browse, create, and join groups, and discuss proposed equity splits at no cost. There is no subscription or paywall.' },
+  { q: 'Do I need an account to browse groups?', a: 'No. You can browse all public groups freely without signing in. You only need an account to create a group, join a group, or participate in group discussions.' },
+  { q: 'Are the equity numbers legal shares?', a: 'No. Equity numbers shown on a group are proposals for discussion only. EquityTake does not issue shares, allocate legal ownership, or incorporate companies. If anyone asks you for funds, shares, or formal incorporation, get independent legal advice first.' },
+  { q: 'Is EquityTake a stock exchange or investment platform?', a: 'No. EquityTake is a co-founder matching and startup groups platform. It is not a stock exchange, investment platform, or legal incorporation service. The equity discussions are non-binding proposals to help teams talk through ownership before formalising anything.' },
+  { q: 'How does co-founder matching work?', a: "Create or join a group around a startup idea. Inside the group, you can see other members' skills and interests. From there, you can connect directly and discuss whether you'd make a good co-founder team." },
+  { q: 'Can I discuss a startup equity split before incorporating?', a: "Yes \u2014 that's exactly what the proposed equity feature is for. Team members can suggest equity splits and discuss them openly within the group. These are non-binding proposals to help you align before spending money on legal incorporation." },
+];
+
+const HOW_IT_WORKS_FAQS = [
+  { q: 'What is Proposed Company Value?', a: 'The value the group creator assigns to 100% of the business. It is a reference for equity talks, not a professional valuation.' },
+  { q: 'How is Reference Value calculated?', a: 'Proposed Company Value multiplied by the equity percentage. A $20,000 Proposed Company Value and 5% equity is a $1,000 Reference Value.' },
+  { q: 'Does a Skills / Tasks application mean cash was invested?', a: 'No. Reference Value is only the reference attached to that proposed equity. It is not cash invested.' },
+  { q: 'Does EquityTake issue shares?', a: 'No. Applications and allocations on EquityTake are proposed. They do not issue shares, transfer ownership, or create a binding agreement by themselves.' },
+  { q: 'Is EquityTake free?', a: 'Yes. Sign-in is the only gate. Create a group or browse groups after you sign in.' },
+];
+
+function buildOrganizationJsonLd(logoUrl) {
+  const logo = absoluteImageUrl(logoUrl) || SITE_LOGO_FALLBACK;
+  return jsonLdScript({
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": ORG_ID,
+    "name": "EquityTake",
+    "url": `${SITE_ORIGIN}/`,
+    "logo": { "@type": "ImageObject", "url": logo, "width": 512, "height": 512 },
+    "contactPoint": { "@type": "ContactPoint", "email": "admin@groupsandcrowds.com", "contactType": "customer support" },
+  });
+}
+
+function buildWebSiteJsonLd() {
+  return jsonLdScript({
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": `${SITE_ORIGIN}/#website`,
+    "url": `${SITE_ORIGIN}/`,
+    "name": "EquityTake",
+    "publisher": { "@id": ORG_ID },
+  });
+}
+
+function buildSoftwareApplicationJsonLd() {
+  return jsonLdScript({
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "EquityTake",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web",
+    "url": `${SITE_ORIGIN}/`,
+    "publisher": { "@id": ORG_ID },
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  });
+}
+
+function buildHomepageFAQJsonLd() {
+  return jsonLdScript({
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": HOMEPAGE_FAQS.map((f) => ({
+      "@type": "Question",
+      "name": f.q,
+      "acceptedAnswer": { "@type": "Answer", "text": f.a },
+    })),
+  });
+}
+
+function buildHowItWorksFAQJsonLd() {
+  return jsonLdScript({
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": HOW_IT_WORKS_FAQS.map((f) => ({
+      "@type": "Question",
+      "name": f.q,
+      "acceptedAnswer": { "@type": "Answer", "text": f.a },
+    })),
+  }, { dataRh: true });
+}
+
+function buildHomepageHeadExtra(logoUrl) {
+  return [
+    buildOrganizationJsonLd(logoUrl),
+    buildWebSiteJsonLd(),
+    buildSoftwareApplicationJsonLd(),
+    buildHomepageFAQJsonLd(),
+  ].join('\n    ');
+}
+
+function buildBlogPostingJsonLd(post, logoUrl) {
+  const url = `${SITE_ORIGIN}/blog/${post.slug}/`;
+  const logo = absoluteImageUrl(logoUrl) || SITE_LOGO_FALLBACK;
+  const datePublished = post.published_at ? new Date(post.published_at).toISOString() : '';
+  const dateModified = post.updated_at ? new Date(post.updated_at).toISOString() : datePublished;
+  const image = post.featured_image_url ? absoluteImageUrl(post.featured_image_url) : DEFAULT_OG_IMAGE;
+  const description = post.meta_description || post.excerpt || truncate(stripHtml(post.content_body), 160);
+  return {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "headline": post.title,
+    "description": description,
+    "image": image,
+    "datePublished": datePublished,
+    "dateModified": dateModified,
+    "mainEntityOfPage": { "@type": "WebPage", "@id": url },
+    "url": url,
+    "author": { "@type": "Organization", "name": "EquityTake", "url": `${SITE_ORIGIN}/` },
+    "publisher": {
+      "@type": "Organization",
+      "@id": ORG_ID,
+      "name": "EquityTake",
+      "logo": { "@type": "ImageObject", "url": logo },
+    },
+  };
+}
+
+function buildBreadcrumbJsonLd(post) {
+  const url = `${SITE_ORIGIN}/blog/${post.slug}/`;
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": `${SITE_ORIGIN}/` },
+      { "@type": "ListItem", "position": 2, "name": "Blog", "item": `${SITE_ORIGIN}/blog/` },
+      { "@type": "ListItem", "position": 3, "name": post.title, "item": url },
+    ],
+  };
+}
+
 // ---------- Generate a single blog post page ----------
 // IMPORTANT: No truncation. The full rendered markdown body is written to the
 // prerendered HTML so View Source shows the complete article.
@@ -1025,7 +1178,7 @@ function safeJsonForHtml(jsonString) {
 // BlogPostPage can initialise from it without a runtime Supabase request.
 // This ensures the article remains visible even if Supabase is temporarily
 // unreachable after hydration.
-function buildBlogPostPage(post) {
+function buildBlogPostPage(post, logoUrl) {
   const title = esc(post.title || 'Untitled');
   const excerpt = post.meta_description || post.excerpt || truncate(stripHtml(post.content_body), 160);
   const date = post.published_at
@@ -1055,7 +1208,10 @@ function buildBlogPostPage(post) {
   <div style="color:#475569;line-height:1.7;font-size:1.05rem;">${bodyHtml}</div>
   <p style="margin:32px 0 16px;"><a href="/blog/" style="color:#ea580c;">&larr; Back to blog</a></p>
 </main>`;
-  return { body: withShell(body), headExtra: `<script type="application/json" id="prerendered-blog-post">${embeddedJson}</script>` };
+  const blogPostingTag = jsonLdScript(buildBlogPostingJsonLd(post, logoUrl), { dataRh: true });
+  const breadcrumbTag = jsonLdScript(buildBreadcrumbJsonLd(post), { dataRh: true });
+  const headExtra = `<script type="application/json" id="prerendered-blog-post">${embeddedJson}</script>\n    ${blogPostingTag}\n    ${breadcrumbTag}`;
+  return { body: withShell(body), headExtra };
 }
 
 // ---------- Neutral blog fallback for unknown /blog/* URLs ----------
@@ -1145,11 +1301,12 @@ async function main() {
   }
 
   console.log('🔍 Fetching live data from Supabase...');
-  let posts, groups;
+  let posts, groups, logoUrl;
   try {
-    [posts, groups] = await Promise.all([
+    [posts, groups, logoUrl] = await Promise.all([
       fetchPublishedBlogPosts(),
       fetchPublicGroups(),
+      fetchSiteLogoUrl(),
     ]);
   } catch (e) {
     console.error('❌ Prerender aborted: failed to fetch live data from Supabase.');
@@ -1157,7 +1314,7 @@ async function main() {
     console.error('   A network error during prerender must fail the build loudly — no partial/noindex HTML written.');
     process.exit(1);
   }
-  console.log(`   Found ${posts.length} blog posts, ${groups.length} public groups`);
+  console.log(`   Found ${posts.length} blog posts, ${groups.length} public groups, logo: ${logoUrl || 'fallback'}`);
 
   // Read the original dist/index.html to extract the correct asset filenames
   const builtIndex = readFileSync(join(distDir, 'index.html'), 'utf8');
@@ -1196,6 +1353,13 @@ async function main() {
       continue;
     }
 
+    let headExtra = config.headExtra || '';
+    if (routePath === '/') {
+      headExtra = buildHomepageHeadExtra(logoUrl);
+    } else if (routePath === '/how-it-works') {
+      headExtra = buildHowItWorksFAQJsonLd();
+    }
+
     const html = buildHtmlWithAssets({
       path: routePath,
       title: config.title,
@@ -1206,6 +1370,8 @@ async function main() {
       robots: config.robots,
       canonical: config.canonical || routePath,
       omitCanonical: config.omitCanonical || false,
+      omitOgUrl: config.omitOgUrl || false,
+      headExtra,
     });
     writeRoute(distDir, routePath, html);
     generated++;
@@ -1240,7 +1406,7 @@ async function main() {
   for (const post of posts) {
     if (!post.slug) continue;
     const routePath = `/blog/${post.slug}`;
-    const { body: bodyHtml, headExtra: blogHeadExtra } = buildBlogPostPage(post);
+    const { body: bodyHtml, headExtra: blogHeadExtra } = buildBlogPostPage(post, logoUrl);
     const title = `${post.title} – EquityTake Blog`;
     const description = post.meta_description || post.excerpt || truncate(stripHtml(post.content_body), 160);
     // Per-post og:image from the post's featured image; fall back to default.
@@ -1275,7 +1441,7 @@ async function main() {
     bodyHtml: buildBlogFallback(),
     ogType: 'website',
     omitCanonical: true,
-    omitRobots: true,
+    robots: 'noindex, follow',
     omitOgUrl: true,
   });
   const fallbackDir = join(distDir, 'blog-fallback');
