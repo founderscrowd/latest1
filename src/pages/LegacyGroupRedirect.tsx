@@ -23,7 +23,7 @@ const LegacyGroupRedirect: React.FC = () => {
       const group = await groupAPI.getGroup(groupId);
       if (group && group.slug) {
         // Redirect to new slug-based URL
-        navigate(`/groups/${group.slug}`, { replace: true });
+        navigate(`/groups/${group.slug}/`, { replace: true });
       } else {
         // Group not found, redirect to home
         navigate('/', { replace: true });

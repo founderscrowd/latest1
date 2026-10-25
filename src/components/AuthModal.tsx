@@ -535,7 +535,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuccess, i
           {!isSignUp && (
             <div className="text-right -mt-2">
               <Link
-                to="/forgot-password"
+                to="/forgot-password/"
                 onClick={onClose}
                 className="text-xs text-blue-600 hover:text-blue-700 font-medium"
               >
@@ -625,7 +625,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, onAuthSuccess, i
               <span className="text-xs text-slate-600 leading-relaxed">
                 I agree to the{' '}
                 <Link
-                  to="/terms"
+                  to="/terms/"
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}

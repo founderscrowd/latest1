@@ -30,8 +30,8 @@ const NotificationToasts: React.FC = () => {
       'equity_claim_submitted', 'equity_claim_approved', 'equity_claim_rejected'
     ];
     if (groupTypes.includes(notification.type)) {
-      if (data.group_slug) navigate(`/groups/${data.group_slug}/manage`);
-      else if (data.group_id) navigate(`/groups/${data.group_id}/manage`);
+      if (data.group_slug) navigate(`/groups/${data.group_slug}/manage/`);
+      else if (data.group_id) navigate(`/groups/${data.group_id}/manage/`);
     } else if (notification.type === 'user_registered') {
       navigate('/settings/');
     }

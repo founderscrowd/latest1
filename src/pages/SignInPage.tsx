@@ -19,7 +19,7 @@ const SignInPage: React.FC<SignInPageProps> = ({ siteLogoUrl }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    trackGAPageView('/sign-in');
+    trackGAPageView('/sign-in/');
   }, []);
 
   const handleGoogleSignIn = async () => {

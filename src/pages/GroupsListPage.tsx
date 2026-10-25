@@ -126,9 +126,9 @@ const GroupsListPage: React.FC<GroupsListPageProps> = ({
     }
 
     if (isGroupOwner(group) || group.joined) {
-      navigate(`/groups/${group.slug}/manage`);
+      navigate(`/groups/${group.slug}/manage/`);
     } else {
-      navigate(`/groups/${group.slug}`);
+      navigate(`/groups/${group.slug}/`);
     }
   };
 

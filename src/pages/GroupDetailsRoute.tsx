@@ -83,7 +83,7 @@ const GroupDetailsRoute: React.FC<GroupDetailsRouteProps> = ({
     // Find group by ID and navigate to its slug
     groupAPI.getGroup(groupId).then(group => {
       if (group.slug) {
-        navigate(`/groups/${group.slug}/manage`);
+        navigate(`/groups/${group.slug}/manage/`);
       }
     });
   };

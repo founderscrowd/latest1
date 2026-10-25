@@ -971,9 +971,9 @@ const App: React.FC = () => {
     }
 
     if (isGroupOwner(group) || group.joined) {
-      navigate(`/groups/${group.slug}/manage`);
+      navigate(`/groups/${group.slug}/manage/`);
     } else {
-      navigate(`/groups/${group.slug}`);
+      navigate(`/groups/${group.slug}/`);
     }
   };
 
@@ -1785,7 +1785,7 @@ const App: React.FC = () => {
                             onClick={(e) => {
                               e.stopPropagation();
                               e.preventDefault();
-                              navigate(`/groups/${group.slug}/manage`);
+                              navigate(`/groups/${group.slug}/manage/`);
                             }}
                             className="px-3 py-1.5 rounded-lg font-semibold text-xs transition-all hover:scale-105 bg-blue-600 text-white hover:bg-blue-700 cursor-pointer relative z-[100]"
                           >
@@ -1797,7 +1797,7 @@ const App: React.FC = () => {
                             onClick={(e) => {
                               e.stopPropagation();
                               e.preventDefault();
-                              navigate(`/groups/${group.slug}/manage`);
+                              navigate(`/groups/${group.slug}/manage/`);
                             }}
                             className="px-3 py-1.5 rounded-lg font-semibold text-xs transition-all hover:scale-105 bg-green-600 text-white hover:bg-green-700 cursor-pointer relative z-[100]"
                           >
@@ -1809,7 +1809,7 @@ const App: React.FC = () => {
                             onClick={(e) => {
                               e.stopPropagation();
                               e.preventDefault();
-                              navigate(`/groups/${group.slug}`);
+                              navigate(`/groups/${group.slug}/`);
                             }}
                             className="px-3 py-1.5 rounded-lg font-semibold text-xs transition-all hover:scale-105 bg-slate-600 text-white hover:bg-slate-700 cursor-pointer relative z-[100]"
                           >

@@ -84,15 +84,15 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ onClose, showAs
 
     if (notification.type === 'new_message') {
       if (data.group_id && data.group_slug) {
-        navigate(`/groups/${data.group_slug}/manage`);
+        navigate(`/groups/${data.group_slug}/manage/`);
       } else if (data.group_id) {
-        navigate(`/groups/${data.group_id}/manage`);
+        navigate(`/groups/${data.group_id}/manage/`);
       }
     } else if (notification.type === 'forum_reply' || notification.type === 'forum_topic') {
       if (data.group_slug) {
-        navigate(`/groups/${data.group_slug}/manage`);
+        navigate(`/groups/${data.group_slug}/manage/`);
       } else if (data.group_id) {
-        navigate(`/groups/${data.group_id}/manage`);
+        navigate(`/groups/${data.group_id}/manage/`);
       }
     } else if (notification.type === 'user_registered' && isAdmin) {
       navigate('/settings/');
@@ -105,8 +105,8 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ onClose, showAs
       notification.type === 'equity_claim_approved' ||
       notification.type === 'equity_claim_rejected'
     ) {
-      if (data.group_slug) navigate(`/groups/${data.group_slug}/manage`);
-      else if (data.group_id) navigate(`/groups/${data.group_id}/manage`);
+      if (data.group_slug) navigate(`/groups/${data.group_slug}/manage/`);
+      else if (data.group_id) navigate(`/groups/${data.group_id}/manage/`);
     }
 
     if (onClose) onClose();
@@ -169,9 +169,9 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ onClose, showAs
       'equity_claim_submitted', 'equity_claim_approved', 'equity_claim_rejected'
     ];
     if (groupTypes.includes(notification.type)) {
-      return data.group_slug ? `/groups/${data.group_slug}/manage` : data.group_id ? `/groups/${data.group_id}/manage` : null;
+      return data.group_slug ? `/groups/${data.group_slug}/manage/` : data.group_id ? `/groups/${data.group_id}/manage/` : null;
     }
-    if (notification.type === 'user_registered' && isAdmin) return '/settings';
+    if (notification.type === 'user_registered' && isAdmin) return '/settings/';
     return null;
   };
 
