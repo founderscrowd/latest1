@@ -7,7 +7,7 @@ declare global {
   }
 }
 
-const PIXEL_ID = '1614166306981071';
+const PIXEL_ID = '2083489125868265';
 
 let loaded = false;
 
